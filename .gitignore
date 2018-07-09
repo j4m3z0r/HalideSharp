@@ -1,0 +1,9 @@
+HalideSharp/3rdparty/halide
+[Dd]ebug/
+[Rr]elease/
+x64/
+[Bb]in/
+[Oo]bj/
+*.o
+*.so
+.idea
