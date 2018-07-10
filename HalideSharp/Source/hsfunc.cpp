@@ -58,3 +58,35 @@ extern "C" void func_parallel_var(Func *f, Var *v) {
 extern "C" void func_compile_to_lowered_stmt(Func *f, const char *filename, enum HSOutputFormat format) {
     f->compile_to_lowered_stmt(filename, {}, (StmtOutputFormat) format);
 }
+
+extern "C" void func_print_loop_nest(Func* f) {
+    f->print_loop_nest();
+}
+
+extern "C" void func_reorder(Func *f, int nrVariables, Var **vars) {
+    std::vector<VarOrRVar> varList;
+    for(int i = 0; i < nrVariables; i++) {
+        varList.push_back(*vars[i]);
+    }
+    f->reorder(varList);
+}
+
+extern "C" void func_split(Func* f, Var* origVar, Var* v1, Var* v2, int factor) {
+    f->split(*origVar, *v1, *v2, factor);
+}
+
+extern "C" void func_fuse(Func* f, Var* v1, Var* v2, Var* fused) {
+    f->fuse(*v1, *v2, *fused);
+}
+
+extern "C" void func_vectorize(Func* f, Var* v) {
+    f->vectorize(*v);
+}
+
+extern "C" void func_unroll(Func* f, Var* v) {
+    f->unroll(*v);
+}
+
+extern "C" void func_tile(Func* func, Var* x, Var* y, Var* xo, Var* yo, Var* xi, Var* yi, int xfactor, int yfactor) {
+    func->tile(*x, *y, *xo, *yo, *xi, *yi, xfactor, yfactor);
+}

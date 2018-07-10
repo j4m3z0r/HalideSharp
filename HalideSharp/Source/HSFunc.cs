@@ -129,5 +129,71 @@ namespace HalideSharp
         {
             FuncCompileToLoweredStmt(_cppobj, filename, format);
         }
+
+        [DllImport(Constants.LibName, EntryPoint = "func_print_loop_nest")]
+        private static extern void FuncPrintLoopNest(IntPtr func);
+
+        public void PrintLoopNest()
+        {
+            FuncPrintLoopNest(_cppobj);
+        }
+
+        [DllImport(Constants.LibName, EntryPoint = "func_reorder")]
+        private static extern void FuncReorder(IntPtr func, int nrVariables, IntPtr[] vars);
+
+        public void Reorder(params HSVar[] vars)
+        {
+            var varPointers = new IntPtr[vars.Length];
+            for (var i = 0; i < vars.Length; i++)
+            {
+                varPointers[i] = vars[i]._cppobj;
+            }
+            
+            FuncReorder(_cppobj, vars.Length, varPointers);
+        }
+
+        [DllImport(Constants.LibName, EntryPoint = "func_split")]
+        private static extern void FuncSplit(IntPtr func, IntPtr origVar, IntPtr var1, IntPtr var2, int factor);
+
+        public void Split(HSVar origVar, HSVar v1, HSVar v2, int factor)
+        {
+            FuncSplit(_cppobj, origVar._cppobj, v1._cppobj, v2._cppobj, factor);
+        }
+
+        [DllImport(Constants.LibName, EntryPoint = "func_fuse")]
+        private static extern void FuncFuse(IntPtr func, IntPtr var1, IntPtr var2, IntPtr fused);
+
+        public HSFunc Fuse(HSVar var1, HSVar var2, HSVar fused)
+        {
+            FuncFuse(_cppobj, var1._cppobj, var2._cppobj, fused._cppobj);
+            return this;
+        }
+
+        [DllImport(Constants.LibName, EntryPoint = "func_vectorize")]
+        private static extern void FuncVectorize(IntPtr func, IntPtr var1);
+
+        public HSFunc Vectorize(HSVar var1)
+        {
+            FuncVectorize(_cppobj, var1._cppobj);
+            return this;
+        }
+        
+        [DllImport(Constants.LibName, EntryPoint = "func_unroll")]
+        private static extern void FuncUnroll(IntPtr func, IntPtr var1);
+
+        public void Unroll(HSVar var1)
+        {
+            FuncUnroll(_cppobj, var1._cppobj);
+        }
+
+        [DllImport(Constants.LibName, EntryPoint = "func_tile")]
+        private static extern void FuncTile(IntPtr func, IntPtr x, IntPtr y, IntPtr xo, IntPtr yo, IntPtr xi,
+            IntPtr yi, int xfactor, int yfactor);
+
+        public HSFunc Tile(HSVar x, HSVar y, HSVar xo, HSVar yo, HSVar xi, HSVar yi, int xfactor, int yfactor)
+        {
+            FuncTile(_cppobj, x._cppobj, y._cppobj, xo._cppobj, yo._cppobj, xi._cppobj, yi._cppobj, xfactor, yfactor);
+            return this;
+        }
     }
 }
