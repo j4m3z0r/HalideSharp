@@ -1,5 +1,9 @@
 #include <Halide.h>
 
+#define LANGUAGE_C 1
+#include "SharedEnums.cs"
+#undef LANGUAGE_C
+
 using namespace Halide;
 
 extern "C" Func *new_func(const char *name) {
@@ -48,4 +52,9 @@ extern "C" void func_trace_stores(Func *f) {
 
 extern "C" void func_parallel_var(Func *f, Var *v) {
     f->parallel(*v);
+}
+
+// TODO: accept a list of Argument objects.
+extern "C" void func_compile_to_lowered_stmt(Func *f, const char *filename, enum HSOutputFormat format) {
+    f->compile_to_lowered_stmt(filename, {}, (StmtOutputFormat) format);
 }

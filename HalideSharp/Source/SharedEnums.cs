@@ -18,6 +18,13 @@ namespace HalideSharp
             HS_Var = 1,
             HS_Expr = 2
         };
+
+        public enum HSOutputFormat
+        {
+            HS_Text = 0,
+            HS_HTML = 1
+        };
+
 #if !LANGUAGE_C
     }
 }

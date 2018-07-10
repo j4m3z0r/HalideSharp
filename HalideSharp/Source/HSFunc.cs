@@ -120,5 +120,14 @@ namespace HalideSharp
         {
             FuncParallelVar(_cppobj, v._cppobj);
         }
+
+        [DllImport(Constants.LibName, EntryPoint = "func_compile_to_lowered_stmt")]
+        private static extern void FuncCompileToLoweredStmt(IntPtr func,
+            [MarshalAs(Constants.StringType)] string filename, SharedEnums.HSOutputFormat format);
+        
+        public void CompileToLoweredStmt(string filename, SharedEnums.HSOutputFormat format)
+        {
+            FuncCompileToLoweredStmt(_cppobj, filename, format);
+        }
     }
 }

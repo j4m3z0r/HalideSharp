@@ -2,7 +2,7 @@
 #include <vector>
 #include <string>
 
-#define LANGUAGE_C 1 // muahahaha.
+#define LANGUAGE_C 1
 #include "SharedEnums.cs"
 #undef LANGUAGE_C
 
