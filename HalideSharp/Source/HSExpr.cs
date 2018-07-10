@@ -17,7 +17,18 @@ namespace HalideSharp
         
         ~HSExpr()
         {
-            DeleteExpr(_cppobj);
+            if (_cppobj != IntPtr.Zero)
+            {
+                DeleteExpr(_cppobj);
+            }
+        }
+
+        [DllImport(Constants.LibName, EntryPoint = "expr_mult_float")]
+        private static extern IntPtr ExprMultPloat(IntPtr expr, float f);
+        
+        public static HSExpr operator*(HSExpr expr, float f)
+        {
+            return new HSExpr(ExprMultPloat(expr._cppobj, f));
         }
     }
 }

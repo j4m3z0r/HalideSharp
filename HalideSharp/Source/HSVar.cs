@@ -25,7 +25,10 @@ namespace HalideSharp
         private static extern void DeleteVar(IntPtr obj);
         
         ~HSVar() {
-            DeleteVar(_cppobj);
+            if (_cppobj != IntPtr.Zero)
+            {
+                DeleteVar(_cppobj);
+            }
         }
 
         [DllImport(Constants.LibName, EntryPoint = "var_plus_var")]

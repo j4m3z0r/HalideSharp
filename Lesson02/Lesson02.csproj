@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D84E250C-9E9C-4854-A2BF-9D1F9D045499}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{44E8A9DE-64C8-498C-A455-133B33D5FD06}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HalideSharp</RootNamespace>
-    <AssemblyName>HalideSharp</AssemblyName>
+    <RootNamespace>Lesson02</RootNamespace>
+    <AssemblyName>Lesson02</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -21,7 +21,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -31,7 +30,6 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -40,27 +38,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Source\Constants.cs" />
-    <Compile Include="Source\HS.cs" />
-    <Compile Include="Source\HSBuffer.cs" />
-    <Compile Include="Source\HSExpr.cs" />
-    <Compile Include="Source\HSFunc.cs" />
-    <Compile Include="Source\HSVar.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Source\hs.cpp" />
-    <Content Include="Source\hsbuffer.cpp" />
-    <Content Include="Source\hsexpr.cpp" />
-    <Content Include="Source\hsfunc.cpp" />
-    <Content Include="Source\hsvar.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ContentWithTargetPath Include="$(ProjectDir)/Source/libhalide-wrapper.so">
-      <Visible>false</Visible>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>libhalide-wrapper.so</TargetPath>
-    </ContentWithTargetPath>
+    <ProjectReference Include="..\HalideSharp\HalideSharp.csproj">
+      <Project>{d84e250c-9e9c-4854-a2bf-9d1f9d045499}</Project>
+      <Name>HalideSharp</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -70,12 +55,4 @@
     <Target Name="AfterBuild">
     </Target>
     -->
-  <!-- Compile the bridging library for native -->
-  <Target Name="BeforeBuild">
-    <Exec Command="make -C $(ProjectDir)/Source -j 8" />
-  </Target>
-  <!-- Clean the bridging library when we clean the C# project -->
-  <Target Name="BeforeClean">
-    <Exec Command="make -C $(ProjectDir)/Source clean" />
-  </Target>
 </Project>

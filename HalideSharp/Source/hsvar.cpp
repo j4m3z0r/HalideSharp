@@ -11,3 +11,4 @@ extern "C" void delete_var(Halide::Var *v) {
 extern "C" Halide::Expr *var_plus_var(Halide::Var *v1, Halide::Var *v2) {
     return new Halide::Expr(*v1 + *v2);
 }
+
