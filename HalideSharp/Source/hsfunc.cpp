@@ -26,10 +26,26 @@ extern "C" Buffer<int32_t> *func_realize_int_3d(Func *f, int width, int height, 
     return new Buffer<int32_t>(f->realize(width, height, channels));
 }
 
+extern "C" Buffer<float> *func_realize_float_2d(Func *f, int width, int height) {
+    return new Buffer<float>(f->realize(width, height));
+}
+
+extern "C" Buffer<float> *func_realize_float_3d(Func *f, int width, int height, int channels) {
+    return new Buffer<float>(f->realize(width, height, channels));
+}
+
 extern "C" Buffer<uint8_t> *func_realize_byte_2d(Func *f, int width, int height) {
     return new Buffer<uint8_t>(f->realize(width, height));
 }
 
 extern "C" Buffer<uint8_t> *func_realize_byte_3d(Func *f, int width, int height, int channels) {
     return new Buffer<uint8_t>(f->realize(width, height, channels));
+}
+
+extern "C" void func_trace_stores(Func *f) {
+    f->trace_stores();
+}
+
+extern "C" void func_parallel_var(Func *f, Var *v) {
+    f->parallel(*v);
 }

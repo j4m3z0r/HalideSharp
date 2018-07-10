@@ -1,4 +1,5 @@
-﻿using HalideSharp;
+﻿using System;
+using HalideSharp;
 
 namespace Lesson02
 {
@@ -24,6 +25,8 @@ namespace Lesson02
             var output = brighter.Realize<byte>(input.Width, input.Height, input.Channels);
             
             output.SaveImage("brighter.png");
+            
+            Console.WriteLine("Success!");
         }
     }
 }

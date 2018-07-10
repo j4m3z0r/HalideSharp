@@ -8,12 +8,18 @@ namespace HalideSharp
         [DllImport(Constants.LibName, EntryPoint = "delete_int_buffer")]
         public static extern void DeleteIntBuffer(IntPtr obj);
         
+        [DllImport(Constants.LibName, EntryPoint = "delete_float_buffer")]
+        public static extern void DeleteFloatBuffer(IntPtr obj);
+        
         [DllImport(Constants.LibName, EntryPoint = "delete_byte_buffer")]
         public static extern void DeleteByteBuffer(IntPtr obj);
 
         
         [DllImport(Constants.LibName, EntryPoint = "buffer_int_getval_2d")]
         public static extern void BufferIntGetVal(IntPtr obj, int x, int y, IntPtr result);
+        
+        [DllImport(Constants.LibName, EntryPoint = "buffer_float_getval_2d")]
+        public static extern void BufferFloatGetVal(IntPtr obj, int x, int y, IntPtr result);
         
         [DllImport(Constants.LibName, EntryPoint = "buffer_byte_getval_2d")]
         public static extern void BufferByteGetVal(IntPtr obj, int x, int y, IntPtr result);
@@ -22,12 +28,18 @@ namespace HalideSharp
         [DllImport(Constants.LibName, EntryPoint = "buffer_int_getexpr_2d_var_var")]
         public static extern IntPtr BufferIntGetExprVarVar(IntPtr obj, IntPtr x, IntPtr y);
 
+        [DllImport(Constants.LibName, EntryPoint = "buffer_float_getexpr_2d_var_var")]
+        public static extern IntPtr BufferFloatGetExprVarVar(IntPtr obj, IntPtr x, IntPtr y);
+        
         [DllImport(Constants.LibName, EntryPoint = "buffer_byte_getexpr_2d_var_var")]
         public static extern IntPtr BufferByteGetExprVarVar(IntPtr obj, IntPtr x, IntPtr y);
        
         
         [DllImport(Constants.LibName, EntryPoint = "buffer_int_getval_3d")]
         public static extern void BufferIntGetVal(IntPtr obj, int x, int y, int z, IntPtr result);
+        
+        [DllImport(Constants.LibName, EntryPoint = "buffer_float_getval_3d")]
+        public static extern void BufferFloatGetVal(IntPtr obj, int x, int y, int z, IntPtr result);
         
         [DllImport(Constants.LibName, EntryPoint = "buffer_byte_getval_3d")]
         public static extern void BufferByteGetVal(IntPtr obj, int x, int y, int z, IntPtr result);
@@ -36,12 +48,18 @@ namespace HalideSharp
         [DllImport(Constants.LibName, EntryPoint = "buffer_int_getexpr_3d_var_var_var")]
         public static extern IntPtr BufferIntGetExprVarVarVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
 
+        [DllImport(Constants.LibName, EntryPoint = "buffer_float_getexpr_3d_var_var_var")]
+        public static extern IntPtr BufferFloatGetExprVarVarVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+        
         [DllImport(Constants.LibName, EntryPoint = "buffer_byte_getexpr_3d_var_var_var")]
         public static extern IntPtr BufferByteGetExprVarVarVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
         
         
         [DllImport(Constants.LibName, EntryPoint = "buffer_int_width")]
         public static extern int BufferIntWidth(IntPtr obj);
+        
+        [DllImport(Constants.LibName, EntryPoint = "buffer_float_width")]
+        public static extern int BufferFloatWidth(IntPtr obj);
         
         [DllImport(Constants.LibName, EntryPoint = "buffer_byte_width")]
         public static extern int BufferByteWidth(IntPtr obj);
@@ -50,12 +68,18 @@ namespace HalideSharp
         [DllImport(Constants.LibName, EntryPoint = "buffer_int_height")]
         public static extern int BufferIntHeight(IntPtr obj);
         
+        [DllImport(Constants.LibName, EntryPoint = "buffer_float_height")]
+        public static extern int BufferFloatHeight(IntPtr obj);
+        
         [DllImport(Constants.LibName, EntryPoint = "buffer_byte_height")]
         public static extern int BufferByteHeight(IntPtr obj);
 
         
         [DllImport(Constants.LibName, EntryPoint = "buffer_int_channels")]
         public static extern int BufferIntChannels(IntPtr obj);
+        
+        [DllImport(Constants.LibName, EntryPoint = "buffer_float_channels")]
+        public static extern int BufferFloatChannels(IntPtr obj);
         
         [DllImport(Constants.LibName, EntryPoint = "buffer_byte_channels")]
         public static extern int BufferByteChannels(IntPtr obj);
@@ -74,7 +98,7 @@ namespace HalideSharp
 
         private void CheckType()
         {
-            if (typeof(T) != typeof(int) && typeof(T) != typeof(byte))
+            if (typeof(T) != typeof(int) && typeof(T) != typeof(float) && typeof(T) != typeof(byte))
             {
                 throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
             }
@@ -121,9 +145,17 @@ namespace HalideSharp
             {
                 CppBuffer.DeleteIntBuffer(_cppobj);
             }
+            else if(typeof(T) == typeof(float))
+            {
+                CppBuffer.DeleteFloatBuffer(_cppobj);
+            }
             else if (typeof(T) == typeof(byte))
             {
                 CppBuffer.DeleteByteBuffer(_cppobj);
+            }
+            else
+            {
+                throw new NotImplementedException($"No destructor for type {typeof(T)}");
             }
         }
 
@@ -147,6 +179,10 @@ namespace HalideSharp
                 if (typeof(T) == typeof(int))
                 {
                     CppBuffer.BufferIntGetVal(_cppobj, x, y, resultHandle.AddrOfPinnedObject());
+                }
+                if (typeof(T) == typeof(float))
+                {
+                    CppBuffer.BufferFloatGetVal(_cppobj, x, y, resultHandle.AddrOfPinnedObject());
                 }
                 else if (typeof(T) == typeof(byte))
                 {
@@ -177,6 +213,10 @@ namespace HalideSharp
                 {
                     CppBuffer.BufferIntGetVal(_cppobj, x, y, z, resultHandle.AddrOfPinnedObject());
                 }
+                else if (typeof(T) == typeof(float))
+                {
+                    CppBuffer.BufferFloatGetVal(_cppobj, x, y, z, resultHandle.AddrOfPinnedObject());
+                }
                 else if (typeof(T) == typeof(byte))
                 {
                     CppBuffer.BufferByteGetVal(_cppobj, x, y, z, resultHandle.AddrOfPinnedObject());
@@ -203,6 +243,10 @@ namespace HalideSharp
             {
                 return new HSExpr(CppBuffer.BufferIntGetExprVarVar(_cppobj, x._cppobj, y._cppobj));
             }
+            else if(typeof(T) == typeof(float))
+            {
+                return new HSExpr(CppBuffer.BufferFloatGetExprVarVar(_cppobj, x._cppobj, y._cppobj));
+            }
             else if (typeof(T) == typeof(byte))
             {
                 return new HSExpr(CppBuffer.BufferByteGetExprVarVar(_cppobj, x._cppobj, y._cppobj));
@@ -218,6 +262,10 @@ namespace HalideSharp
             if(typeof(T) == typeof(int))
             {
                 return new HSExpr(CppBuffer.BufferIntGetExprVarVarVar(_cppobj, x._cppobj, y._cppobj, z._cppobj));
+            }
+            if(typeof(T) == typeof(float))
+            {
+                return new HSExpr(CppBuffer.BufferFloatGetExprVarVarVar(_cppobj, x._cppobj, y._cppobj, z._cppobj));
             }
             else if (typeof(T) == typeof(byte))
             {
@@ -241,6 +289,10 @@ namespace HalideSharp
                 {
                     return CppBuffer.BufferIntWidth(_cppobj);
                 }
+                else if (typeof(T) == typeof(float))
+                {
+                    return CppBuffer.BufferFloatWidth(_cppobj);
+                }
                 else if (typeof(T) == typeof(byte))
                 {
                     return CppBuffer.BufferByteWidth(_cppobj);
@@ -261,6 +313,10 @@ namespace HalideSharp
                 {
                     return CppBuffer.BufferIntHeight(_cppobj);      
                 }
+                else if (typeof(T) == typeof(float))
+                {
+                    return CppBuffer.BufferFloatHeight(_cppobj);      
+                }
                 else if(typeof(T) == typeof(byte))
                 {
                     return CppBuffer.BufferByteHeight(_cppobj);      
@@ -279,6 +335,10 @@ namespace HalideSharp
                 if (typeof(T) == typeof(int))
                 {
                     return CppBuffer.BufferIntChannels(_cppobj);      
+                }
+                if (typeof(T) == typeof(float))
+                {
+                    return CppBuffer.BufferFloatChannels(_cppobj);      
                 }
                 else if(typeof(T) == typeof(byte))
                 {

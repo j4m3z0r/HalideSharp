@@ -47,6 +47,12 @@ namespace HalideSharp
         [DllImport(Constants.LibName, EntryPoint = "func_realize_int_3d")]
         private static extern IntPtr FuncRealizeInt(IntPtr func, int width, int height, int channels);
         
+        [DllImport(Constants.LibName, EntryPoint = "func_realize_float_2d")]
+        private static extern IntPtr FuncRealizeFloat(IntPtr func, int width, int height);
+        
+        [DllImport(Constants.LibName, EntryPoint = "func_realize_float_3d")]
+        private static extern IntPtr FuncRealizeFloat(IntPtr func, int width, int height, int channels);
+        
         [DllImport(Constants.LibName, EntryPoint = "func_realize_byte_2d")]
         private static extern IntPtr FuncRealizeByte(IntPtr func, int width, int height);
         
@@ -59,6 +65,10 @@ namespace HalideSharp
             if (typeof(T) == typeof(int))
             {
                 result = FuncRealizeInt(_cppobj, width, height);
+            }
+            else if (typeof(T) == typeof(float))
+            {
+                result = FuncRealizeFloat(_cppobj, width, height);
             }
             else if (typeof(T) == typeof(byte))
             {
@@ -79,6 +89,10 @@ namespace HalideSharp
             {
                 result = FuncRealizeInt(_cppobj, width, height, channels);
             }
+            else if (typeof(T) == typeof(float))
+            {
+                result = FuncRealizeFloat(_cppobj, width, height, channels);
+            }
             else if (typeof(T) == typeof(byte))
             {
                 result = FuncRealizeByte(_cppobj, width, height, channels);
@@ -89,6 +103,22 @@ namespace HalideSharp
             }
 
             return new HSBuffer<T>(result);
+        }
+
+        [DllImport(Constants.LibName, EntryPoint = "func_trace_stores")]
+        private static extern void FuncTraceStores(IntPtr func);
+        
+        public void TraceStores()
+        {
+            FuncTraceStores(_cppobj);
+        }
+
+        [DllImport(Constants.LibName, EntryPoint = "func_parallel_var")]
+        private static extern void FuncParallelVar(IntPtr func, IntPtr v);
+        
+        public void Parallel(HSVar v)
+        {
+            FuncParallelVar(_cppobj, v._cppobj);
         }
     }
 }

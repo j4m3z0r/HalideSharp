@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace HalideSharp
 {
@@ -41,6 +44,72 @@ namespace HalideSharp
             var newExpr = MinExprFloat(expr._cppobj, f);
             expr._cppobj = IntPtr.Zero;
             return new HSExpr(newExpr);
+        }
+
+        [DllImport(Constants.LibName, EntryPoint = "print_objects_when")]
+        private static extern IntPtr PrintObjectsWhen(IntPtr condition, int numObjects, SharedEnums.HSObjectType[] objTypes, IntPtr[] objects);
+        
+        public static HSExpr PrintWhen(HSExpr when, params object[] args)
+        {
+            // Construct a pair of parallel arrays representing the argument list: one for denoting the types of the
+            // arguments, the other for pointers to the arguments themselves.
+            var typeList = new SharedEnums.HSObjectType[args.Length];
+            var objList = new IntPtr[args.Length];
+            var garbage = new List<GCHandle>();
+
+            try
+            {
+                for (var i = 0; i < args.Length; i++)
+                {
+                    var a = args[i];
+                    if (a is string s)
+                    {
+                        // Convert to null-terminated UTF8 string. FIXME: get the encoding from the Constants class.
+                        var bytes = Encoding.UTF8.GetBytes(s + '\0');
+                        var handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+                        garbage.Add(handle);
+
+                        typeList[i] = SharedEnums.HSObjectType.HS_String;
+                        objList[i] = handle.AddrOfPinnedObject();
+                    }
+                    else if (a is HSVar @var)
+                    {
+                        typeList[i] = SharedEnums.HSObjectType.HS_Var;
+                        objList[i] = @var._cppobj;
+                    }
+                    else if (a is HSExpr expr)
+                    {
+                        typeList[i] = SharedEnums.HSObjectType.HS_Expr;
+                        objList[i] = expr._cppobj;
+                    }
+                    else
+                    {
+                        throw new NotImplementedException($"Cannot print objects {a} at index {i}");
+                    }
+                }
+
+                if (when == null)
+                {
+                    return new HSExpr(PrintObjectsWhen(IntPtr.Zero, args.Length, typeList, objList));
+                }
+                else
+                {
+                    return new HSExpr(PrintObjectsWhen(when._cppobj, args.Length, typeList, objList));
+                }
+
+            }
+            finally
+            {
+                foreach (var h in garbage)
+                {
+                    h.Free();
+                }
+            }
+        }
+
+        public static HSExpr Print(params object[] args)
+        {
+            return PrintWhen(null, args);
         }
     }
 }
