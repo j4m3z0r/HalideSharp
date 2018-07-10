@@ -180,7 +180,7 @@ namespace HalideSharp
                 {
                     CppBuffer.BufferIntGetVal(_cppobj, x, y, resultHandle.AddrOfPinnedObject());
                 }
-                if (typeof(T) == typeof(float))
+                else if (typeof(T) == typeof(float))
                 {
                     CppBuffer.BufferFloatGetVal(_cppobj, x, y, resultHandle.AddrOfPinnedObject());
                 }
