@@ -15,8 +15,8 @@ HALIDE_LIB := $(HALIDE_DIR)/lib/libHalide.a
 HALIDE_INC := $(HALIDE_DIR)/include
 HALIDE_TOOLS := $(HALIDE_DIR)/tools
 
-CXXFLAGS := -I$(HALIDE_INC) -I$(HALIDE_TOOLS) -fPIC
-LDFLAGS := $(HALIDE_LIB) -fPIC
+CXXFLAGS := -I$(HALIDE_INC) -I$(HALIDE_TOOLS) `libpng-config --cflags` -fPIC
+LDFLAGS := $(HALIDE_LIB) `libpng-config --ldflags` -ljpeg -lpthread -ldl -fPIC
 
 CXX := g++
 

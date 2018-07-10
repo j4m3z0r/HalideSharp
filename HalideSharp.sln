@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lesson01", "Tutorials\Lesso
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lesson02", "Tutorials\Lesson02\Lesson02.csproj", "{44E8A9DE-64C8-498C-A455-133B33D5FD06}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Resources", "Tutorials\Resources\Resources.shproj", "{28483B41-6611-43F6-B213-4CA88569C177}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{32EDB897-C43D-41FA-8409-E141F74FFA6F} = {F8F69F4F-9AE3-46B5-99BD-E03A77BCA933}
 		{44E8A9DE-64C8-498C-A455-133B33D5FD06} = {F8F69F4F-9AE3-46B5-99BD-E03A77BCA933}
+		{28483B41-6611-43F6-B213-4CA88569C177} = {F8F69F4F-9AE3-46B5-99BD-E03A77BCA933}
 	EndGlobalSection
 EndGlobal

@@ -30,7 +30,7 @@ extern "C" Expr* buffer_byte_getexpr_3d_var_var_var(Buffer<uint8_t> *b, Var* x, 
 
 extern "C" Buffer<uint8_t>* buffer_byte_load_image(const char *filename) {
     Buffer<uint8_t> buf = Tools::load_image(std::string(filename));
-    auto result = new Buffer<uint8_t>(buf);
+    return new Buffer<uint8_t>(buf);
 }
 
 extern "C" void buffer_byte_save_image(Buffer<uint8_t> *buf, const char *filename) {

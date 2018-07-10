@@ -6,7 +6,7 @@ namespace Lesson02
     {
         public static void Main(string[] args)
         {
-            var input = HSBuffer<byte>.LoadImage("images/rgb.png");
+            var input = HSBuffer<byte>.LoadImage("rgb.png");
             
             var brighter = new HSFunc("brighter");
             var x = new HSVar("x");
@@ -22,6 +22,8 @@ namespace Lesson02
             brighter[x, y, c] = value;
 
             var output = brighter.Realize<byte>(input.Width, input.Height, input.Channels);
+            
+            output.SaveImage("brighter.png");
         }
     }
 }
