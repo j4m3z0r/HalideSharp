@@ -42,7 +42,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HalideSharp\HalideSharp.csproj">
+    <ProjectReference Include="..\..\HalideSharp\HalideSharp.csproj">
       <Project>{d84e250c-9e9c-4854-a2bf-9d1f9d045499}</Project>
       <Name>HalideSharp</Name>
     </ProjectReference>

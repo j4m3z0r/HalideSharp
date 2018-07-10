@@ -4,9 +4,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HalideSharp", "HalideSharp\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tutorials", "Tutorials", "{F8F69F4F-9AE3-46B5-99BD-E03A77BCA933}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lesson01", "Lesson01\Lesson01.csproj", "{32EDB897-C43D-41FA-8409-E141F74FFA6F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lesson01", "Tutorials\Lesson01\Lesson01.csproj", "{32EDB897-C43D-41FA-8409-E141F74FFA6F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lesson02", "Lesson02\Lesson02.csproj", "{44E8A9DE-64C8-498C-A455-133B33D5FD06}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lesson02", "Tutorials\Lesson02\Lesson02.csproj", "{44E8A9DE-64C8-498C-A455-133B33D5FD06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
