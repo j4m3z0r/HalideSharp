@@ -5,6 +5,16 @@ namespace HalideSharp
 {
     internal class CppBuffer
     {
+        [DllImport(Constants.LibName, EntryPoint = "new_int_buffer_int_int")]
+        public static extern IntPtr NewIntBufferIntInt(int width, int height);
+        
+        [DllImport(Constants.LibName, EntryPoint = "new_float_buffer_int_int")]
+        public static extern IntPtr NewFloatBufferIntInt(int width, int height);
+        
+        [DllImport(Constants.LibName, EntryPoint = "new_byte_buffer_int_int")]
+        public static extern IntPtr NewByteBufferIntInt(int width, int height);
+        
+        
         [DllImport(Constants.LibName, EntryPoint = "delete_int_buffer")]
         public static extern void DeleteIntBuffer(IntPtr obj);
         
@@ -55,6 +65,16 @@ namespace HalideSharp
         public static extern IntPtr BufferByteGetExprVarVarVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
         
         
+        [DllImport(Constants.LibName, EntryPoint = "buffer_int_setmin")]
+        public static extern int BufferIntSetMin(IntPtr obj, int x, int y);
+        
+        [DllImport(Constants.LibName, EntryPoint = "buffer_float_setmin")]
+        public static extern int BufferFloatSetMin(IntPtr obj, int x, int y);
+        
+        [DllImport(Constants.LibName, EntryPoint = "buffer_byte_setmin")]
+        public static extern int BufferByteSetMin(IntPtr obj, int x, int y);
+        
+        
         [DllImport(Constants.LibName, EntryPoint = "buffer_int_width")]
         public static extern int BufferIntWidth(IntPtr obj);
         
@@ -99,6 +119,26 @@ namespace HalideSharp
         private void CheckType()
         {
             if (typeof(T) != typeof(int) && typeof(T) != typeof(float) && typeof(T) != typeof(byte))
+            {
+                throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
+            }
+        }
+        
+        public HSBuffer(int width, int height)
+        {
+            if (typeof(T) == typeof(int))
+            {
+                _cppobj = CppBuffer.NewIntBufferIntInt(width, height);
+            }
+            else if (typeof(T) == typeof(float))
+            {
+                _cppobj = CppBuffer.NewFloatBufferIntInt(width, height);
+            }
+            else if (typeof(T) == typeof(byte))
+            {
+                _cppobj = CppBuffer.NewByteBufferIntInt(width, height);
+            }
+            else
             {
                 throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
             }
@@ -263,7 +303,7 @@ namespace HalideSharp
             {
                 return new HSExpr(CppBuffer.BufferIntGetExprVarVarVar(_cppobj, x._cppobj, y._cppobj, z._cppobj));
             }
-            if(typeof(T) == typeof(float))
+            else if(typeof(T) == typeof(float))
             {
                 return new HSExpr(CppBuffer.BufferFloatGetExprVarVarVar(_cppobj, x._cppobj, y._cppobj, z._cppobj));
             }
@@ -280,6 +320,25 @@ namespace HalideSharp
         public HSExpr this[HSVar x, HSVar y] => GetExpr(x, y);
         public HSExpr this[HSVar x, HSVar y, HSVar z] => GetExpr(x, y, z);
         
+        public void SetMin(int x, int y)
+        {
+            if(typeof(T) == typeof(int))
+            {
+                CppBuffer.BufferIntSetMin(_cppobj, x, y);
+            }
+            else if(typeof(T) == typeof(float))
+            {
+                CppBuffer.BufferFloatSetMin(_cppobj, x, y);
+            }
+            else if (typeof(T) == typeof(byte))
+            {
+                CppBuffer.BufferByteSetMin(_cppobj, x, y);
+            }
+            else
+            {
+                throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
+            }
+        }
 
         public int Width
         {

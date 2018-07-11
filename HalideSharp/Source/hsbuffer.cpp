@@ -4,6 +4,10 @@
 
 using namespace Halide;
 
+extern "C" Buffer<int32_t>* new_int_buffer_int_int(int width, int height) { return new Buffer<int32_t>(width, height); }
+extern "C" Buffer<float>* new_float_buffer_int_int(int width, int height) { return new Buffer<float>(width, height); }
+extern "C" Buffer<uint8_t>* new_byte_buffer_int_int(int width, int height) { return new Buffer<uint8_t>(width, height); }
+
 extern "C" void delete_int_buffer(Buffer<int32_t> *b) { delete b; }
 extern "C" void delete_float_buffer(Buffer<float> *b) { delete b; }
 extern "C" void delete_byte_buffer(Buffer<uint8_t> *b) { delete b; }
@@ -35,6 +39,10 @@ extern "C" Expr* buffer_byte_getexpr_2d_var_var(Buffer<uint8_t> *b, Var *x, Var 
 extern "C" Expr* buffer_int_getexpr_3d_var_var_var(Buffer<int32_t> *b, Var* x, Var* y, Var* z) { return new Expr((*b)(*x, *y, *z)); }
 extern "C" Expr* buffer_float_getexpr_3d_var_var_var(Buffer<float> *b, Var* x, Var* y, Var* z) { return new Expr((*b)(*x, *y, *z)); }
 extern "C" Expr* buffer_byte_getexpr_3d_var_var_var(Buffer<uint8_t> *b, Var* x, Var* y, Var* z) { return new Expr((*b)(*x, *y, *z)); }
+
+extern "C" void buffer_int_setmin(Buffer<int32_t> *b, int x, int y) { b->set_min(x, y); }
+extern "C" void buffer_float_setmin(Buffer<float> *b, int x, int y) { b->set_min(x, y); }
+extern "C" void buffer_byte_setmin(Buffer<uint8_t> *b, int x, int y) { b->set_min(x, y); }
 
 extern "C" Buffer<uint8_t>* buffer_byte_load_image(const char *filename) {
     Buffer<uint8_t> buf = Tools::load_image(std::string(filename));

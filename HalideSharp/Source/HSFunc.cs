@@ -40,21 +40,32 @@ namespace HalideSharp
         {
             set => FuncSetVarVarVarExpr(_cppobj, v1._cppobj, v2._cppobj, v3._cppobj, value._cppobj);
         }
+
+        [DllImport(Constants.LibName, EntryPoint = "func_realize_int_buffer")]
+        private static extern IntPtr FuncRealizeIntBuffer(IntPtr func, IntPtr buffer);
+        
+        [DllImport(Constants.LibName, EntryPoint = "func_realize_float_buffer")]
+        private static extern IntPtr FuncRealizeFloatBuffer(IntPtr func, IntPtr buffer);
+        
+        [DllImport(Constants.LibName, EntryPoint = "func_realize_byte_buffer")]
+        private static extern IntPtr FuncRealizeByteBuffer(IntPtr func, IntPtr buffer);
+        
         
         [DllImport(Constants.LibName, EntryPoint = "func_realize_int_2d")]
         private static extern IntPtr FuncRealizeInt(IntPtr func, int width, int height);
         
-        [DllImport(Constants.LibName, EntryPoint = "func_realize_int_3d")]
-        private static extern IntPtr FuncRealizeInt(IntPtr func, int width, int height, int channels);
-        
         [DllImport(Constants.LibName, EntryPoint = "func_realize_float_2d")]
         private static extern IntPtr FuncRealizeFloat(IntPtr func, int width, int height);
         
-        [DllImport(Constants.LibName, EntryPoint = "func_realize_float_3d")]
-        private static extern IntPtr FuncRealizeFloat(IntPtr func, int width, int height, int channels);
-        
         [DllImport(Constants.LibName, EntryPoint = "func_realize_byte_2d")]
         private static extern IntPtr FuncRealizeByte(IntPtr func, int width, int height);
+        
+        
+        [DllImport(Constants.LibName, EntryPoint = "func_realize_int_3d")]
+        private static extern IntPtr FuncRealizeInt(IntPtr func, int width, int height, int channels);
+        
+        [DllImport(Constants.LibName, EntryPoint = "func_realize_float_3d")]
+        private static extern IntPtr FuncRealizeFloat(IntPtr func, int width, int height, int channels);
         
         [DllImport(Constants.LibName, EntryPoint = "func_realize_byte_3d")]
         private static extern IntPtr FuncRealizeByte(IntPtr func, int width, int height, int channels);
@@ -103,6 +114,26 @@ namespace HalideSharp
             }
 
             return new HSBuffer<T>(result);
+        }
+
+        public void Realize<T>(HSBuffer<T> buffer) where T: struct
+        {
+            if (typeof(T) == typeof(int))
+            {
+                FuncRealizeIntBuffer(_cppobj, buffer._cppobj);
+            }
+            else if (typeof(T) == typeof(float))
+            {
+                FuncRealizeFloatBuffer(_cppobj, buffer._cppobj);
+            }
+            else if (typeof(T) == typeof(byte))
+            {
+                FuncRealizeByteBuffer(_cppobj, buffer._cppobj);
+            }
+            else
+            {
+                throw new NotImplementedException($"Cannot realize to buffer of type {typeof(T)}");
+            }
         }
 
         [DllImport(Constants.LibName, EntryPoint = "func_trace_stores")]
