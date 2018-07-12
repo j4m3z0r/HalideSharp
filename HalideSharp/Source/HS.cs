@@ -19,7 +19,6 @@ namespace HalideSharp
         
         public static HSExpr Cast<T>(HSExpr expr)
         {
-            // Cast uses move semantics.
             IntPtr newExpr;
             if (typeof(T) == typeof(float))
             {
@@ -116,5 +115,22 @@ namespace HalideSharp
         {
             return PrintWhen(null, args);
         }
+
+        [DllImport(Constants.LibName, EntryPoint = "clamp_expr_int_int")]
+        private static extern IntPtr ClampExprIntInt(IntPtr e, int min, int max);
+
+        public static HSExpr Clamp(HSExpr e, int min, int max)
+        {
+            return new HSExpr(ClampExprIntInt(e._cppobj, min, max));
+        }
+
+        [DllImport(Constants.LibName, EntryPoint = "clamp_var_int_int")]
+        private static extern IntPtr ClampVarIntInt(IntPtr v, int min, int max);
+        
+        public static HSExpr Clamp(HSVar v, int min, int max)
+        {
+            return new HSExpr(ClampVarIntInt(v._cppobj, min, max));
+        }
+
     }
 }

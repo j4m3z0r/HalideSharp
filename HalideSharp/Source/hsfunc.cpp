@@ -1,5 +1,7 @@
 #include <Halide.h>
 
+#include "magicmacros.h"
+
 #define LANGUAGE_C 1
 #include "SharedEnums.cs"
 #undef LANGUAGE_C
@@ -9,59 +11,26 @@ using namespace Halide;
 extern "C" Func *new_func(const char *name) { return new Func(name); }
 extern "C" void delete_func(Func *f) { delete f; }
 
+// 1D indexers
+#define FUNC_INDEXER_1D(T1) \
+    extern "C" Expr* func_get_Expr__ ## T1(Func* f, T1* x) { return new Expr((*f)(*x)); } \
+    extern "C" void func_set_Expr_ ## T1 ## __Expr(Func* f, T1* x, Expr* e) { (*f)(*x) = *e; }
+
+PERMUTE_ARGS_1D(FUNC_INDEXER_1D)
+
 // 2D indexers
-// var var
-extern "C" void func_set_var_var__expr(Func *f, Var *v1, Var *v2, Expr *e) { (*f)(*v1, *v2) = *e; }
-extern "C" Expr* func_getexpr__var_var(Func*f, Var *v1, Var *v2) { return new Expr((*f)(*v1, *v2)); }
+#define FUNC_INDEXER_2D(T1, T2) \
+    extern "C" Expr* func_get_Expr__ ## T1 ## _ ## T2(Func* f, T1* x, T2* y) { return new Expr((*f)(*x, *y)); } \
+    extern "C" void func_set_Expr_ ## T1 ## _ ## T2 ## __Expr(Func* f, T1* x, T2* y, Expr* e) { (*f)(*x, *y) = *e; }
 
-// var expr
-extern "C" void func_set_var_expr__expr(Func *f, Var *v1, Expr *v2, Expr *e) { (*f)(*v1, *v2) = *e; }
-extern "C" Expr* func_getexpr__var_expr(Func*f, Var *v1, Expr *v2) { return new Expr((*f)(*v1, *v2)); }
-
-// expr var
-extern "C" void func_set_expr_var__expr(Func *f, Expr *v1, Var *v2, Expr *e) { (*f)(*v1, *v2) = *e; }
-extern "C" Expr* func_getexpr__expr_var(Func*f, Expr *v1, Var *v2) { return new Expr((*f)(*v1, *v2)); }
-
-// expr var
-extern "C" void func_set_expr_expr__expr(Func *f, Expr *v1, Expr *v2, Expr *e) { (*f)(*v1, *v2) = *e; }
-extern "C" Expr* func_getexpr__expr_expr(Func*f, Expr *v1, Expr *v2) { return new Expr((*f)(*v1, *v2)); }
-// END 2D indexers
-
-
+PERMUTE_ARGS_2D(FUNC_INDEXER_2D)
 
 // 3D indexers
-// var var var
-extern "C" void func_set_var_var_var__expr(Func *f, Var *v1, Var *v2, Var *v3, Expr *e) { (*f)(*v1, *v2, *v3) = *e; }
-extern "C" Expr* func_getexpr__var_var_var(Func*f, Var *v1, Var *v2, Var *v3) { return new Expr((*f)(*v1, *v2, *v3)); }
+#define FUNC_INDEXER_3D(T1, T2, T3) \
+    extern "C" Expr* func_get_Expr__ ## T1 ## _ ## T2 ## _ ## T3(Func* f, T1* x, T2* y, T3 *z) { return new Expr((*f)(*x, *y, *z)); } \
+    extern "C" void func_set_Expr_ ## T1 ## _ ## T2 ## _ ## T3 ## __Expr(Func* f, T1* x, T2* y, T3* z, Expr* e) { (*f)(*x, *y, *z) = *e; }
 
-// expr var var
-extern "C" void func_set_expr_var_var__expr(Func *f, Expr *v1, Var *v2, Var *v3, Expr *e) { (*f)(*v1, *v2, *v3) = *e; }
-extern "C" Expr* func_getexpr__expr_var_var(Func*f, Expr *v1, Var *v2, Var *v3) { return new Expr((*f)(*v1, *v2, *v3)); }
-
-// var expr var
-extern "C" void func_set_var_expr_var__expr(Func *f, Var *v1, Expr *v2, Var *v3, Expr *e) { (*f)(*v1, *v2, *v3) = *e; }
-extern "C" Expr* func_getexpr__var_expr_var(Func*f, Var *v1, Expr *v2, Var *v3) { return new Expr((*f)(*v1, *v2, *v3)); }
-
-// var var expr
-extern "C" void func_set_var_var_expr__expr(Func *f, Var *v1, Var *v2, Expr *v3, Expr *e) { (*f)(*v1, *v2, *v3) = *e; }
-extern "C" Expr* func_getexpr__var_var_expr(Func*f, Var *v1, Var *v2, Expr *v3) { return new Expr((*f)(*v1, *v2, *v3)); }
-
-// expr expr var
-extern "C" void func_set_expr_expr_var__expr(Func *f, Expr *v1, Expr *v2, Var *v3, Expr *e) { (*f)(*v1, *v2, *v3) = *e; }
-extern "C" Expr* func_getexpr__expr_expr_var(Func*f, Expr *v1, Expr *v2, Var *v3) { return new Expr((*f)(*v1, *v2, *v3)); }
-
-// var expr expr
-extern "C" void func_set_var_expr_expr__expr(Func *f, Var *v1, Expr *v2, Expr *v3, Expr *e) { (*f)(*v1, *v2, *v3) = *e; }
-extern "C" Expr* func_getexpr__var_expr_expr(Func*f, Var *v1, Expr *v2, Expr *v3) { return new Expr((*f)(*v1, *v2, *v3)); }
-
-// expr var expr
-extern "C" void func_set_expr_var_expr__expr(Func *f, Expr *v1, Var *v2, Expr *v3, Expr *e) { (*f)(*v1, *v2, *v3) = *e; }
-extern "C" Expr* func_getexpr__expr_var_expr(Func*f, Expr *v1, Var *v2, Expr *v3) { return new Expr((*f)(*v1, *v2, *v3)); }
-
-// expr expr expr
-extern "C" void func_set_expr_expr_expr__expr(Func *f, Expr *v1, Expr *v2, Expr *v3, Expr *e) { (*f)(*v1, *v2, *v3) = *e; }
-extern "C" Expr* func_getexpr__expr_expr_expr(Func*f, Expr *v1, Expr *v2, Expr *v3) { return new Expr((*f)(*v1, *v2, *v3)); }
-// END 3D indexers
+PERMUTE_ARGS_3D(FUNC_INDEXER_3D)
 
 
 

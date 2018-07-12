@@ -22,6 +22,7 @@ extern "C" Expr* expr_gt_int(Expr* e, int i) { return new Expr((*e) > i); }
 
 // expr <op> expr
 extern "C" Expr* expr_plus_expr(Expr* e1, Expr* e2) { return new Expr((*e1) + (*e2)); }
+extern "C" Expr* expr_minus_expr(Expr* e1, Expr* e2) { return new Expr((*e1) - (*e2)); }
 extern "C" Expr* expr_and_expr(Expr* e1, Expr* e2) { return new Expr((*e1) && (*e2)); }
 
 // expr <op> var

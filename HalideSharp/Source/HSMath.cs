@@ -36,5 +36,13 @@ namespace HalideSharp
         {
             return new HSExpr(CosExpr(v._cppobj));
         }
+
+        [DllImport(Constants.LibName, EntryPoint = "pow_expr_float")]
+        private static extern IntPtr PowExprFloat(IntPtr v, float f);
+
+        public static HSExpr Pow(HSExpr e, float f)
+        {
+            return new HSExpr(PowExprFloat(e._cppobj, f));
+        }
     }
 }

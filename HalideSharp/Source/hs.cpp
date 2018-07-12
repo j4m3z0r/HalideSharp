@@ -53,3 +53,6 @@ extern "C" Expr* print_objects_when(Expr* condition, int numObjects, enum HSObje
         return new Expr(print_when(*condition, args));
     }
 }
+
+extern "C" Expr* clamp_expr_int_int(Expr* e, int min, int max) { return new Expr(clamp(*e, min, max)); }
+extern "C" Expr* clamp_var_int_int(Var *v, int min, int max) { return new Expr(clamp(*v, min, max)); }

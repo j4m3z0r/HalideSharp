@@ -43,11 +43,11 @@ namespace HalideSharp
         // wrapper library.
         #region 2D indexers
         
-        #region var var
-        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__var_var")]
+        #region Var Var
+        [DllImport(Constants.LibName, EntryPoint = "func_get_Expr__Var_Var")]
         public static extern IntPtr FuncGetExpr_VarVar(IntPtr obj, IntPtr x, IntPtr y);
         
-        [DllImport(Constants.LibName, EntryPoint = "func_set_var_var__expr")]
+        [DllImport(Constants.LibName, EntryPoint = "func_set_Var_Var__Expr")]
         private static extern void FuncSetVarVar_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr e);
         
         public HSExpr this[HSVar v1, HSVar v2]
@@ -57,11 +57,11 @@ namespace HalideSharp
         }
         #endregion
         
-        #region var expr
-        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__var_expr")]
+        #region Var Expr
+        [DllImport(Constants.LibName, EntryPoint = "func_get_Expr__Var_Expr")]
         public static extern IntPtr FuncGetExpr_VarExpr(IntPtr obj, IntPtr x, IntPtr y);
         
-        [DllImport(Constants.LibName, EntryPoint = "func_set_var_expr__expr")]
+        [DllImport(Constants.LibName, EntryPoint = "func_set_Var_Expr__Expr")]
         private static extern void FuncSetVarExpr_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr e);
         
         public HSExpr this[HSVar v1, HSExpr v2]
@@ -71,11 +71,11 @@ namespace HalideSharp
         }
         #endregion
         
-        #region expr var
-        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__expr_var")]
+        #region Expr Var
+        [DllImport(Constants.LibName, EntryPoint = "func_get_Expr__Expr_Var")]
         public static extern IntPtr FuncGetExpr_ExprVar(IntPtr obj, IntPtr x, IntPtr y);
         
-        [DllImport(Constants.LibName, EntryPoint = "func_set_expr_var__expr")]
+        [DllImport(Constants.LibName, EntryPoint = "func_set_Expr_Var__Expr")]
         private static extern void FuncSetExprVar_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr e);
         
         public HSExpr this[HSExpr v1, HSVar v2]
@@ -86,11 +86,11 @@ namespace HalideSharp
         #endregion
         
         
-        #region expr expr
-        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__expr_expr")]
+        #region Expr Expr
+        [DllImport(Constants.LibName, EntryPoint = "func_get_Expr__Expr_Expr")]
         public static extern IntPtr FuncGetExpr_ExprExpr(IntPtr obj, IntPtr x, IntPtr y);
         
-        [DllImport(Constants.LibName, EntryPoint = "func_set_expr_expr__expr")]
+        [DllImport(Constants.LibName, EntryPoint = "func_set_Expr_Expr__Expr")]
         private static extern void FuncSetExprExpr_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr e);
         
         public HSExpr this[HSExpr v1, HSExpr v2]
@@ -104,11 +104,11 @@ namespace HalideSharp
 
         #region 3D indexers
         
-        #region var var var
-        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__var_var_var")]
+        #region Var Var Var
+        [DllImport(Constants.LibName, EntryPoint = "func_get_Expr__Var_Var_Var")]
         public static extern IntPtr FuncGetExpr_VarVarVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
         
-        [DllImport(Constants.LibName, EntryPoint = "func_set_var_var_var__expr")]
+        [DllImport(Constants.LibName, EntryPoint = "func_set_Var_Var_Var__Expr")]
         private static extern void FuncSetVarVarVar_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr v3, IntPtr e);
         
         public HSExpr this[HSVar v1, HSVar v2, HSVar v3]
@@ -118,11 +118,11 @@ namespace HalideSharp
         }
         #endregion
         
-        #region expr var var
-        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__expr_var_var")]
+        #region Expr Var Var
+        [DllImport(Constants.LibName, EntryPoint = "func_get_Expr__Expr_Var_Var")]
         public static extern IntPtr FuncGetExpr_ExprVarVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
         
-        [DllImport(Constants.LibName, EntryPoint = "func_set_expr_var_var__expr")]
+        [DllImport(Constants.LibName, EntryPoint = "func_set_Expr_Var_Var__Expr")]
         private static extern void FuncSetExprVarVar_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr v3, IntPtr e);
         
         public HSExpr this[HSExpr v1, HSVar v2, HSVar v3]
@@ -132,11 +132,11 @@ namespace HalideSharp
         }
         #endregion
         
-        #region var expr var
-        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__var_expr_var")]
+        #region Var Expr Var
+        [DllImport(Constants.LibName, EntryPoint = "func_get_Expr__Var_Expr_Var")]
         public static extern IntPtr FuncGetExpr_VarExprVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
         
-        [DllImport(Constants.LibName, EntryPoint = "func_set_var_expr_var__expr")]
+        [DllImport(Constants.LibName, EntryPoint = "func_set_Var_Expr_Var__Expr")]
         private static extern void FuncSetVarExprVar_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr v3, IntPtr e);
         
         public HSExpr this[HSVar v1, HSExpr v2, HSVar v3]
@@ -146,11 +146,11 @@ namespace HalideSharp
         }
         #endregion
         
-        #region var var expr
-        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__var_var_expr")]
+        #region Var Var Expr
+        [DllImport(Constants.LibName, EntryPoint = "func_get_Expr__Var_Var_Expr")]
         public static extern IntPtr FuncGetExpr_VarVarExpr(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
         
-        [DllImport(Constants.LibName, EntryPoint = "func_set_var_var_expr__expr")]
+        [DllImport(Constants.LibName, EntryPoint = "func_set_Var_Var_Expr__Expr")]
         private static extern void FuncSetVarVarExpr_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr v3, IntPtr e);
         
         public HSExpr this[HSVar v1, HSVar v2, HSExpr v3]
@@ -160,11 +160,11 @@ namespace HalideSharp
         }
         #endregion
         
-        #region expr expr var
-        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__expr_expr_var")]
+        #region Expr Expr Var
+        [DllImport(Constants.LibName, EntryPoint = "func_get_Expr__Expr_Expr_Var")]
         public static extern IntPtr FuncGetExpr_ExprExprVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
         
-        [DllImport(Constants.LibName, EntryPoint = "func_set_expr_expr_var__expr")]
+        [DllImport(Constants.LibName, EntryPoint = "func_set_Expr_Expr_Var__Expr")]
         private static extern void FuncSetExprExprVar_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr v3, IntPtr e);
         
         public HSExpr this[HSExpr v1, HSExpr v2, HSVar v3]
@@ -174,11 +174,11 @@ namespace HalideSharp
         }
         #endregion
         
-        #region var expr expr
-        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__var_expr_expr")]
+        #region Var Expr Expr
+        [DllImport(Constants.LibName, EntryPoint = "func_get_Expr__Var_Expr_Expr")]
         public static extern IntPtr FuncGetExpr_VarExprExpr(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
         
-        [DllImport(Constants.LibName, EntryPoint = "func_set_var_expr_expr__expr")]
+        [DllImport(Constants.LibName, EntryPoint = "func_set_Var_Expr_Expr__Expr")]
         private static extern void FuncSetVarExprExpr_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr v3, IntPtr e);
         
         public HSExpr this[HSVar v1, HSExpr v2, HSExpr v3]
@@ -188,11 +188,11 @@ namespace HalideSharp
         }
         #endregion
         
-        #region expr var expr
-        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__expr_var_expr")]
+        #region Expr Var Expr
+        [DllImport(Constants.LibName, EntryPoint = "func_get_Expr__Expr_Var_Expr")]
         public static extern IntPtr FuncGetExpr_ExprVarExpr(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
         
-        [DllImport(Constants.LibName, EntryPoint = "func_set_expr_var_expr__expr")]
+        [DllImport(Constants.LibName, EntryPoint = "func_set_Expr_Var_Expr__Expr")]
         private static extern void FuncSetExprVarExpr_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr v3, IntPtr e);
         
         public HSExpr this[HSExpr v1, HSVar v2, HSExpr v3]
@@ -202,11 +202,11 @@ namespace HalideSharp
         }
         #endregion
         
-        #region expr expr expr
-        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__expr_expr_expr")]
+        #region Expr Expr Expr
+        [DllImport(Constants.LibName, EntryPoint = "func_get_Expr__Expr_Expr_Expr")]
         public static extern IntPtr FuncGetExpr_ExprExprExpr(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
         
-        [DllImport(Constants.LibName, EntryPoint = "func_set_expr_expr_expr__expr")]
+        [DllImport(Constants.LibName, EntryPoint = "func_set_Expr_Expr_Expr__Expr")]
         private static extern void FuncSetExprExprExpr_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr v3, IntPtr e);
         
         public HSExpr this[HSExpr v1, HSExpr v2, HSExpr v3]

@@ -2,6 +2,8 @@
 #include <Halide.h>
 #include <halide_image_io.h>
 
+#include "magicmacros.h"
+
 using namespace Halide;
 
 // 2D constructors
@@ -55,23 +57,17 @@ GEN(BUFFER_GETVAL_3D, int)
 #define BUFFER_GETEXPR_3D(CSTYPE, CPPTYPE, T1, T2, T3) \
     extern "C" Expr* buffer_ ## CSTYPE ## _getexpr__ ## T1 ## _ ## T2 ## _ ## T3(Buffer< CPPTYPE > *b, T1 *x, T2 *y, T3 *z) { return new Expr((*b)(*x, *y, *z)); }
 
-GEN(BUFFER_GETEXPR_3D, Expr, Expr, Expr)
-GEN(BUFFER_GETEXPR_3D, Expr, Expr, Var)
-GEN(BUFFER_GETEXPR_3D, Expr, Var, Expr)
-GEN(BUFFER_GETEXPR_3D, Expr, Var, Var)
-GEN(BUFFER_GETEXPR_3D, Var, Expr, Expr)
-GEN(BUFFER_GETEXPR_3D, Var, Expr, Var)
-GEN(BUFFER_GETEXPR_3D, Var, Var, Expr)
-GEN(BUFFER_GETEXPR_3D, Var, Var, Var)
+#define BUFFER_GETEXPR_3D_ALLTYPES(T1, T2, T3) GEN(BUFFER_GETEXPR_3D, T1, T2, T3)
+
+PERMUTE_ARGS_3D(BUFFER_GETEXPR_3D_ALLTYPES)
 
 // 2D indexers
 #define BUFFER_GETEXPR_2D(CSTYPE, CPPTYPE, T1, T2) \
     extern "C" Expr* buffer_ ## CSTYPE ## _getexpr__ ## T1 ## _ ## T2 (Buffer< CPPTYPE > *b, T1 *x, T2 *y) { return new Expr((*b)(*x, *y)); }
 
-GEN(BUFFER_GETEXPR_2D, Expr, Expr)
-GEN(BUFFER_GETEXPR_2D, Expr, Var)
-GEN(BUFFER_GETEXPR_2D, Var, Expr)
-GEN(BUFFER_GETEXPR_2D, Var, Var)
+#define BUFFER_GETEXPR_2D_ALLTYPES(T1, T2) GEN(BUFFER_GETEXPR_2D, T1, T2)
+
+PERMUTE_ARGS_2D(BUFFER_GETEXPR_2D_ALLTYPES)
 
 extern "C" void buffer_int_setmin(Buffer<int32_t> *b, int x, int y) { b->set_min(x, y); }
 extern "C" void buffer_float_setmin(Buffer<float> *b, int x, int y) { b->set_min(x, y); }

@@ -6,6 +6,8 @@ namespace HalideSharp
 {
     public class HSExpr
     {
+        public const string CppType = "Expr";
+        
         internal IntPtr _cppobj;
 
         internal HSExpr(IntPtr cppobj)
@@ -83,6 +85,14 @@ namespace HalideSharp
         public static HSExpr operator +(HSExpr exp1, HSExpr exp2)
         {
             return new HSExpr(ExprPlusExpr(exp1._cppobj, exp2._cppobj));
+        }
+        
+        [DllImport(Constants.LibName, EntryPoint = "expr_minus_expr")]
+        private static extern IntPtr ExprMinusExpr(IntPtr exp1, IntPtr exp2);
+
+        public static HSExpr operator -(HSExpr exp1, HSExpr exp2)
+        {
+            return new HSExpr(ExprMinusExpr(exp1._cppobj, exp2._cppobj));
         }
         
         [DllImport(Constants.LibName, EntryPoint = "expr_and_expr")]

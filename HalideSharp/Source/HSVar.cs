@@ -6,6 +6,8 @@ namespace HalideSharp
 {
     public class HSVar
     {
+        public const string CppType = "Var";
+        
         internal IntPtr _cppobj;
 
         [DllImport(Constants.LibName, EntryPoint = "new_var")]
@@ -29,14 +31,6 @@ namespace HalideSharp
             {
                 DeleteVar(_cppobj);
             }
-        }
-
-        [DllImport(Constants.LibName, EntryPoint = "var_clamp")]
-        private static extern IntPtr VarClamp(IntPtr v, int min, int max);
-        
-        public HSExpr Clamp(int min, int max)
-        {
-            return new HSExpr(VarClamp(_cppobj, min, max));
         }
 
         #region var <op> var
@@ -87,6 +81,17 @@ namespace HalideSharp
         public static HSExpr operator !=(HSVar v, int i)
         {
             return new HSExpr(VarNotEqualsInt(v._cppobj, i));
+        }
+        #endregion
+        
+        #region var <op> float>
+
+        [DllImport(Constants.LibName, EntryPoint = "var_div_float")]
+        private static extern IntPtr VarDivFloat(IntPtr v, float f);
+
+        public static HSExpr operator /(HSVar v, float f)
+        {
+            return new HSExpr(VarDivFloat(v._cppobj, f));
         }
         #endregion
     }
