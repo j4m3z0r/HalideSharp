@@ -18,6 +18,11 @@ extern "C" Expr *cast_to_byte(Expr *expr) {
     return new Expr(casted_expr);
 }
 
+extern "C" Expr *cast_to_ushort(Expr *expr) {
+    auto casted_expr = cast<uint16_t>(*expr);
+    return new Expr(casted_expr);
+}
+
 extern "C" Expr* min_expr_float(Expr* expr, float f) {
     return new Expr(min(*expr, f));
 }

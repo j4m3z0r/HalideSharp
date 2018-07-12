@@ -31,12 +31,22 @@ namespace HalideSharp
             }
         }
 
+        [DllImport(Constants.LibName, EntryPoint = "var_clamp")]
+        private static extern IntPtr VarClamp(IntPtr v, int min, int max);
+        
+        public HSExpr Clamp(int min, int max)
+        {
+            return new HSExpr(VarClamp(_cppobj, min, max));
+        }
+
+        #region var <op> var
         [DllImport(Constants.LibName, EntryPoint = "var_plus_var")]
         private static extern IntPtr VarPlusVar(IntPtr v1, IntPtr v2);
         public static HSExpr operator +(HSVar v1, HSVar v2)
         {
             return new HSExpr(VarPlusVar(v1._cppobj, v2._cppobj));
         }
+        
 
         [DllImport(Constants.LibName, EntryPoint = "var_mult_var")]
         private static extern IntPtr VarMultVar(IntPtr v1, IntPtr v2);
@@ -44,6 +54,23 @@ namespace HalideSharp
         public static HSExpr operator *(HSVar v1, HSVar v2)
         {
             return new HSExpr(VarMultVar(v1._cppobj, v2._cppobj));
+        }
+        #endregion
+        
+        #region var <op> int
+        [DllImport(Constants.LibName, EntryPoint = "var_plus_int")]
+        private static extern IntPtr VarPlusInt(IntPtr v, int i);
+
+        public static HSExpr operator +(HSVar v, int i)
+        {
+            return new HSExpr(VarPlusInt(v._cppobj, i));
+        }
+        
+        [DllImport(Constants.LibName, EntryPoint = "var_minus_int")]
+        private static extern IntPtr VarMinusInt(IntPtr v1, int i);
+        public static HSExpr operator -(HSVar v1, int i)
+        {
+            return new HSExpr(VarMinusInt(v1._cppobj, i));
         }
 
         [DllImport(Constants.LibName, EntryPoint = "var_equals_int")]
@@ -61,5 +88,6 @@ namespace HalideSharp
         {
             return new HSExpr(VarNotEqualsInt(v._cppobj, i));
         }
+        #endregion
     }
 }

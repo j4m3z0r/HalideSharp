@@ -14,6 +14,9 @@ namespace HalideSharp
         [DllImport(Constants.LibName, EntryPoint = "cast_to_byte")]
         private static extern IntPtr CastToByte(IntPtr expr);
         
+        [DllImport(Constants.LibName, EntryPoint = "cast_to_ushort")]
+        private static extern IntPtr CastToUshort(IntPtr expr);
+        
         public static HSExpr Cast<T>(HSExpr expr)
         {
             // Cast uses move semantics.
@@ -26,12 +29,15 @@ namespace HalideSharp
             {
                 newExpr = CastToByte(expr._cppobj);
             }
+            else if (typeof(T) == typeof(ushort))
+            {
+                newExpr = CastToUshort(expr._cppobj);
+            }
             else
             {
                 throw new NotImplementedException($"Casting not implemented for type {typeof(T)}");
             }
             
-            expr._cppobj = IntPtr.Zero;
             return new HSExpr(newExpr);
         }
 
@@ -42,7 +48,6 @@ namespace HalideSharp
         {
             // Min uses move semantics.
             var newExpr = MinExprFloat(expr._cppobj, f);
-            expr._cppobj = IntPtr.Zero;
             return new HSExpr(newExpr);
         }
 

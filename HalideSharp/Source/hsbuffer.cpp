@@ -4,41 +4,74 @@
 
 using namespace Halide;
 
+// 2D constructors
 extern "C" Buffer<int32_t>* new_int_buffer_int_int(int width, int height) { return new Buffer<int32_t>(width, height); }
 extern "C" Buffer<float>* new_float_buffer_int_int(int width, int height) { return new Buffer<float>(width, height); }
 extern "C" Buffer<uint8_t>* new_byte_buffer_int_int(int width, int height) { return new Buffer<uint8_t>(width, height); }
 
+// 3D constructors
+extern "C" Buffer<int32_t>* new_int_buffer_int_int_int(int width, int height, int channels) { return new Buffer<int32_t>(width, height, channels); }
+extern "C" Buffer<float>* new_float_buffer_int_int_int(int width, int height, int channels) { return new Buffer<float>(width, height, channels); }
+extern "C" Buffer<uint8_t>* new_byte_buffer_int_int_int(int width, int height, int channels) { return new Buffer<uint8_t>(width, height, channels); }
+
+// destructors
 extern "C" void delete_int_buffer(Buffer<int32_t> *b) { delete b; }
 extern "C" void delete_float_buffer(Buffer<float> *b) { delete b; }
 extern "C" void delete_byte_buffer(Buffer<uint8_t> *b) { delete b; }
 
-extern "C" int buffer_int_width(Buffer<int32_t> *b) { return b->width(); }
-extern "C" int buffer_float_width(Buffer<float> *b) { return b->width(); }
-extern "C" int buffer_byte_width(Buffer<uint8_t> *b) { return b->width(); }
+// GEN will invoke the given macro once for each set of types we handle, passing the C# type
+// as the first argument, the corresponding C++ type as the second argument, and then any
+// further arguments that were specified. Currently it will generate variants for ints, floats,
+// and bytes.
+#define GEN(MACRO, args...) \
+    MACRO(int, int32_t, args) \
+    MACRO(float, float, args) \
+    MACRO(byte, uint8_t, args)
 
-extern "C" int buffer_int_height(Buffer<int32_t> *b) { return b->height(); }
-extern "C" int buffer_float_height(Buffer<float> *b) { return b->height(); }
-extern "C" int buffer_byte_height(Buffer<uint8_t> *b) { return b->height(); }
+#define INT_ACCESSOR(CSTYPE, CPPTYPE, NAME) \
+    extern "C" int buffer_ ## CSTYPE ## _ ## NAME (Buffer< CPPTYPE > *b) { return b-> NAME (); }
 
-extern "C" int buffer_int_channels(Buffer<int32_t> *b) { return b->channels(); }
-extern "C" int buffer_float_channels(Buffer<float> *b) { return b->channels(); }
-extern "C" int buffer_byte_channels(Buffer<uint8_t> *b) { return b->channels(); }
+// width, height & channels accessors
+GEN(INT_ACCESSOR, width)
+GEN(INT_ACCESSOR, height)
+GEN(INT_ACCESSOR, channels)
 
-extern "C" void buffer_int_getval_2d(Buffer<int32_t> *b, int x, int y, int32_t *result) { *result = (*b)(x, y); }
-extern "C" void buffer_float_getval_2d(Buffer<float> *b, int x, int y, int32_t *result) { *result = (*b)(x, y); }
-extern "C" void buffer_byte_getval_2d(Buffer<uint8_t> *b, int x, int y, uint8_t *result) { *result = (*b)(x, y); }
+// direct accessors -- to read the data out of the buffer, rather than use it as part of a
+// pipeline.
 
-extern "C" void buffer_int_getval_3d(Buffer<int32_t> *b, int x, int y, int z, int32_t *result) { *result = (*b)(x, y, z); }
-extern "C" void buffer_float_getval_3d(Buffer<float> *b, int x, int y, int z, int32_t *result) { *result = (*b)(x, y, z); }
-extern "C" void buffer_byte_getval_3d(Buffer<uint8_t> *b, int x, int y, int z, uint8_t *result) { *result = (*b)(x, y, z); }
+// Don't really need to pass int in here, but it means this fits the pattern of the GEN macro.
+// Similarly, it takes us more lines to do this with the macro, but it means we'll get the
+// definitions for other buffer types for free, if/when we add them.
+#define BUFFER_GETVAL_2D(CSTYPE, CPPTYPE, ARGTYPE) \
+    extern "C" void buffer_ ## CSTYPE ## _getval__ ## ARGTYPE ## _ ## ARGTYPE(Buffer< CPPTYPE > *b, ARGTYPE x, ARGTYPE y, CPPTYPE *result) { *result = (*b)(x, y); }
 
-extern "C" Expr* buffer_int_getexpr_2d_var_var(Buffer<int32_t> *b, Var *x, Var *y) { return new Expr((*b)(*x, *y)); }
-extern "C" Expr* buffer_float_getexpr_2d_var_var(Buffer<float> *b, Var *x, Var *y) { return new Expr((*b)(*x, *y)); }
-extern "C" Expr* buffer_byte_getexpr_2d_var_var(Buffer<uint8_t> *b, Var *x, Var *y) { return new Expr((*b)(*x, *y)); }
+#define BUFFER_GETVAL_3D(CSTYPE, CPPTYPE, ARGTYPE) \
+    extern "C" void buffer_ ## CSTYPE ## _getval__ ## ARGTYPE ## _ ## ARGTYPE ## _ ## ARGTYPE(Buffer< CPPTYPE > *b, ARGTYPE x, ARGTYPE y, ARGTYPE z, CPPTYPE *result) { *result = (*b)(x, y, z); }
 
-extern "C" Expr* buffer_int_getexpr_3d_var_var_var(Buffer<int32_t> *b, Var* x, Var* y, Var* z) { return new Expr((*b)(*x, *y, *z)); }
-extern "C" Expr* buffer_float_getexpr_3d_var_var_var(Buffer<float> *b, Var* x, Var* y, Var* z) { return new Expr((*b)(*x, *y, *z)); }
-extern "C" Expr* buffer_byte_getexpr_3d_var_var_var(Buffer<uint8_t> *b, Var* x, Var* y, Var* z) { return new Expr((*b)(*x, *y, *z)); }
+GEN(BUFFER_GETVAL_2D, int)
+GEN(BUFFER_GETVAL_3D, int)
+
+// 3D indexers
+#define BUFFER_GETEXPR_3D(CSTYPE, CPPTYPE, T1, T2, T3) \
+    extern "C" Expr* buffer_ ## CSTYPE ## _getexpr__ ## T1 ## _ ## T2 ## _ ## T3(Buffer< CPPTYPE > *b, T1 *x, T2 *y, T3 *z) { return new Expr((*b)(*x, *y, *z)); }
+
+GEN(BUFFER_GETEXPR_3D, Expr, Expr, Expr)
+GEN(BUFFER_GETEXPR_3D, Expr, Expr, Var)
+GEN(BUFFER_GETEXPR_3D, Expr, Var, Expr)
+GEN(BUFFER_GETEXPR_3D, Expr, Var, Var)
+GEN(BUFFER_GETEXPR_3D, Var, Expr, Expr)
+GEN(BUFFER_GETEXPR_3D, Var, Expr, Var)
+GEN(BUFFER_GETEXPR_3D, Var, Var, Expr)
+GEN(BUFFER_GETEXPR_3D, Var, Var, Var)
+
+// 2D indexers
+#define BUFFER_GETEXPR_2D(CSTYPE, CPPTYPE, T1, T2) \
+    extern "C" Expr* buffer_ ## CSTYPE ## _getexpr__ ## T1 ## _ ## T2 (Buffer< CPPTYPE > *b, T1 *x, T2 *y) { return new Expr((*b)(*x, *y)); }
+
+GEN(BUFFER_GETEXPR_2D, Expr, Expr)
+GEN(BUFFER_GETEXPR_2D, Expr, Var)
+GEN(BUFFER_GETEXPR_2D, Var, Expr)
+GEN(BUFFER_GETEXPR_2D, Var, Var)
 
 extern "C" void buffer_int_setmin(Buffer<int32_t> *b, int x, int y) { b->set_min(x, y); }
 extern "C" void buffer_float_setmin(Buffer<float> *b, int x, int y) { b->set_min(x, y); }

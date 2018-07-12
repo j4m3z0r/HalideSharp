@@ -25,22 +25,199 @@ namespace HalideSharp
             }
         }
 
-        [DllImport(Constants.LibName, EntryPoint = "func_set_var_var_expr")]
-        private static extern void FuncSetVarVarExpr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr e);
+        // Ok, so in C++, you're able to use either Vars or Exprs interchangeably, and
+        // it works by having Var have an implicit conversion to Expr. We could do this
+        // by having Var inherit from Expr, but that's not how it works in C++, and I
+        // figure that using a different inheritance hierarchy in C# is likely to introduce
+        // other problems elsewhere. So we go ahead and just enumerate all the
+        // possible combinations of Vars and Exprs for indexers here. This is pretty
+        // awful, but it's localized awfulness.
+        //
+        // A quick word on naming: we have pairs of methods, for setting and getting based on how many dimensions of
+        // indexing we want to do:
+        //
+        // Setter: FuncSet<dim 1 type><dim 2 type><...>_<object type>
+        // Getter: FuncGet<object type>_<dim 1 type><dim 2 type><...>
+        //
+        // Likewise, the name will match the order of the arguments of the wrapping method, both in C# and in the C
+        // wrapper library.
+        #region 2D indexers
+        
+        #region var var
+        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__var_var")]
+        public static extern IntPtr FuncGetExpr_VarVar(IntPtr obj, IntPtr x, IntPtr y);
+        
+        [DllImport(Constants.LibName, EntryPoint = "func_set_var_var__expr")]
+        private static extern void FuncSetVarVar_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr e);
         
         public HSExpr this[HSVar v1, HSVar v2]
         {
-            set => FuncSetVarVarExpr(_cppobj, v1._cppobj, v2._cppobj, value._cppobj);
+            get => new HSExpr(FuncGetExpr_VarVar(_cppobj, v1._cppobj, v2._cppobj));
+            set => FuncSetVarVar_Expr(_cppobj, v1._cppobj, v2._cppobj, value._cppobj);
         }
+        #endregion
+        
+        #region var expr
+        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__var_expr")]
+        public static extern IntPtr FuncGetExpr_VarExpr(IntPtr obj, IntPtr x, IntPtr y);
+        
+        [DllImport(Constants.LibName, EntryPoint = "func_set_var_expr__expr")]
+        private static extern void FuncSetVarExpr_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr e);
+        
+        public HSExpr this[HSVar v1, HSExpr v2]
+        {
+            get => new HSExpr(FuncGetExpr_VarExpr(_cppobj, v1._cppobj, v2._cppobj));
+            set => FuncSetVarExpr_Expr(_cppobj, v1._cppobj, v2._cppobj, value._cppobj);
+        }
+        #endregion
+        
+        #region expr var
+        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__expr_var")]
+        public static extern IntPtr FuncGetExpr_ExprVar(IntPtr obj, IntPtr x, IntPtr y);
+        
+        [DllImport(Constants.LibName, EntryPoint = "func_set_expr_var__expr")]
+        private static extern void FuncSetExprVar_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr e);
+        
+        public HSExpr this[HSExpr v1, HSVar v2]
+        {
+            get => new HSExpr(FuncGetExpr_ExprVar(_cppobj, v1._cppobj, v2._cppobj));
+            set => FuncSetExprVar_Expr(_cppobj, v1._cppobj, v2._cppobj, value._cppobj);
+        }
+        #endregion
+        
+        
+        #region expr expr
+        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__expr_expr")]
+        public static extern IntPtr FuncGetExpr_ExprExpr(IntPtr obj, IntPtr x, IntPtr y);
+        
+        [DllImport(Constants.LibName, EntryPoint = "func_set_expr_expr__expr")]
+        private static extern void FuncSetExprExpr_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr e);
+        
+        public HSExpr this[HSExpr v1, HSExpr v2]
+        {
+            get => new HSExpr(FuncGetExpr_ExprExpr(_cppobj, v1._cppobj, v2._cppobj));
+            set => FuncSetExprExpr_Expr(_cppobj, v1._cppobj, v2._cppobj, value._cppobj);
+        }
+        #endregion
+        
+        #endregion
 
-        [DllImport(Constants.LibName, EntryPoint = "func_set_var_var_var_expr")]
-        private static extern void FuncSetVarVarVarExpr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr v3, IntPtr e);
+        #region 3D indexers
+        
+        #region var var var
+        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__var_var_var")]
+        public static extern IntPtr FuncGetExpr_VarVarVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+        
+        [DllImport(Constants.LibName, EntryPoint = "func_set_var_var_var__expr")]
+        private static extern void FuncSetVarVarVar_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr v3, IntPtr e);
         
         public HSExpr this[HSVar v1, HSVar v2, HSVar v3]
         {
-            set => FuncSetVarVarVarExpr(_cppobj, v1._cppobj, v2._cppobj, v3._cppobj, value._cppobj);
+            get => new HSExpr(FuncGetExpr_VarVarVar(_cppobj, v1._cppobj, v2._cppobj, v3._cppobj));
+            set => FuncSetVarVarVar_Expr(_cppobj, v1._cppobj, v2._cppobj, v3._cppobj, value._cppobj);
         }
+        #endregion
+        
+        #region expr var var
+        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__expr_var_var")]
+        public static extern IntPtr FuncGetExpr_ExprVarVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+        
+        [DllImport(Constants.LibName, EntryPoint = "func_set_expr_var_var__expr")]
+        private static extern void FuncSetExprVarVar_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr v3, IntPtr e);
+        
+        public HSExpr this[HSExpr v1, HSVar v2, HSVar v3]
+        {
+            get => new HSExpr(FuncGetExpr_ExprVarVar(_cppobj, v1._cppobj, v2._cppobj, v3._cppobj));
+            set => FuncSetExprVarVar_Expr(_cppobj, v1._cppobj, v2._cppobj, v3._cppobj, value._cppobj);
+        }
+        #endregion
+        
+        #region var expr var
+        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__var_expr_var")]
+        public static extern IntPtr FuncGetExpr_VarExprVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+        
+        [DllImport(Constants.LibName, EntryPoint = "func_set_var_expr_var__expr")]
+        private static extern void FuncSetVarExprVar_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr v3, IntPtr e);
+        
+        public HSExpr this[HSVar v1, HSExpr v2, HSVar v3]
+        {
+            get => new HSExpr(FuncGetExpr_VarExprVar(_cppobj, v1._cppobj, v2._cppobj, v3._cppobj));
+            set => FuncSetVarExprVar_Expr(_cppobj, v1._cppobj, v2._cppobj, v3._cppobj, value._cppobj);
+        }
+        #endregion
+        
+        #region var var expr
+        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__var_var_expr")]
+        public static extern IntPtr FuncGetExpr_VarVarExpr(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+        
+        [DllImport(Constants.LibName, EntryPoint = "func_set_var_var_expr__expr")]
+        private static extern void FuncSetVarVarExpr_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr v3, IntPtr e);
+        
+        public HSExpr this[HSVar v1, HSVar v2, HSExpr v3]
+        {
+            get => new HSExpr(FuncGetExpr_VarVarExpr(_cppobj, v1._cppobj, v2._cppobj, v3._cppobj));
+            set => FuncSetVarVarExpr_Expr(_cppobj, v1._cppobj, v2._cppobj, v3._cppobj, value._cppobj);
+        }
+        #endregion
+        
+        #region expr expr var
+        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__expr_expr_var")]
+        public static extern IntPtr FuncGetExpr_ExprExprVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+        
+        [DllImport(Constants.LibName, EntryPoint = "func_set_expr_expr_var__expr")]
+        private static extern void FuncSetExprExprVar_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr v3, IntPtr e);
+        
+        public HSExpr this[HSExpr v1, HSExpr v2, HSVar v3]
+        {
+            get => new HSExpr(FuncGetExpr_ExprExprVar(_cppobj, v1._cppobj, v2._cppobj, v3._cppobj));
+            set => FuncSetExprExprVar_Expr(_cppobj, v1._cppobj, v2._cppobj, v3._cppobj, value._cppobj);
+        }
+        #endregion
+        
+        #region var expr expr
+        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__var_expr_expr")]
+        public static extern IntPtr FuncGetExpr_VarExprExpr(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+        
+        [DllImport(Constants.LibName, EntryPoint = "func_set_var_expr_expr__expr")]
+        private static extern void FuncSetVarExprExpr_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr v3, IntPtr e);
+        
+        public HSExpr this[HSVar v1, HSExpr v2, HSExpr v3]
+        {
+            get => new HSExpr(FuncGetExpr_VarExprExpr(_cppobj, v1._cppobj, v2._cppobj, v3._cppobj));
+            set => FuncSetVarExprExpr_Expr(_cppobj, v1._cppobj, v2._cppobj, v3._cppobj, value._cppobj);
+        }
+        #endregion
+        
+        #region expr var expr
+        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__expr_var_expr")]
+        public static extern IntPtr FuncGetExpr_ExprVarExpr(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+        
+        [DllImport(Constants.LibName, EntryPoint = "func_set_expr_var_expr__expr")]
+        private static extern void FuncSetExprVarExpr_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr v3, IntPtr e);
+        
+        public HSExpr this[HSExpr v1, HSVar v2, HSExpr v3]
+        {
+            get => new HSExpr(FuncGetExpr_ExprVarExpr(_cppobj, v1._cppobj, v2._cppobj, v3._cppobj));
+            set => FuncSetExprVarExpr_Expr(_cppobj, v1._cppobj, v2._cppobj, v3._cppobj, value._cppobj);
+        }
+        #endregion
+        
+        #region expr expr expr
+        [DllImport(Constants.LibName, EntryPoint = "func_getexpr__expr_expr_expr")]
+        public static extern IntPtr FuncGetExpr_ExprExprExpr(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+        
+        [DllImport(Constants.LibName, EntryPoint = "func_set_expr_expr_expr__expr")]
+        private static extern void FuncSetExprExprExpr_Expr(IntPtr func, IntPtr v1, IntPtr v2, IntPtr v3, IntPtr e);
+        
+        public HSExpr this[HSExpr v1, HSExpr v2, HSExpr v3]
+        {
+            get => new HSExpr(FuncGetExpr_ExprExprExpr(_cppobj, v1._cppobj, v2._cppobj, v3._cppobj));
+            set => FuncSetExprExprExpr_Expr(_cppobj, v1._cppobj, v2._cppobj, v3._cppobj, value._cppobj);
+        }
+        #endregion
+        #endregion
 
+        #region Realize to pre-allocated buffer
         [DllImport(Constants.LibName, EntryPoint = "func_realize_int_buffer")]
         private static extern IntPtr FuncRealizeIntBuffer(IntPtr func, IntPtr buffer);
         
@@ -49,8 +226,28 @@ namespace HalideSharp
         
         [DllImport(Constants.LibName, EntryPoint = "func_realize_byte_buffer")]
         private static extern IntPtr FuncRealizeByteBuffer(IntPtr func, IntPtr buffer);
-        
-        
+        public void Realize<T>(HSBuffer<T> buffer) where T: struct
+        {
+            if (typeof(T) == typeof(int))
+            {
+                FuncRealizeIntBuffer(_cppobj, buffer._cppobj);
+            }
+            else if (typeof(T) == typeof(float))
+            {
+                FuncRealizeFloatBuffer(_cppobj, buffer._cppobj);
+            }
+            else if (typeof(T) == typeof(byte))
+            {
+                FuncRealizeByteBuffer(_cppobj, buffer._cppobj);
+            }
+            else
+            {
+                throw new NotImplementedException($"Cannot realize to buffer of type {typeof(T)}");
+            }
+        }
+        #endregion
+
+        #region Realize to new buffer, 2D
         [DllImport(Constants.LibName, EntryPoint = "func_realize_int_2d")]
         private static extern IntPtr FuncRealizeInt(IntPtr func, int width, int height);
         
@@ -59,16 +256,6 @@ namespace HalideSharp
         
         [DllImport(Constants.LibName, EntryPoint = "func_realize_byte_2d")]
         private static extern IntPtr FuncRealizeByte(IntPtr func, int width, int height);
-        
-        
-        [DllImport(Constants.LibName, EntryPoint = "func_realize_int_3d")]
-        private static extern IntPtr FuncRealizeInt(IntPtr func, int width, int height, int channels);
-        
-        [DllImport(Constants.LibName, EntryPoint = "func_realize_float_3d")]
-        private static extern IntPtr FuncRealizeFloat(IntPtr func, int width, int height, int channels);
-        
-        [DllImport(Constants.LibName, EntryPoint = "func_realize_byte_3d")]
-        private static extern IntPtr FuncRealizeByte(IntPtr func, int width, int height, int channels);
         
         public HSBuffer<T> Realize<T>(int width, int height) where T : struct
         {
@@ -92,7 +279,18 @@ namespace HalideSharp
 
             return new HSBuffer<T>(result);
         }
-
+        #endregion
+        
+        #region Realize to new buffer, 3D
+        [DllImport(Constants.LibName, EntryPoint = "func_realize_int_3d")]
+        private static extern IntPtr FuncRealizeInt(IntPtr func, int width, int height, int channels);
+        
+        [DllImport(Constants.LibName, EntryPoint = "func_realize_float_3d")]
+        private static extern IntPtr FuncRealizeFloat(IntPtr func, int width, int height, int channels);
+        
+        [DllImport(Constants.LibName, EntryPoint = "func_realize_byte_3d")]
+        private static extern IntPtr FuncRealizeByte(IntPtr func, int width, int height, int channels);
+        
         public HSBuffer<T> Realize<T>(int width, int height, int channels) where T : struct
         {
             IntPtr result;
@@ -115,26 +313,8 @@ namespace HalideSharp
 
             return new HSBuffer<T>(result);
         }
-
-        public void Realize<T>(HSBuffer<T> buffer) where T: struct
-        {
-            if (typeof(T) == typeof(int))
-            {
-                FuncRealizeIntBuffer(_cppobj, buffer._cppobj);
-            }
-            else if (typeof(T) == typeof(float))
-            {
-                FuncRealizeFloatBuffer(_cppobj, buffer._cppobj);
-            }
-            else if (typeof(T) == typeof(byte))
-            {
-                FuncRealizeByteBuffer(_cppobj, buffer._cppobj);
-            }
-            else
-            {
-                throw new NotImplementedException($"Cannot realize to buffer of type {typeof(T)}");
-            }
-        }
+        #endregion
+        
 
         [DllImport(Constants.LibName, EntryPoint = "func_trace_stores")]
         private static extern void FuncTraceStores(IntPtr func);
