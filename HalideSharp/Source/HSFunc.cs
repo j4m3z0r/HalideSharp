@@ -389,6 +389,15 @@ namespace HalideSharp
             return this;
         }
         
+        [DllImport(Constants.LibName, EntryPoint = "func_vectorize_int")]
+        private static extern void FuncVectorizeInt(IntPtr func, IntPtr var1, int factor);
+
+        public HSFunc Vectorize(HSVar var1, int factor)
+        {
+            FuncVectorizeInt(_cppobj, var1._cppobj, factor);
+            return this;
+        }
+        
         [DllImport(Constants.LibName, EntryPoint = "func_unroll")]
         private static extern void FuncUnroll(IntPtr func, IntPtr var1);
 
@@ -404,6 +413,42 @@ namespace HalideSharp
         public HSFunc Tile(HSVar x, HSVar y, HSVar xo, HSVar yo, HSVar xi, HSVar yi, int xfactor, int yfactor)
         {
             FuncTile(_cppobj, x._cppobj, y._cppobj, xo._cppobj, yo._cppobj, xi._cppobj, yi._cppobj, xfactor, yfactor);
+            return this;
+        }
+
+        [DllImport(Constants.LibName, EntryPoint = "func_compute_root")]
+        private static extern void FuncComputeRoot(IntPtr func);
+
+        public HSFunc ComputeRoot()
+        {
+            FuncComputeRoot(_cppobj);
+            return this;
+        }
+
+        [DllImport(Constants.LibName, EntryPoint = "func_compute_at")]
+        private static extern void FuncComputeAt(IntPtr self, IntPtr func, IntPtr v);
+
+        public HSFunc ComputeAt(HSFunc f, HSVar v)
+        {
+            FuncComputeAt(_cppobj, f._cppobj, v._cppobj);
+            return this;
+        }
+
+        [DllImport(Constants.LibName, EntryPoint = "func_store_root")]
+        private static extern void FuncStoreRoot(IntPtr self);
+
+        public HSFunc StoreRoot()
+        {
+            FuncStoreRoot(_cppobj);
+            return this;
+        }
+
+        [DllImport(Constants.LibName, EntryPoint = "func_store_at")]
+        private static extern void FuncStoreAt(IntPtr self, IntPtr func, IntPtr v);
+
+        public HSFunc StoreAt(HSFunc f, HSVar v)
+        {
+            FuncStoreAt(_cppobj, f._cppobj, v._cppobj);
             return this;
         }
     }

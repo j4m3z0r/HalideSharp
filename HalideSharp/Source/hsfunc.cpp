@@ -110,9 +110,8 @@ extern "C" void func_fuse(Func* f, Var* v1, Var* v2, Var* fused) {
     f->fuse(*v1, *v2, *fused);
 }
 
-extern "C" void func_vectorize(Func* f, Var* v) {
-    f->vectorize(*v);
-}
+extern "C" void func_vectorize(Func* f, Var* v) { f->vectorize(*v); }
+extern "C" void func_vectorize_int(Func* f, Var* v, int factor) { f->vectorize(*v, factor); }
 
 extern "C" void func_unroll(Func* f, Var* v) {
     f->unroll(*v);
@@ -121,3 +120,8 @@ extern "C" void func_unroll(Func* f, Var* v) {
 extern "C" void func_tile(Func* func, Var* x, Var* y, Var* xo, Var* yo, Var* xi, Var* yi, int xfactor, int yfactor) {
     func->tile(*x, *y, *xo, *yo, *xi, *yi, xfactor, yfactor);
 }
+
+extern "C" void func_compute_root(Func *func) { func->compute_root(); }
+extern "C" void func_compute_at(Func *self, Func *func, Var *v) { self->compute_at(*func, *v); }
+extern "C" void func_store_root(Func *self) { self->store_root(); }
+extern "C" void func_store_at(Func *self, Func *func, Var *v) { self->store_at(*func, *v); }
