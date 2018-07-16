@@ -1,257 +1,136 @@
-﻿using System;
+﻿#ecs;
+
+includeFile("MagicMacros.ecs");
+
+using System;
 using System.Runtime.InteropServices;
+
+// Execute the given macro with all variations of containing types specified.
+define ExecMacroAllTypes($macro) {
+    unroll(BufferType in BufferTypes) {
+        $macro(BufferType);
+    }
+}
+
+// Execute the given macro with all permutations of types for 3 arguments, plus all types for the
+// container object (eg: Buffer<float>, Buffer<byte>, etc).
+define ExecMacroAllTypes2D($macro2d) {
+    define TypedEval($T1, $T2) {
+        unroll (BufferType in BufferTypes) {
+            $macro2d(BufferType, $T1, $T2);
+        }
+    }
+    ExecMacro2D(TypedEval);
+}
+
+// Execute the given macro with all permutations of types for 3 arguments, plus all types for the
+// container object (eg: Buffer<float>, Buffer<byte>, etc).
+define ExecMacroAllTypes3D($macro3d)
+{
+    define TypedEval($T1, $T2, $T3)
+    {
+        unroll (BufferType in BufferTypes)
+        {
+            $macro3d(BufferType, $T1, $T2, $T3);
+        }
+    }
+    ExecMacro3D(TypedEval);
+}
 
 namespace HalideSharp
 {
     internal class CppBuffer
     {
-        #region 2D constructors
-        [DllImport(Constants.LibName, EntryPoint = "new_int_buffer_int_int")]
-        public static extern IntPtr NewIntBufferIntInt(int width, int height);
-        
-        [DllImport(Constants.LibName, EntryPoint = "new_float_buffer_int_int")]
-        public static extern IntPtr NewFloatBufferIntInt(int width, int height);
-        
-        [DllImport(Constants.LibName, EntryPoint = "new_byte_buffer_int_int")]
-        public static extern IntPtr NewByteBufferIntInt(int width, int height);
-        #endregion
 
-        #region 3D constructors
-        [DllImport(Constants.LibName, EntryPoint = "new_int_buffer_int_int_int")]
-        public static extern IntPtr NewIntBufferIntIntInt(int width, int height, int channels);
-        
-        [DllImport(Constants.LibName, EntryPoint = "new_float_buffer_int_int_int")]
-        public static extern IntPtr NewFloatBufferIntIntInt(int width, int height, int channels);
-        
-        [DllImport(Constants.LibName, EntryPoint = "new_byte_buffer_int_int_int")]
-        public static extern IntPtr NewByteBufferIntIntInt(int width, int height, int channels);
-        #endregion
-
-        #region destructors
-        [DllImport(Constants.LibName, EntryPoint = "delete_int_buffer")]
-        public static extern void DeleteIntBuffer(IntPtr obj);
-        
-        [DllImport(Constants.LibName, EntryPoint = "delete_float_buffer")]
-        public static extern void DeleteFloatBuffer(IntPtr obj);
-        
-        [DllImport(Constants.LibName, EntryPoint = "delete_byte_buffer")]
-        public static extern void DeleteByteBuffer(IntPtr obj);
-        #endregion
-
-        
-        #region 2D inderxers
-        #region int indexers
-        [DllImport(Constants.LibName, EntryPoint = "buffer_int_getval__int_int")]
-        public static extern void BufferIntGetVal(IntPtr obj, int x, int y, IntPtr result);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_float_getval__int_int")]
-        public static extern void BufferFloatGetVal(IntPtr obj, int x, int y, IntPtr result);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_byte_getval__int_int")]
-        public static extern void BufferByteGetVal(IntPtr obj, int x, int y, IntPtr result);
-        #endregion
-
-        #region expr expr
-        [DllImport(Constants.LibName, EntryPoint = "buffer_int_getexpr__Expr_Expr")]
-        public static extern IntPtr BufferIntGetExpr_ExprExpr(IntPtr obj, IntPtr x, IntPtr y);
-
-        [DllImport(Constants.LibName, EntryPoint = "buffer_float_getexpr__Expr_Expr")]
-        public static extern IntPtr BufferFloatGetExpr_ExprExpr(IntPtr obj, IntPtr x, IntPtr y);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_byte_getexpr__Expr_Expr")]
-        public static extern IntPtr BufferByteGetExpr_ExprExpr(IntPtr obj, IntPtr x, IntPtr y);
-        #endregion
-
-        #region expr var
-        [DllImport(Constants.LibName, EntryPoint = "buffer_int_getexpr__Expr_Var")]
-        public static extern IntPtr BufferIntGetExpr_ExprVar(IntPtr obj, IntPtr x, IntPtr y);
-
-        [DllImport(Constants.LibName, EntryPoint = "buffer_float_getexpr__Expr_Var")]
-        public static extern IntPtr BufferFloatGetExpr_ExprVar(IntPtr obj, IntPtr x, IntPtr y);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_byte_getexpr__Expr_Var")]
-        public static extern IntPtr BufferByteGetExpr_ExprVar(IntPtr obj, IntPtr x, IntPtr y);
-        #endregion
-        
-        #region var expr
-        [DllImport(Constants.LibName, EntryPoint = "buffer_int_getexpr__Var_Expr")]
-        public static extern IntPtr BufferIntGetExpr_VarExpr(IntPtr obj, IntPtr x, IntPtr y);
-
-        [DllImport(Constants.LibName, EntryPoint = "buffer_float_getexpr__Var_Expr")]
-        public static extern IntPtr BufferFloatGetExpr_VarExpr(IntPtr obj, IntPtr x, IntPtr y);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_byte_getexpr__Var_Expr")]
-        public static extern IntPtr BufferByteGetExpr_VarExpr(IntPtr obj, IntPtr x, IntPtr y);
-        #endregion
-        
-        #region var var
-        [DllImport(Constants.LibName, EntryPoint = "buffer_int_getexpr__Var_Var")]
-        public static extern IntPtr BufferIntGetExpr_VarVar(IntPtr obj, IntPtr x, IntPtr y);
-
-        [DllImport(Constants.LibName, EntryPoint = "buffer_float_getexpr__Var_Var")]
-        public static extern IntPtr BufferFloatGetExpr_VarVar(IntPtr obj, IntPtr x, IntPtr y);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_byte_getexpr__Var_Var")]
-        public static extern IntPtr BufferByteGetExpr_VarVar(IntPtr obj, IntPtr x, IntPtr y);
-        #endregion
-        #endregion
-       
-        
-        #region 3D indexers
-        #region int indexers
-        [DllImport(Constants.LibName, EntryPoint = "buffer_int_getval__int_int_int")]
-        public static extern void BufferIntGetVal(IntPtr obj, int x, int y, int z, IntPtr result);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_float_getval__int_int_int")]
-        public static extern void BufferFloatGetVal(IntPtr obj, int x, int y, int z, IntPtr result);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_byte_getval__int_int_int")]
-        public static extern void BufferByteGetVal(IntPtr obj, int x, int y, int z, IntPtr result);
-        #endregion
+        //region 2D constructors
+        unroll (BufferType in BufferTypes) {
+            replacePP(MethodName => concatId(BufferOf, BufferType, _New_IntInt)) {
+                [DllImport(Constants.LibName)] public static extern IntPtr MethodName(int width, int height);
+            }
+        }
+        //endregion
 
 
-        #region expr expr expr
-        [DllImport(Constants.LibName, EntryPoint = "buffer_int_getexpr__Expr_Expr_Expr")]
-        public static extern IntPtr BufferIntGetExpr_ExprExprExpr(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+        //region 3D constructors
+        unroll (BufferType in BufferTypes) {
+            replacePP(MethodName => concatId(BufferOf, BufferType, _New_IntIntInt)) {
+                [DllImport(Constants.LibName)] public static extern IntPtr MethodName(int width, int height, int channels);
+            }
+        }
+        //endregion
 
-        [DllImport(Constants.LibName, EntryPoint = "buffer_float_getexpr__Expr_Expr_Expr")]
-        public static extern IntPtr BufferFloatGetExpr_ExprExprExpr(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_byte_getexpr__Expr_Expr_Expr")]
-        public static extern IntPtr BufferByteGetExpr_ExprExprExpr(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
-        #endregion
-        
-        #region expr expr var
-        [DllImport(Constants.LibName, EntryPoint = "buffer_int_getexpr__Expr_Expr_Var")]
-        public static extern IntPtr BufferIntGetExpr_ExprExprVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+        //region destructors
+        unroll(BufferType in BufferTypes) {
+            replacePP(MethodName => concatId(BufferOf, BufferType, _Delete)) {
+                [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr obj);
+            }
+        }
+        //endregion
 
-        [DllImport(Constants.LibName, EntryPoint = "buffer_float_getexpr__Expr_Expr_Var")]
-        public static extern IntPtr BufferFloatGetExpr_ExprExprVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_byte_getexpr__Expr_Expr_Var")]
-        public static extern IntPtr BufferByteGetExpr_ExprExprVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
-        #endregion
-        
-        #region expr var expr
-        [DllImport(Constants.LibName, EntryPoint = "buffer_int_getexpr__Expr_Var_Expr")]
-        public static extern IntPtr BufferIntGetExpr_ExprVarExpr(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+        //region 2D indexers
+        //region int indexers
+        unroll(BufferType in BufferTypes) {
+            replacePP(MethodName => concatId(BufferOf, BufferType, _GetVal_IntInt)) {
+                [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr obj, int x, int y, IntPtr result);
+            }
+        }
+        //endregion
 
-        [DllImport(Constants.LibName, EntryPoint = "buffer_float_getexpr__Expr_Var_Expr")]
-        public static extern IntPtr BufferFloatGetExpr_ExprVarExpr(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_byte_getexpr__Expr_Var_Expr")]
-        public static extern IntPtr BufferByteGetExpr_ExprVarExpr(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
-        #endregion
-        
-        #region expr var var
-        [DllImport(Constants.LibName, EntryPoint = "buffer_int_getexpr__Expr_Var_Var")]
-        public static extern IntPtr BufferIntGetExpr_ExprVarVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+        // 2D indexer entry points
+        define Indexer2D($BufferType, $T1, $T2) {
+            replace(MethodName => concatId(BufferOf, $BufferType, _GetExpr_, $T1, $T2)) {
+                [DllImport(Constants.LibName)] public static extern IntPtr MethodName(IntPtr obj, IntPtr x, IntPtr y);
+            }
 
-        [DllImport(Constants.LibName, EntryPoint = "buffer_float_getexpr__Expr_Var_Var")]
-        public static extern IntPtr BufferFloatGetExpr_ExprVarVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_byte_getexpr__Expr_Var_Var")]
-        public static extern IntPtr BufferByteGetExpr_ExprVarVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
-        #endregion
-        
-        #region var expr expr
-        [DllImport(Constants.LibName, EntryPoint = "buffer_int_getexpr__Var_Expr_Expr")]
-        public static extern IntPtr BufferIntGetExpr_VarExprExpr(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+        }
+        ExecMacroAllTypes2D(Indexer2D);
 
-        [DllImport(Constants.LibName, EntryPoint = "buffer_float_getexpr__Var_Expr_Expr")]
-        public static extern IntPtr BufferFloatGetExpr_VarExprExpr(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+        //endregion
         
-        [DllImport(Constants.LibName, EntryPoint = "buffer_byte_getexpr__Var_Expr_Expr")]
-        public static extern IntPtr BufferByteGetExpr_VarExprExpr(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
-        #endregion
-        
-        #region var expr var
-        [DllImport(Constants.LibName, EntryPoint = "buffer_int_getexpr__Var_Expr_Var")]
-        public static extern IntPtr BufferIntGetExpr_VarExprVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+        //region 3D indexers
 
-        [DllImport(Constants.LibName, EntryPoint = "buffer_float_getexpr__Var_Expr_Var")]
-        public static extern IntPtr BufferFloatGetExpr_VarExprVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_byte_getexpr__Var_Expr_Var")]
-        public static extern IntPtr BufferByteGetExpr_VarExprVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
-        #endregion
-        
-        #region var var expr
-        [DllImport(Constants.LibName, EntryPoint = "buffer_int_getexpr__Var_Var_Expr")]
-        public static extern IntPtr BufferIntGetExpr_VarVarExpr(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+        //region int indexers
+        unroll(BufferType in BufferTypes) {
+            replacePP(MethodName => concatId(BufferOf, BufferType, _GetVal_IntIntInt)) {
+                [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr obj, int x, int y, int z, IntPtr result);
+            }
+        }
+        //endregion
 
-        [DllImport(Constants.LibName, EntryPoint = "buffer_float_getexpr__Var_Var_Expr")]
-        public static extern IntPtr BufferFloatGetExpr_VarVarExpr(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_byte_getexpr__Var_Var_Expr")]
-        public static extern IntPtr BufferByteGetExpr_VarVarExpr(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
-        #endregion
-        
-        #region var var var
-        [DllImport(Constants.LibName, EntryPoint = "buffer_int_getexpr__Var_Var_Var")]
-        public static extern IntPtr BufferIntGetExpr_VarVarVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+        // 3D indexer entry points
+        define Indexer3D($BufferType, $T1, $T2, $T3)
+        {
+            replace(MethodName => concatId(BufferOf, $BufferType, _GetExpr_, $T1, $T2, $T3)) {
+                [DllImport(Constants.LibName)] public static extern IntPtr MethodName(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+            }
 
-        [DllImport(Constants.LibName, EntryPoint = "buffer_float_getexpr__Var_Var_Var")]
-        public static extern IntPtr BufferFloatGetExpr_VarVarVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_byte_getexpr__Var_Var_Var")]
-        public static extern IntPtr BufferByteGetExpr_VarVarVar(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
-        #endregion
-        
-        #endregion
-        
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_int_setmin")]
-        public static extern int BufferIntSetMin(IntPtr obj, int x, int y);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_float_setmin")]
-        public static extern int BufferFloatSetMin(IntPtr obj, int x, int y);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_byte_setmin")]
-        public static extern int BufferByteSetMin(IntPtr obj, int x, int y);
+        }
 
+        ExecMacroAllTypes3D(Indexer3D);
+        //endregion
+        
+        define SetMin($BufferType) {
+            replace(MethodName => concatId(BufferOf, $BufferType, _SetMin, _IntInt)) {
+                [DllImport(Constants.LibName)] public static extern int MethodName(IntPtr obj, int x, int y);
+            }
+        }
+        ExecMacroAllTypes(SetMin);
 
-        #region Dimension size accessors
-        #region Width accessors
-        [DllImport(Constants.LibName, EntryPoint = "buffer_int_width")]
-        public static extern int BufferIntWidth(IntPtr obj);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_float_width")]
-        public static extern int BufferFloatWidth(IntPtr obj);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_byte_width")]
-        public static extern int BufferByteWidth(IntPtr obj);
-        #endregion
-        
-        #region Height accessors
-        [DllImport(Constants.LibName, EntryPoint = "buffer_int_height")]
-        public static extern int BufferIntHeight(IntPtr obj);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_float_height")]
-        public static extern int BufferFloatHeight(IntPtr obj);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_byte_height")]
-        public static extern int BufferByteHeight(IntPtr obj);
-        #endregion
-
-        #region Channel accessors
-        [DllImport(Constants.LibName, EntryPoint = "buffer_int_channels")]
-        public static extern int BufferIntChannels(IntPtr obj);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_float_channels")]
-        public static extern int BufferFloatChannels(IntPtr obj);
-        
-        [DllImport(Constants.LibName, EntryPoint = "buffer_byte_channels")]
-        public static extern int BufferByteChannels(IntPtr obj);
-        #endregion
-        #endregion
+        //region Dimension size accessors
+        define Accessors($BufferType) {
+            unroll((DIMENSION) in (Width, Height, Channels)) {
+                replace(MethodName => concatId(BufferOf, $BufferType, _, DIMENSION)) {
+                    [DllImport(Constants.LibName)] public static extern int MethodName(IntPtr obj);
+                }
+            }
+        }
+        ExecMacroAllTypes(Accessors);
+        //endregion
 
         
-        [DllImport(Constants.LibName, EntryPoint = "buffer_byte_load_image")]
-        public static extern IntPtr BufferByteLoadImage([MarshalAs(Constants.StringType)] string filename);
+        [DllImport(Constants.LibName)] public static extern IntPtr BufferOfByte_LoadImage_String([MarshalAs(Constants.StringType)] string filename);
         
-        [DllImport(Constants.LibName, EntryPoint = "buffer_byte_save_image")]
-        public static extern IntPtr BufferByteSaveImage(IntPtr buffer, [MarshalAs(Constants.StringType)] string filename);
+        [DllImport(Constants.LibName)] public static extern IntPtr BufferOfByte_SaveImage_String(IntPtr buffer, [MarshalAs(Constants.StringType)] string filename);
     }
     
     public class HSBuffer<T> where T: struct
@@ -268,42 +147,22 @@ namespace HalideSharp
         
         public HSBuffer(int width, int height)
         {
-            if (typeof(T) == typeof(int))
-            {
-                _cppobj = CppBuffer.NewIntBufferIntInt(width, height);
+            unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                replacePP(MethodName => concatId(BufferOf, BufferType, _New_IntInt)) {
+                    if(typeof(T) == typeof(NativeType)) { _cppobj = CppBuffer.MethodName(width, height); return; }
+                }
             }
-            else if (typeof(T) == typeof(float))
-            {
-                _cppobj = CppBuffer.NewFloatBufferIntInt(width, height);
-            }
-            else if (typeof(T) == typeof(byte))
-            {
-                _cppobj = CppBuffer.NewByteBufferIntInt(width, height);
-            }
-            else
-            {
-                throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
-            }
+            throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
         }
         
         public HSBuffer(int width, int height, int channels)
         {
-            if (typeof(T) == typeof(int))
-            {
-                _cppobj = CppBuffer.NewIntBufferIntIntInt(width, height, channels);
+            unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                replacePP(MethodName => concatId(BufferOf, BufferType, _New_IntIntInt)) {
+                    if(typeof(T) == typeof(NativeType)) { _cppobj = CppBuffer.MethodName(width, height, channels); return; }
+                }
             }
-            else if (typeof(T) == typeof(float))
-            {
-                _cppobj = CppBuffer.NewFloatBufferIntIntInt(width, height, channels);
-            }
-            else if (typeof(T) == typeof(byte))
-            {
-                _cppobj = CppBuffer.NewByteBufferIntIntInt(width, height, channels);
-            }
-            else
-            {
-                throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
-            }
+            throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
         }
         
         internal HSBuffer(IntPtr cppobj)
@@ -316,7 +175,7 @@ namespace HalideSharp
         {
             if (typeof(T) == typeof(byte))
             {
-                return new HSBuffer<T>(CppBuffer.BufferByteLoadImage(filename));
+                return new HSBuffer<T>(CppBuffer.BufferOfByte_LoadImage_String(filename));
             }
             else
             {
@@ -328,7 +187,7 @@ namespace HalideSharp
         {
             if (typeof(T) == typeof(byte))
             {
-                CppBuffer.BufferByteSaveImage(_cppobj, filename);
+                CppBuffer.BufferOfByte_SaveImage_String(_cppobj, filename);
             }
             else
             {
@@ -343,22 +202,12 @@ namespace HalideSharp
             {
                 return;
             }
-            if(typeof(T) == typeof(int))
-            {
-                CppBuffer.DeleteIntBuffer(_cppobj);
+            unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                replacePP(MethodName => concatId(BufferOf, BufferType, _Delete)) {
+                    if(typeof(T) == (typeof(NativeType))) { CppBuffer.MethodName(_cppobj); return; }
+                }
             }
-            else if(typeof(T) == typeof(float))
-            {
-                CppBuffer.DeleteFloatBuffer(_cppobj);
-            }
-            else if (typeof(T) == typeof(byte))
-            {
-                CppBuffer.DeleteByteBuffer(_cppobj);
-            }
-            else
-            {
-                throw new NotImplementedException($"No destructor for type {typeof(T)}");
-            }
+            throw new NotImplementedException($"No destructor for type {typeof(T)}");
         }
 
         public T GetVal(int x, int y)
@@ -378,22 +227,13 @@ namespace HalideSharp
 
             try
             {
-                if (typeof(T) == typeof(int))
+                unroll((BufferType, NativeType) in BufferAndNativeTypes)
                 {
-                    CppBuffer.BufferIntGetVal(_cppobj, x, y, resultHandle.AddrOfPinnedObject());
+                    replacePP(MethodName => concatId(BufferOf, BufferType, _GetVal_IntInt)) {
+                        if(typeof(T) == typeof(NativeType)) { CppBuffer.MethodName(_cppobj, x, y, resultHandle.AddrOfPinnedObject()); return result[0]; }
+                    }
                 }
-                else if (typeof(T) == typeof(float))
-                {
-                    CppBuffer.BufferFloatGetVal(_cppobj, x, y, resultHandle.AddrOfPinnedObject());
-                }
-                else if (typeof(T) == typeof(byte))
-                {
-                    CppBuffer.BufferByteGetVal(_cppobj, x, y, resultHandle.AddrOfPinnedObject());
-                }
-                else
-                {
-                    throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
-                }
+                throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
             }
             finally
             {
@@ -411,403 +251,94 @@ namespace HalideSharp
 
             try
             {
-                if (typeof(T) == typeof(int))
+                unroll((BufferType, NativeType) in BufferAndNativeTypes)
                 {
-                    CppBuffer.BufferIntGetVal(_cppobj, x, y, z, resultHandle.AddrOfPinnedObject());
+                    replacePP(MethodName => concatId(BufferOf, BufferType, _GetVal_IntIntInt)) {
+                        if(typeof(T) == typeof(NativeType)) { CppBuffer.MethodName(_cppobj, x, y, z, resultHandle.AddrOfPinnedObject()); return result[0]; }
+                    }
                 }
-                else if (typeof(T) == typeof(float))
-                {
-                    CppBuffer.BufferFloatGetVal(_cppobj, x, y, z, resultHandle.AddrOfPinnedObject());
-                }
-                else if (typeof(T) == typeof(byte))
-                {
-                    CppBuffer.BufferByteGetVal(_cppobj, x, y, z, resultHandle.AddrOfPinnedObject());
-                }
-                else
-                {
-                    throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
-                }
+                throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
             }
             finally
             {
                 resultHandle.Free();
             }
-            
-            return result[0];
         }
 
         public T this[int x, int y] => GetVal(x, y);
         public T this[int x, int y, int z] => GetVal(x, y, z);
 
-        #region 2D indexers
-        #region expr expr
-        public HSExpr GetExpr(HSExpr x, HSExpr y)
-        {
-            if(typeof(T) == typeof(int))
-            {
-                return new HSExpr(CppBuffer.BufferIntGetExpr_ExprExpr(_cppobj, x._cppobj, y._cppobj));
-            }
-            else if(typeof(T) == typeof(float))
-            {
-                return new HSExpr(CppBuffer.BufferFloatGetExpr_ExprExpr(_cppobj, x._cppobj, y._cppobj));
-            }
-            else if (typeof(T) == typeof(byte))
-            {
-                return new HSExpr(CppBuffer.BufferByteGetExpr_ExprExpr(_cppobj, x._cppobj, y._cppobj));
-            }
-            else
-            {
-                throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
-            }
-        }
-        public HSExpr this[HSExpr x, HSExpr y] => GetExpr(x, y);
-        #endregion
-        
-        #region expr var
-        public HSExpr GetExpr(HSExpr x, HSVar y)
-        {
-            if(typeof(T) == typeof(int))
-            {
-                return new HSExpr(CppBuffer.BufferIntGetExpr_ExprVar(_cppobj, x._cppobj, y._cppobj));
-            }
-            else if(typeof(T) == typeof(float))
-            {
-                return new HSExpr(CppBuffer.BufferFloatGetExpr_ExprVar(_cppobj, x._cppobj, y._cppobj));
-            }
-            else if (typeof(T) == typeof(byte))
-            {
-                return new HSExpr(CppBuffer.BufferByteGetExpr_ExprVar(_cppobj, x._cppobj, y._cppobj));
-            }
-            else
-            {
-                throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
-            }
-        }
-        public HSExpr this[HSExpr x, HSVar y] => GetExpr(x, y);
-        #endregion
-        
-        #region var expr
-        public HSExpr GetExpr(HSVar x, HSExpr y)
-        {
-            if(typeof(T) == typeof(int))
-            {
-                return new HSExpr(CppBuffer.BufferIntGetExpr_VarExpr(_cppobj, x._cppobj, y._cppobj));
-            }
-            else if(typeof(T) == typeof(float))
-            {
-                return new HSExpr(CppBuffer.BufferFloatGetExpr_VarExpr(_cppobj, x._cppobj, y._cppobj));
-            }
-            else if (typeof(T) == typeof(byte))
-            {
-                return new HSExpr(CppBuffer.BufferByteGetExpr_VarExpr(_cppobj, x._cppobj, y._cppobj));
-            }
-            else
-            {
-                throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
-            }
-        }
-        public HSExpr this[HSVar x, HSExpr y] => GetExpr(x, y);
-        #endregion
-        
-        #region var var
-        public HSExpr GetExpr(HSVar x, HSVar y)
-        {
-            if(typeof(T) == typeof(int))
-            {
-                return new HSExpr(CppBuffer.BufferIntGetExpr_VarVar(_cppobj, x._cppobj, y._cppobj));
-            }
-            else if(typeof(T) == typeof(float))
-            {
-                return new HSExpr(CppBuffer.BufferFloatGetExpr_VarVar(_cppobj, x._cppobj, y._cppobj));
-            }
-            else if (typeof(T) == typeof(byte))
-            {
-                return new HSExpr(CppBuffer.BufferByteGetExpr_VarVar(_cppobj, x._cppobj, y._cppobj));
-            }
-            else
-            {
-                throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
-            }
-        }
-        public HSExpr this[HSVar x, HSVar y] => GetExpr(x, y);
-        #endregion
-        #endregion
+        //region 2D indexers
+        define Indexer2D($T1, $T2) {
+            replacePP(arg1 => concatId(HS, $T1)) {
+                replacePP(arg2 => concatId(HS, $T2)) {
+                    public HSExpr GetExpr(arg1 x, arg2 y)
+                    {
+                        unroll((BufferType, NativeType) in BufferAndNativeTypes)
+                        {
+                            replacePP(MethodName => concatId(BufferOf, BufferType, _GetExpr_, $T1, $T2)) {
+                                if(typeof(T) == typeof(NativeType)) { return new HSExpr(CppBuffer.MethodName(_cppobj, x._cppobj, y._cppobj)); }
+                            }
 
-        #region 3D indexers
-        
-        #region expr expr expr
-        public HSExpr GetExpr(HSExpr x, HSExpr y, HSExpr z)
-        {
-            if(typeof(T) == typeof(int))
-            {
-                return new HSExpr(CppBuffer.BufferIntGetExpr_ExprExprExpr(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else if(typeof(T) == typeof(float))
-            {
-                return new HSExpr(CppBuffer.BufferFloatGetExpr_ExprExprExpr(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else if (typeof(T) == typeof(byte))
-            {
-                return new HSExpr(CppBuffer.BufferByteGetExpr_ExprExprExpr(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else
-            {
-                throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
+                        }
+                        throw new NotImplementedException("Buffer type {typeof(T)} unsupported");
+                    }
+                    public HSExpr this[arg1 x, arg2 y] => GetExpr(x, y);
+                }
             }
         }
-        public HSExpr this[HSExpr x, HSExpr y, HSExpr z] => GetExpr(x, y, z);
-        #endregion
-        
-        #region expr expr var
-        public HSExpr GetExpr(HSExpr x, HSExpr y, HSVar z)
-        {
-            if(typeof(T) == typeof(int))
-            {
-                return new HSExpr(CppBuffer.BufferIntGetExpr_ExprExprVar(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else if(typeof(T) == typeof(float))
-            {
-                return new HSExpr(CppBuffer.BufferFloatGetExpr_ExprExprVar(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else if (typeof(T) == typeof(byte))
-            {
-                return new HSExpr(CppBuffer.BufferByteGetExpr_ExprExprVar(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else
-            {
-                throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
-            }
-        }
-        public HSExpr this[HSExpr x, HSExpr y, HSVar z] => GetExpr(x, y, z);
-        #endregion
-        
-        #region expr var expr
-        public HSExpr GetExpr(HSExpr x, HSVar y, HSExpr z)
-        {
-            if(typeof(T) == typeof(int))
-            {
-                return new HSExpr(CppBuffer.BufferIntGetExpr_ExprVarExpr(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else if(typeof(T) == typeof(float))
-            {
-                return new HSExpr(CppBuffer.BufferFloatGetExpr_ExprVarExpr(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else if (typeof(T) == typeof(byte))
-            {
-                return new HSExpr(CppBuffer.BufferByteGetExpr_ExprVarExpr(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else
-            {
-                throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
+        ExecMacro2D(Indexer2D);
+        //endregion
+
+        //region 3D indexers
+        define Indexer3D($T1, $T2, $T3) {
+            replacePP(arg1 => concatId(HS, $T1)) {
+                replacePP(arg2 => concatId(HS, $T2)) {
+                    replacePP(arg3 => concatId(HS, $T3)) {
+                        public HSExpr GetExpr(arg1 x, arg2 y, arg3 z)
+                        {
+                            unroll((BufferType, NativeType) in BufferAndNativeTypes)
+                            {
+                                replacePP(MethodName => concatId(BufferOf, BufferType, _GetExpr_, $T1, $T2, $T3)) {
+                                    if(typeof(T) == typeof(NativeType)) { return new HSExpr(CppBuffer.MethodName(_cppobj, x._cppobj, y._cppobj, z._cppobj)); }
+                                }
+                            }
+                            throw new NotImplementedException("Buffer type {typeof(T)} unsupported");
+                        }
+                        public HSExpr this[arg1 x, arg2 y, arg3 z] => GetExpr(x, y, z);
+                    }
+                }
             }
         }
-        public HSExpr this[HSExpr x, HSVar y, HSExpr z] => GetExpr(x, y, z);
-        #endregion
-        
-        #region expr var var
-        public HSExpr GetExpr(HSExpr x, HSVar y, HSVar z)
-        {
-            if(typeof(T) == typeof(int))
-            {
-                return new HSExpr(CppBuffer.BufferIntGetExpr_ExprVarVar(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else if(typeof(T) == typeof(float))
-            {
-                return new HSExpr(CppBuffer.BufferFloatGetExpr_ExprVarVar(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else if (typeof(T) == typeof(byte))
-            {
-                return new HSExpr(CppBuffer.BufferByteGetExpr_ExprVarVar(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else
-            {
-                throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
-            }
-        }
-        public HSExpr this[HSExpr x, HSVar y, HSVar z] => GetExpr(x, y, z);
-        #endregion
-        
-        #region var expr expr
-        public HSExpr GetExpr(HSVar x, HSExpr y, HSExpr z)
-        {
-            if(typeof(T) == typeof(int))
-            {
-                return new HSExpr(CppBuffer.BufferIntGetExpr_VarExprExpr(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else if(typeof(T) == typeof(float))
-            {
-                return new HSExpr(CppBuffer.BufferFloatGetExpr_VarExprExpr(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else if (typeof(T) == typeof(byte))
-            {
-                return new HSExpr(CppBuffer.BufferByteGetExpr_VarExprExpr(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else
-            {
-                throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
-            }
-        }
-        public HSExpr this[HSVar x, HSExpr y, HSExpr z] => GetExpr(x, y, z);
-        #endregion
-        
-        #region var expr var
-        public HSExpr GetExpr(HSVar x, HSExpr y, HSVar z)
-        {
-            if(typeof(T) == typeof(int))
-            {
-                return new HSExpr(CppBuffer.BufferIntGetExpr_VarExprVar(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else if(typeof(T) == typeof(float))
-            {
-                return new HSExpr(CppBuffer.BufferFloatGetExpr_VarExprVar(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else if (typeof(T) == typeof(byte))
-            {
-                return new HSExpr(CppBuffer.BufferByteGetExpr_VarExprVar(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else
-            {
-                throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
-            }
-        }
-        public HSExpr this[HSVar x, HSExpr y, HSVar z] => GetExpr(x, y, z);
-        #endregion
-        
-        #region var var expr
-        public HSExpr GetExpr(HSVar x, HSVar y, HSExpr z)
-        {
-            if(typeof(T) == typeof(int))
-            {
-                return new HSExpr(CppBuffer.BufferIntGetExpr_VarVarExpr(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else if(typeof(T) == typeof(float))
-            {
-                return new HSExpr(CppBuffer.BufferFloatGetExpr_VarVarExpr(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else if (typeof(T) == typeof(byte))
-            {
-                return new HSExpr(CppBuffer.BufferByteGetExpr_VarVarExpr(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else
-            {
-                throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
-            }
-        }
-        public HSExpr this[HSVar x, HSVar y, HSExpr z] => GetExpr(x, y, z);
-        #endregion
-        
-        #region var var var
-        public HSExpr GetExpr(HSVar x, HSVar y, HSVar z)
-        {
-            if(typeof(T) == typeof(int))
-            {
-                return new HSExpr(CppBuffer.BufferIntGetExpr_VarVarVar(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else if(typeof(T) == typeof(float))
-            {
-                return new HSExpr(CppBuffer.BufferFloatGetExpr_VarVarVar(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else if (typeof(T) == typeof(byte))
-            {
-                return new HSExpr(CppBuffer.BufferByteGetExpr_VarVarVar(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-            }
-            else
-            {
-                throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
-            }
-        }
-        public HSExpr this[HSVar x, HSVar y, HSVar z] => GetExpr(x, y, z);
-        #endregion
-        #endregion
+        ExecMacro3D(Indexer3D);
+        //endregion
         
         public void SetMin(int x, int y)
         {
-            if(typeof(T) == typeof(int))
+            unroll((BufferType, NativeType) in BufferAndNativeTypes)
             {
-                CppBuffer.BufferIntSetMin(_cppobj, x, y);
+                replacePP(MethodName => concatId(BufferOf, BufferType, _, SetMin, _IntInt)) {
+                    if(typeof(T) == typeof(NativeType)) { CppBuffer.MethodName(_cppobj, x, y); return; }
+                }
             }
-            else if(typeof(T) == typeof(float))
-            {
-                CppBuffer.BufferFloatSetMin(_cppobj, x, y);
-            }
-            else if (typeof(T) == typeof(byte))
-            {
-                CppBuffer.BufferByteSetMin(_cppobj, x, y);
-            }
-            else
-            {
-                throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
-            }
+            throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
         }
 
-        public int Width
-        {
-            get
+        //region simple int accessors
+        unroll (FieldName in (Width, Height, Channels)) {
+            public int FieldName
             {
-                if (typeof(T) == typeof(int))
+                get
                 {
-                    return CppBuffer.BufferIntWidth(_cppobj);
-                }
-                else if (typeof(T) == typeof(float))
-                {
-                    return CppBuffer.BufferFloatWidth(_cppobj);
-                }
-                else if (typeof(T) == typeof(byte))
-                {
-                    return CppBuffer.BufferByteWidth(_cppobj);
-                }
-                else
-                {
+                    unroll ((BufferType, NativeType) in BufferAndNativeTypes) {
+                        replacePP(MethodName => concatId(BufferOf, BufferType, _, FieldName)) {
+                            if(typeof(T) == typeof(NativeType)) { return CppBuffer.MethodName(_cppobj); }
+                        }
+                    }
                     throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
                 }
             }
-        } 
-        
-
-        public int Height
-        {
-            get
-            {
-                if (typeof(T) == typeof(int))
-                {
-                    return CppBuffer.BufferIntHeight(_cppobj);      
-                }
-                else if (typeof(T) == typeof(float))
-                {
-                    return CppBuffer.BufferFloatHeight(_cppobj);      
-                }
-                else if(typeof(T) == typeof(byte))
-                {
-                    return CppBuffer.BufferByteHeight(_cppobj);      
-                }
-                else
-                {
-                    throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
-                }
-            }
-        } 
-        
-        public int Channels
-        {
-            get
-            {
-                if (typeof(T) == typeof(int))
-                {
-                    return CppBuffer.BufferIntChannels(_cppobj);      
-                }
-                if (typeof(T) == typeof(float))
-                {
-                    return CppBuffer.BufferFloatChannels(_cppobj);      
-                }
-                else if(typeof(T) == typeof(byte))
-                {
-                    return CppBuffer.BufferByteChannels(_cppobj);      
-                }
-                else
-                {
-                    throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
-                }
-            }
-        } 
+        }
+        //endregion
     }
 }
