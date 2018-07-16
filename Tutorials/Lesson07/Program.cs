@@ -92,11 +92,11 @@ namespace Lesson07
 
                 // Define an expression that clamps x to lie within the
                 // range [0, input.width()-1].
-                var clamped_x = x.Clamp(0, input.Width-1);
+                var clamped_x = HS.Clamp(x, 0, input.Width-1);
                 // clamp(x, a, b) is equivalent to max(min(x, b), a).
 
                 // Similarly clamp y.
-                var clamped_y = y.Clamp(0, input.Height-1);
+                var clamped_y = HS.Clamp(y, 0, input.Height-1);
                 // Load from input at the clamped coordinates. This means that
                 // no matter how we evaluated the Func 'clamped', we'll never
                 // read out of bounds on the input. This is a clamp-to-edge
