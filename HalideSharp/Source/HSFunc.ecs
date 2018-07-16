@@ -1,0 +1,278 @@
+﻿#ecs;
+
+includeFile("MagicMacros.ecs");
+
+using System;
+using System.Runtime.InteropServices;
+
+namespace HalideSharp
+{
+    public class HSFunc
+    {
+        internal IntPtr _cppobj;
+        
+        [DllImport(Constants.LibName, EntryPoint = "new_func")]
+        private static extern IntPtr NewFunc([MarshalAs(Constants.StringType)] string name);
+        
+        public HSFunc(string name)
+        {
+            _cppobj = NewFunc(name);
+        }
+        
+        [DllImport(Constants.LibName, EntryPoint = "delete_func")]
+        private static extern void DeleteFunc(IntPtr obj);
+        
+        ~HSFunc() {
+            if (_cppobj != IntPtr.Zero)
+            {
+                DeleteFunc(_cppobj);
+            }
+        }
+
+        #region 2D indexers
+        define Indexer2D($T1, $T2) {
+            replacePP(GetterName => concatId(Func, _GetExpr_, $T1, $T2)) {
+                replacePP(SetterName => concatId(Func, _SetExpr_, $T1, $T2, Expr)) {
+
+                    [DllImport(Constants.LibName)] public static extern IntPtr GetterName(IntPtr obj, IntPtr x, IntPtr y);
+                    [DllImport(Constants.LibName)] public static extern void SetterName(IntPtr func, IntPtr x, IntPtr y, IntPtr e);
+
+                    replacePP(arg1 => concatId(HS, $T1)) {
+                        replacePP(arg2 => concatId(HS, $T2)) {
+                            public HSExpr this[arg1 x, arg2 y]
+                            {
+                                get => new HSExpr(GetterName(_cppobj, x._cppobj, y._cppobj));
+                                set => SetterName(_cppobj, x._cppobj, y._cppobj, value._cppobj);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        ExecMacro2D(Indexer2D);
+        #endregion
+
+        #region 3D indexers
+        define Indexer3D($T1, $T2, $T3) {
+            replacePP(GetterName => concatId(Func, _GetExpr_, $T1, $T2, $T3)) {
+                replacePP(SetterName => concatId(Func, _SetExpr_, $T1, $T2, $T3, Expr)) {
+                    [DllImport(Constants.LibName)] public static extern IntPtr GetterName(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+                    [DllImport(Constants.LibName)] public static extern void SetterName(IntPtr func, IntPtr x, IntPtr y, IntPtr z, IntPtr e);
+
+                    replacePP(arg1 => concatId(HS, $T1)) {
+                        replacePP(arg2 => concatId(HS, $T2)) {
+                            replacePP(arg3 => concatId(HS, $T3)) {
+                                public HSExpr this[arg1 x, arg2 y, arg3 z]
+                                {
+                                    get => new HSExpr(GetterName(_cppobj, x._cppobj, y._cppobj, z._cppobj));
+                                    set => SetterName(_cppobj, x._cppobj, y._cppobj, z._cppobj, value._cppobj);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        ExecMacro3D(Indexer3D);
+        #endregion
+
+        #region Realize to pre-allocated buffer
+
+        unroll (BufferType in BufferTypes) {
+            replacePP(MethodName => concatId(Func_Realize_BufferOf, BufferType)) {
+                [DllImport(Constants.LibName)]
+                private static extern IntPtr MethodName(IntPtr func, IntPtr buff);
+            }
+        }
+
+        public HSBuffer<T> Realize<T>(HSBuffer<T> buffer) where T : struct
+        {
+            unroll((BufferType, NativeType) in (BufferAndNativeTypes)) {
+                replacePP(MethodName => concatId(Func_Realize_BufferOf, BufferType)) {
+                    if(typeof(T) == typeof(NativeType)) { return new HSBuffer<T>(MethodName(_cppobj, buffer._cppobj)); }
+                }
+            }
+            throw new NotImplementedException($"Cannot realize to buffer of type {typeof(T)}");
+        }
+
+        #endregion
+
+        #region Realize to new buffer, 2D
+
+        unroll (BufferType in BufferTypes) {
+            replacePP(MethodName => concatId(Func_RealizeToBufferOf, BufferType, _IntInt)) {
+                [DllImport(Constants.LibName)]
+                private static extern IntPtr MethodName(IntPtr func, int width, int height);
+            }
+        }
+        
+        public HSBuffer<T> Realize<T>(int width, int height) where T : struct
+        {
+            unroll((BufferType, NativeType) in (BufferAndNativeTypes)) {
+                replacePP(MethodName => concatId(Func_RealizeToBufferOf, BufferType, _IntInt)) {
+                    if(typeof(T) == typeof(NativeType)) { return new HSBuffer<T>(MethodName(_cppobj, width, height)); }
+                }
+            }
+            throw new NotImplementedException($"Cannot realize to buffer of type {typeof(T)}");
+        }
+
+        #endregion
+        
+        //#region Realize to new buffer, 3D
+
+        unroll (BufferType in BufferTypes) {
+            replacePP(MethodName => concatId(Func_RealizeToBufferOf, BufferType, _IntIntInt)) {
+                [DllImport(Constants.LibName)]
+                private static extern IntPtr MethodName(IntPtr func, int width, int height, int channels);
+            }
+        }
+        
+        public HSBuffer<T> Realize<T>(int width, int height, int channels) where T : struct
+        {
+            unroll((BufferType, NativeType) in (BufferAndNativeTypes)) {
+                replacePP(MethodName => concatId(Func_RealizeToBufferOf, BufferType, _IntIntInt)) {
+                    if(typeof(T) == typeof(NativeType)) { return new HSBuffer<T>(MethodName(_cppobj, width, height, channels)); }
+                }
+            }
+            throw new NotImplementedException($"Cannot realize to buffer of type {typeof(T)}");
+        }
+
+        //#endregion
+
+        [DllImport(Constants.LibName)]
+        private static extern void Func_TraceStores(IntPtr func);
+        
+        public void TraceStores()
+        {
+            Func_TraceStores(_cppobj);
+        }
+
+        [DllImport(Constants.LibName)]
+        private static extern void Func_Parallel_Var(IntPtr func, IntPtr v);
+        
+        public void Parallel(HSVar v)
+        {
+            Func_Parallel_Var(_cppobj, v._cppobj);
+        }
+
+        [DllImport(Constants.LibName)]
+        private static extern void Func_CompileToLoweredStmt_StringOutputFormat(IntPtr func,
+            [MarshalAs(Constants.StringType)] string filename, SharedEnums.HSOutputFormat format);
+        
+        public void CompileToLoweredStmt(string filename, SharedEnums.HSOutputFormat format)
+        {
+            Func_CompileToLoweredStmt_StringOutputFormat(_cppobj, filename, format);
+        }
+
+        [DllImport(Constants.LibName)]
+        private static extern void Func_PrintLoopNest(IntPtr func);
+
+        public void PrintLoopNest()
+        {
+            Func_PrintLoopNest(_cppobj);
+        }
+
+        [DllImport(Constants.LibName, EntryPoint = "func_reorder")]
+        private static extern void FuncReorder(IntPtr func, int nrVariables, IntPtr[] vars);
+
+        public void Reorder(params HSVar[] vars)
+        {
+            var varPointers = new IntPtr[vars.Length];
+            for (var i = 0; i < vars.Length; i++)
+            {
+                varPointers[i] = vars[i]._cppobj;
+            }
+            
+            FuncReorder(_cppobj, vars.Length, varPointers);
+        }
+
+        [DllImport(Constants.LibName)]
+        private static extern void Func_Split_VarVarVarInt(IntPtr func, IntPtr origVar, IntPtr var1, IntPtr var2, int factor);
+
+        public void Split(HSVar origVar, HSVar v1, HSVar v2, int factor)
+        {
+            Func_Split_VarVarVarInt(_cppobj, origVar._cppobj, v1._cppobj, v2._cppobj, factor);
+        }
+
+        [DllImport(Constants.LibName)]
+        private static extern void Func_Fuse_VarVarVar(IntPtr func, IntPtr var1, IntPtr var2, IntPtr fused);
+
+        public HSFunc Fuse(HSVar var1, HSVar var2, HSVar fused)
+        {
+            Func_Fuse_VarVarVar(_cppobj, var1._cppobj, var2._cppobj, fused._cppobj);
+            return this;
+        }
+
+        [DllImport(Constants.LibName)]
+        private static extern void Func_Vectorize_Var(IntPtr func, IntPtr var1);
+
+        public HSFunc Vectorize(HSVar var1)
+        {
+            Func_Vectorize_Var(_cppobj, var1._cppobj);
+            return this;
+        }
+        
+        [DllImport(Constants.LibName)]
+        private static extern void Func_Vectorize_VarInt(IntPtr func, IntPtr var1, int factor);
+
+        public HSFunc Vectorize(HSVar var1, int factor)
+        {
+            Func_Vectorize_VarInt(_cppobj, var1._cppobj, factor);
+            return this;
+        }
+        
+        [DllImport(Constants.LibName)]
+        private static extern void Func_Unroll_Var(IntPtr func, IntPtr var1);
+
+        public void Unroll(HSVar var1)
+        {
+            Func_Unroll_Var(_cppobj, var1._cppobj);
+        }
+
+        [DllImport(Constants.LibName)]
+        private static extern void Func_Tile_VarVarVarVarVarVarIntInt(IntPtr func, IntPtr x, IntPtr y, IntPtr xo, IntPtr yo, IntPtr xi,
+            IntPtr yi, int xfactor, int yfactor);
+
+        public HSFunc Tile(HSVar x, HSVar y, HSVar xo, HSVar yo, HSVar xi, HSVar yi, int xfactor, int yfactor)
+        {
+            Func_Tile_VarVarVarVarVarVarIntInt(_cppobj, x._cppobj, y._cppobj, xo._cppobj, yo._cppobj, xi._cppobj, yi._cppobj, xfactor, yfactor);
+            return this;
+        }
+
+        [DllImport(Constants.LibName)]
+        private static extern void Func_ComputeRoot(IntPtr func);
+
+        public HSFunc ComputeRoot()
+        {
+            Func_ComputeRoot(_cppobj);
+            return this;
+        }
+
+        [DllImport(Constants.LibName)]
+        private static extern void Func_ComputeAt_FuncVar(IntPtr self, IntPtr func, IntPtr v);
+
+        public HSFunc ComputeAt(HSFunc f, HSVar v)
+        {
+            Func_ComputeAt_FuncVar(_cppobj, f._cppobj, v._cppobj);
+            return this;
+        }
+
+        [DllImport(Constants.LibName)]
+        private static extern void Func_StoreRoot(IntPtr self);
+
+        public HSFunc StoreRoot()
+        {
+            Func_StoreRoot(_cppobj);
+            return this;
+        }
+
+        [DllImport(Constants.LibName)]
+        private static extern void Func_StoreAt_FuncVar(IntPtr self, IntPtr func, IntPtr v);
+
+        public HSFunc StoreAt(HSFunc f, HSVar v)
+        {
+            Func_StoreAt_FuncVar(_cppobj, f._cppobj, v._cppobj);
+            return this;
+        }
+    }
+}
