@@ -1,4 +1,5 @@
 HalideSharp/3rdparty/halide
+HalideSharp/3rdparty/LeMP
 [Dd]ebug/
 [Rr]elease/
 x64/
@@ -7,3 +8,5 @@ x64/
 *.o
 *.so
 .idea
+.*.sw*
+*.out.cs
