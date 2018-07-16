@@ -43,20 +43,29 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Source\Constants.cs" />
     <Compile Include="Source\HS.cs" />
-    <Compile Include="Source\HSBuffer.cs" />
+    <None Include="Source\HSBuffer.ecs" />
+    <Compile Include="Source\HSBuffer.out.cs">
+      <DependentUpon>Source\HSBuffer.ecs</DependentUpon>
+    </Compile>
     <Compile Include="Source\HSExpr.cs" />
-    <Compile Include="Source\HSFunc.cs" />
+    <None Include="Source\HSFunc.ecs" />
+    <Compile Include="Source\HSFunc.out.cs">
+      <DependentUpon>Source\HSFunc.ecs</DependentUpon>
+    </Compile>
     <Compile Include="Source\HSMath.cs" />
     <Compile Include="Source\HSVar.cs" />
     <Compile Include="Source\SharedEnums.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Development.md" />
     <Content Include="Source\hs.cpp" />
     <Content Include="Source\hsbuffer.cpp" />
     <Content Include="Source\hsexpr.cpp" />
     <Content Include="Source\hsfunc.cpp" />
     <Content Include="Source\hsmath.cpp" />
     <Content Include="Source\hsvar.cpp" />
+    <Content Include="Source\MagicMacros.ecs" />
+    <Content Include="Source\magicmacros.h" />
   </ItemGroup>
   <ItemGroup>
     <ContentWithTargetPath Include="$(ProjectDir)/Source/libhalide-wrapper.so">
