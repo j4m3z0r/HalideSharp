@@ -194,7 +194,7 @@ namespace HalideSharp
         [DllImport(Constants.LibName, EntryPoint = "func_reorder")]
         private static extern void FuncReorder(IntPtr func, int nrVariables, IntPtr[] vars);
 
-        public void Reorder(params HSVar[] vars)
+        public HSFunc Reorder(params HSVar[] vars)
         {
             var varPointers = new IntPtr[vars.Length];
             for (var i = 0; i < vars.Length; i++)
@@ -203,14 +203,16 @@ namespace HalideSharp
             }
             
             FuncReorder(HSUtil.CArg(this), vars.Length, varPointers);
+            return this;
         }
 
         [DllImport(Constants.LibName)]
         private static extern void Func_Split_VarVarVarInt(IntPtr func, IntPtr origVar, IntPtr var1, IntPtr var2, int factor);
 
-        public void Split(HSVar origVar, HSVar v1, HSVar v2, int factor)
+        public HSFunc Split(HSVar origVar, HSVar v1, HSVar v2, int factor)
         {
             Func_Split_VarVarVarInt(HSUtil.CArg(this), HSUtil.CArg(origVar), HSUtil.CArg(v1), HSUtil.CArg(v2), HSUtil.CArg(factor));
+            return this;
         }
 
         [DllImport(Constants.LibName)]
@@ -291,6 +293,22 @@ namespace HalideSharp
         public HSFunc StoreAt(HSFunc f, HSVar v)
         {
             Func_StoreAt_FuncVar(HSUtil.CArg(this), HSUtil.CArg(f), HSUtil.CArg(v));
+            return this;
+        }
+
+        [DllImport(Constants.LibName)]
+        private static extern void Func_CompileJit(IntPtr self);
+        public HSFunc CompileJit()
+        {
+            Func_CompileJit(HSUtil.CArg(this));
+            return this;
+        }
+
+        [DllImport(Constants.LibName)]
+        private static extern void Func_Bound(IntPtr self, IntPtr v, int min, int max);
+        public HSFunc Bound(HSVar v, int min, int max)
+        {
+            Func_Bound(HSUtil.CArg(this), HSUtil.CArg(v), HSUtil.CArg(min), HSUtil.CArg(max));
             return this;
         }
     }

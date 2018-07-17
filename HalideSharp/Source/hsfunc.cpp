@@ -75,3 +75,5 @@ extern "C" void Func_ComputeRoot(Func *func) { func->compute_root(); }
 extern "C" void Func_ComputeAt_FuncVar(Func *self, Func *func, Var *v) { self->compute_at(*func, *v); }
 extern "C" void Func_StoreRoot(Func *self) { self->store_root(); }
 extern "C" void Func_StoreAt_FuncVar(Func *self, Func *func, Var *v) { self->store_at(*func, *v); }
+extern "C" void Func_CompileJit(Func *self) { self->compile_jit(); }
+extern "C" void Func_Bound(Func *self, Var *v, int min, int max) { self->bound(*v, min, max); }
