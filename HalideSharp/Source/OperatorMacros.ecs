@@ -1,0 +1,21 @@
+replace(Operators => (
+    (Plus, operator+),
+    (Minus, operator-),
+    (Mult, operator*),
+    (Div, operator/),
+    (And, operator&),
+    (Or, operator|),
+    (Equals, operator==),
+    (NotEquals, operator!=),
+    (Gt, operator>),
+    (Lt, operator<),
+    (Gte, operator>=),
+    (Lte, operator<=)));
+
+// Invoke the given macro with all the operators we know about, passing their name and C# method name.
+define ExecAllOperators($opmacro) {
+    unroll((OperatorName, MethodName) in Operators) {
+        $opmacro(OperatorName, MethodName);
+    }
+}
+

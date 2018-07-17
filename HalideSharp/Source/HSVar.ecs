@@ -1,4 +1,8 @@
-﻿using System;
+﻿#ecs;
+
+includeFile("OperatorMacros.ecs");
+
+using System;
 using System.Runtime.InteropServices;
 using System.Xml.Schema;
 
@@ -8,12 +12,11 @@ namespace HalideSharp
     {
         public const string CppType = "Var";
         
-        [DllImport(Constants.LibName, EntryPoint = "new_var")]
-        private static extern IntPtr NewVar([MarshalAs(Constants.StringType)] string name);
+        [DllImport(Constants.LibName)] private static extern IntPtr Var_New_String([MarshalAs(Constants.StringType)] string name);
         
         public HSVar(string name)
         {
-            _cppobj = NewVar(name);
+            _cppobj = Var_New_String(name);
         }
 
         internal HSVar(IntPtr cppobj)
@@ -21,76 +24,66 @@ namespace HalideSharp
             _cppobj = cppobj;
         }
         
-        [DllImport(Constants.LibName, EntryPoint = "delete_var")]
-        private static extern void DeleteVar(IntPtr obj);
+        [DllImport(Constants.LibName)] private static extern void Var_Delete(IntPtr obj);
         
         ~HSVar() {
             if (_cppobj != IntPtr.Zero)
             {
-                DeleteVar(_cppobj);
+                Var_Delete(_cppobj);
             }
         }
 
-        #region var <op> var
-        [DllImport(Constants.LibName, EntryPoint = "var_plus_var")]
-        private static extern IntPtr VarPlusVar(IntPtr v1, IntPtr v2);
-        public static HSExpr operator +(HSVar v1, HSVar v2)
-        {
-            return new HSExpr(VarPlusVar(v1._cppobj, v2._cppobj));
+        // <var> <op> <var>
+        define VarOperator($OperatorName, $OperatorMethodName) {
+            replacePP(CFunction => concatId(Operator_Var_, $OperatorName, _Var)) {
+
+                [DllImport(Constants.LibName)] private static extern IntPtr CFunction(IntPtr v1, IntPtr v2);
+                public static HSExpr $OperatorMethodName(HSVar v1, HSVar v2) {
+                    return new HSExpr(CFunction(HSUtil.CArg(v1), HSUtil.CArg(v2)));
+                }
+            }
         }
+        ExecAllOperators(VarOperator);
         
+        // <var> <op> <float> AND <float> <op> <var>
+        define FloatOperator($OperatorName, $OperatorMethodName) {
+            replacePP(CFunction => concatId(Operator_Var_, $OperatorName, _Float)) {
 
-        [DllImport(Constants.LibName, EntryPoint = "var_mult_var")]
-        private static extern IntPtr VarMultVar(IntPtr v1, IntPtr v2);
+                [DllImport(Constants.LibName)] private static extern IntPtr CFunction(IntPtr v1, float f);
+                public static HSExpr $OperatorMethodName(HSVar v1, float f) {
+                    return new HSExpr(CFunction(HSUtil.CArg(v1), HSUtil.CArg(f)));
+                }
+            }
 
-        public static HSExpr operator *(HSVar v1, HSVar v2)
-        {
-            return new HSExpr(VarMultVar(v1._cppobj, v2._cppobj));
+            replacePP(CFunction => concatId(Operator_Float_, $OperatorName, _Var)) {
+
+                [DllImport(Constants.LibName)] private static extern IntPtr CFunction(float f, IntPtr v1);
+                public static HSExpr $OperatorMethodName(float f, HSVar v1) {
+                    return new HSExpr(CFunction(HSUtil.CArg(f), HSUtil.CArg(v1)));
+                }
+            }
+
         }
-        #endregion
-        
-        #region var <op> int
-        [DllImport(Constants.LibName, EntryPoint = "var_plus_int")]
-        private static extern IntPtr VarPlusInt(IntPtr v, int i);
+        ExecAllOperators(FloatOperator);
 
-        public static HSExpr operator +(HSVar v, int i)
-        {
-            return new HSExpr(VarPlusInt(v._cppobj, i));
+        // <var> <op> <int> AND <int> <op> <var>
+        define IntOperator($OperatorName, $OperatorMethodName) {
+            replacePP(CFunction => concatId(Operator_Var_, $OperatorName, _Int)) {
+
+                [DllImport(Constants.LibName)] private static extern IntPtr CFunction(IntPtr v1, int i);
+                public static HSExpr $OperatorMethodName(HSVar v1, int i) {
+                    return new HSExpr(CFunction(HSUtil.CArg(v1), HSUtil.CArg(i)));
+                }
+            }
+            
+            replacePP(CFunction => concatId(Operator_Int_, $OperatorName, _Var)) {
+
+                [DllImport(Constants.LibName)] private static extern IntPtr CFunction(int i, IntPtr v1);
+                public static HSExpr $OperatorMethodName(int i, HSVar v1) {
+                    return new HSExpr(CFunction(HSUtil.CArg(i), HSUtil.CArg(v1)));
+                }
+            }
         }
-        
-        [DllImport(Constants.LibName, EntryPoint = "var_minus_int")]
-        private static extern IntPtr VarMinusInt(IntPtr v1, int i);
-        public static HSExpr operator -(HSVar v1, int i)
-        {
-            return new HSExpr(VarMinusInt(v1._cppobj, i));
-        }
-
-        [DllImport(Constants.LibName, EntryPoint = "var_equals_int")]
-        private static extern IntPtr VarEqualsInt(IntPtr v, int i);
-
-        public static HSExpr operator ==(HSVar v, int i)
-        {
-            return new HSExpr(VarEqualsInt(v._cppobj, i));
-        }
-
-        [DllImport(Constants.LibName, EntryPoint = "var_not_equals_int")]
-        private static extern IntPtr VarNotEqualsInt(IntPtr v, int i);
-        
-        public static HSExpr operator !=(HSVar v, int i)
-        {
-            return new HSExpr(VarNotEqualsInt(v._cppobj, i));
-        }
-        #endregion
-        
-        #region var <op> float>
-
-        [DllImport(Constants.LibName, EntryPoint = "var_div_float")]
-        private static extern IntPtr VarDivFloat(IntPtr v, float f);
-
-        public static HSExpr operator /(HSVar v, float f)
-        {
-            return new HSExpr(VarDivFloat(v._cppobj, f));
-        }
-        #endregion
+        ExecAllOperators(IntOperator);
     }
 }

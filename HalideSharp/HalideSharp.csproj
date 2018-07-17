@@ -53,6 +53,7 @@
       <DependentUpon>Source\HSFunc.ecs</DependentUpon>
     </Compile>
     <Compile Include="Source\HSMath.cs" />
+    <None Include="Source\HSVar.ecs" />
     <Compile Include="Source\HSObject.cs" />
     <Compile Include="Source\HSUtil.cs" />
     <Compile Include="Source\HSVar.out.cs">
@@ -67,9 +68,11 @@
     <Content Include="Source\hsexpr.cpp" />
     <Content Include="Source\hsfunc.cpp" />
     <Content Include="Source\hsmath.cpp" />
+    <Content Include="Source\hsoperators.cpp" />
     <Content Include="Source\hsvar.cpp" />
     <Content Include="Source\MagicMacros.ecs" />
     <Content Include="Source\magicmacros.h" />
+    <Content Include="Source\OperatorMacros.ecs" />
   </ItemGroup>
   <ItemGroup>
     <ContentWithTargetPath Include="$(ProjectDir)/Source/libhalide-wrapper.so">
