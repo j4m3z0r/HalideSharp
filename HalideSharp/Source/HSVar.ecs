@@ -8,7 +8,7 @@ using System.Xml.Schema;
 
 namespace HalideSharp
 {
-    public class HSVar : HSObject
+    public partial class HSVar : HSObject
     {
         public const string CppType = "Var";
         
@@ -85,5 +85,6 @@ namespace HalideSharp
             }
         }
         ExecAllOperators(IntOperator);
+        
     }
 }

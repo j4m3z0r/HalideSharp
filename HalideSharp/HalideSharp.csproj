@@ -47,8 +47,12 @@
     <Compile Include="Source\HSBuffer.out.cs">
       <DependentUpon>Source\HSBuffer.ecs</DependentUpon>
     </Compile>
-    <Compile Include="Source\HSExpr.cs" />
+    <None Include="Source\HSExpr.ecs" />
+    <Compile Include="Source\HSExpr.out.cs">
+      <DependentUpon>Source\HSExpr.ecs</DependentUpon>
+    </Compile>
     <None Include="Source\HSFunc.ecs" />
+    <Compile Include="Source\HSExpr.shortcircuit.cs" />
     <Compile Include="Source\HSFunc.out.cs">
       <DependentUpon>Source\HSFunc.ecs</DependentUpon>
     </Compile>
@@ -59,6 +63,7 @@
     <Compile Include="Source\HSVar.out.cs">
       <DependentUpon>Source\HSVar.ecs</DependentUpon>
     </Compile>
+    <Compile Include="Source\HSVar.shortcircuit.cs" />
     <Compile Include="Source\SharedEnums.cs" />
   </ItemGroup>
   <ItemGroup>
