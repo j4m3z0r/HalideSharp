@@ -27,6 +27,27 @@ namespace HalideSharp
             }
         }
 
+        #region 1D indexers
+        define Indexer1D($T1) {
+            replacePP(GetterName => concatId(Func, _GetExpr_, $T1)) {
+                replacePP(SetterName => concatId(Func, _SetExpr_, $T1, Expr)) {
+
+                    [DllImport(Constants.LibName)] public static extern IntPtr GetterName(IntPtr obj, IntPtr x);
+                    [DllImport(Constants.LibName)] public static extern void SetterName(IntPtr func, IntPtr x, IntPtr e);
+
+                    replacePP(arg1 => concatId(HS, $T1)) {
+                        public HSExpr this[arg1 x]
+                        {
+                            get => new HSExpr(GetterName(HSUtil.CArg(this), HSUtil.CArg(x)));
+                            set => SetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(value));
+                        }
+                    }
+                }
+            }
+        }
+        ExecMacro1D(Indexer1D);
+        #endregion
+
         #region 2D indexers
         define Indexer2D($T1, $T2) {
             replacePP(GetterName => concatId(Func, _GetExpr_, $T1, $T2)) {
