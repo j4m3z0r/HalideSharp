@@ -81,8 +81,8 @@ Functions exposing a binary operator are named like so:
 For example, the method exposing the add operator of an Expr and an int would be named `Operator_Expr_Plus_Int`. The
 following names are used for operators:
 
-* operator- : Minus
 * operator+ : Plus
+* operator- : Minus
 * operator* : Mult
 * operator/ : Div
 * operator&& : And
