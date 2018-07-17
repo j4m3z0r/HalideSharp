@@ -92,7 +92,7 @@ namespace HalideSharp
                     }
                 }
 
-                if (when == null)
+                if (ReferenceEquals(when, null))
                 {
                     return new HSExpr(PrintObjectsWhen(IntPtr.Zero, args.Length, typeList, objList));
                 }
