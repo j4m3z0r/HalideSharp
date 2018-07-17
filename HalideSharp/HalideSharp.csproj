@@ -53,6 +53,7 @@
       <DependentUpon>Source\HSFunc.ecs</DependentUpon>
     </Compile>
     <Compile Include="Source\HSMath.cs" />
+    <Compile Include="Source\HSObject.cs" />
     <Compile Include="Source\HSUtil.cs" />
     <Compile Include="Source\HSVar.out.cs">
       <DependentUpon>Source\HSVar.ecs</DependentUpon>

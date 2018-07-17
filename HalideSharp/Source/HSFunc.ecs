@@ -7,10 +7,8 @@ using System.Runtime.InteropServices;
 
 namespace HalideSharp
 {
-    public class HSFunc
+    public class HSFunc : HSObject
     {
-        internal IntPtr _cppobj;
-        
         [DllImport(Constants.LibName, EntryPoint = "new_func")]
         private static extern IntPtr NewFunc([MarshalAs(Constants.StringType)] string name);
         

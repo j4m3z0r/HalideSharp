@@ -4,12 +4,10 @@ using System.Xml.Schema;
 
 namespace HalideSharp
 {
-    public class HSVar
+    public class HSVar : HSObject
     {
         public const string CppType = "Var";
         
-        internal IntPtr _cppobj;
-
         [DllImport(Constants.LibName, EntryPoint = "new_var")]
         private static extern IntPtr NewVar([MarshalAs(Constants.StringType)] string name);
         

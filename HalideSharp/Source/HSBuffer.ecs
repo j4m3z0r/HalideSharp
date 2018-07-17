@@ -133,10 +133,9 @@ namespace HalideSharp
         [DllImport(Constants.LibName)] public static extern IntPtr BufferOfByte_SaveImage_String(IntPtr buffer, [MarshalAs(Constants.StringType)] string filename);
     }
     
-    public class HSBuffer<T> where T: struct
+    public class HSBuffer<T> : HSObject
+        where T: struct
     {
-        internal IntPtr _cppobj;
-
         private void CheckType()
         {
             if (typeof(T) != typeof(int) && typeof(T) != typeof(float) && typeof(T) != typeof(byte))

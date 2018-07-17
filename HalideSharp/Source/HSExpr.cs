@@ -4,12 +4,10 @@ using System.Runtime.InteropServices;
 
 namespace HalideSharp
 {
-    public class HSExpr
+    public class HSExpr : HSObject
     {
         public const string CppType = "Expr";
         
-        internal IntPtr _cppobj;
-
         internal HSExpr(IntPtr cppobj)
         {
             _cppobj = cppobj;
