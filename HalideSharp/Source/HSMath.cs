@@ -10,7 +10,7 @@ namespace HalideSharp
         
         public static HSExpr Sin(HSVar v)
         {
-            return new HSExpr(SinVar(v._cppobj));
+            return new HSExpr(SinVar(HSUtil.CArg(v)));
         }
 
         [DllImport(Constants.LibName, EntryPoint = "sin_expr")]
@@ -18,7 +18,7 @@ namespace HalideSharp
         
         public static HSExpr Sin(HSExpr v)
         {
-            return new HSExpr(SinExpr(v._cppobj));
+            return new HSExpr(SinExpr(HSUtil.CArg(v)));
         }
         
         [DllImport(Constants.LibName, EntryPoint = "cos_var")]
@@ -26,7 +26,7 @@ namespace HalideSharp
         
         public static HSExpr Cos(HSVar v)
         {
-            return new HSExpr(CosVar(v._cppobj));
+            return new HSExpr(CosVar(HSUtil.CArg(v)));
         }
         
         [DllImport(Constants.LibName, EntryPoint = "cos_expr")]
@@ -34,7 +34,7 @@ namespace HalideSharp
         
         public static HSExpr Cos(HSExpr v)
         {
-            return new HSExpr(CosExpr(v._cppobj));
+            return new HSExpr(CosExpr(HSUtil.CArg(v)));
         }
 
         [DllImport(Constants.LibName, EntryPoint = "pow_expr_float")]
@@ -42,7 +42,7 @@ namespace HalideSharp
 
         public static HSExpr Pow(HSExpr e, float f)
         {
-            return new HSExpr(PowExprFloat(e._cppobj, f));
+            return new HSExpr(PowExprFloat(HSUtil.CArg(e), HSUtil.CArg(f)));
         }
     }
 }

@@ -39,8 +39,8 @@ namespace HalideSharp
                         replacePP(arg2 => concatId(HS, $T2)) {
                             public HSExpr this[arg1 x, arg2 y]
                             {
-                                get => new HSExpr(GetterName(_cppobj, x._cppobj, y._cppobj));
-                                set => SetterName(_cppobj, x._cppobj, y._cppobj, value._cppobj);
+                                get => new HSExpr(GetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y)));
+                                set => SetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(value));
                             }
                         }
                     }
@@ -62,8 +62,8 @@ namespace HalideSharp
                             replacePP(arg3 => concatId(HS, $T3)) {
                                 public HSExpr this[arg1 x, arg2 y, arg3 z]
                                 {
-                                    get => new HSExpr(GetterName(_cppobj, x._cppobj, y._cppobj, z._cppobj));
-                                    set => SetterName(_cppobj, x._cppobj, y._cppobj, z._cppobj, value._cppobj);
+                                    get => new HSExpr(GetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z)));
+                                    set => SetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z), HSUtil.CArg(value));
                                 }
                             }
                         }
@@ -87,7 +87,7 @@ namespace HalideSharp
         {
             unroll((BufferType, NativeType) in (BufferAndNativeTypes)) {
                 replacePP(MethodName => concatId(Func_Realize_BufferOf, BufferType)) {
-                    if(typeof(T) == typeof(NativeType)) { return new HSBuffer<T>(MethodName(_cppobj, buffer._cppobj)); }
+                    if(typeof(T) == typeof(NativeType)) { return new HSBuffer<T>(MethodName(HSUtil.CArg(this), HSUtil.CArg(buffer))); }
                 }
             }
             throw new NotImplementedException($"Cannot realize to buffer of type {typeof(T)}");
@@ -108,7 +108,7 @@ namespace HalideSharp
         {
             unroll((BufferType, NativeType) in (BufferAndNativeTypes)) {
                 replacePP(MethodName => concatId(Func_RealizeToBufferOf, BufferType, _IntInt)) {
-                    if(typeof(T) == typeof(NativeType)) { return new HSBuffer<T>(MethodName(_cppobj, width, height)); }
+                    if(typeof(T) == typeof(NativeType)) { return new HSBuffer<T>(MethodName(HSUtil.CArg(this), HSUtil.CArg(width), HSUtil.CArg(height))); }
                 }
             }
             throw new NotImplementedException($"Cannot realize to buffer of type {typeof(T)}");
@@ -129,7 +129,7 @@ namespace HalideSharp
         {
             unroll((BufferType, NativeType) in (BufferAndNativeTypes)) {
                 replacePP(MethodName => concatId(Func_RealizeToBufferOf, BufferType, _IntIntInt)) {
-                    if(typeof(T) == typeof(NativeType)) { return new HSBuffer<T>(MethodName(_cppobj, width, height, channels)); }
+                    if(typeof(T) == typeof(NativeType)) { return new HSBuffer<T>(MethodName(HSUtil.CArg(this), HSUtil.CArg(width), HSUtil.CArg(height), HSUtil.CArg(channels))); }
                 }
             }
             throw new NotImplementedException($"Cannot realize to buffer of type {typeof(T)}");
@@ -142,7 +142,7 @@ namespace HalideSharp
         
         public void TraceStores()
         {
-            Func_TraceStores(_cppobj);
+            Func_TraceStores(HSUtil.CArg(this));
         }
 
         [DllImport(Constants.LibName)]
@@ -150,16 +150,16 @@ namespace HalideSharp
         
         public void Parallel(HSVar v)
         {
-            Func_Parallel_Var(_cppobj, v._cppobj);
+            Func_Parallel_Var(HSUtil.CArg(this), HSUtil.CArg(v));
         }
 
         [DllImport(Constants.LibName)]
-        private static extern void Func_CompileToLoweredStmt_StringOutputFormat(IntPtr func,
+        private static extern void Func_CompileToLoweredStmt_StringOutputformat(IntPtr func,
             [MarshalAs(Constants.StringType)] string filename, SharedEnums.HSOutputFormat format);
         
         public void CompileToLoweredStmt(string filename, SharedEnums.HSOutputFormat format)
         {
-            Func_CompileToLoweredStmt_StringOutputFormat(_cppobj, filename, format);
+            Func_CompileToLoweredStmt_StringOutputformat(HSUtil.CArg(this), HSUtil.CArg(filename), HSUtil.CArg(format));
         }
 
         [DllImport(Constants.LibName)]
@@ -167,7 +167,7 @@ namespace HalideSharp
 
         public void PrintLoopNest()
         {
-            Func_PrintLoopNest(_cppobj);
+            Func_PrintLoopNest(HSUtil.CArg(this));
         }
 
         [DllImport(Constants.LibName, EntryPoint = "func_reorder")]
@@ -181,7 +181,7 @@ namespace HalideSharp
                 varPointers[i] = vars[i]._cppobj;
             }
             
-            FuncReorder(_cppobj, vars.Length, varPointers);
+            FuncReorder(HSUtil.CArg(this), vars.Length, varPointers);
         }
 
         [DllImport(Constants.LibName)]
@@ -189,7 +189,7 @@ namespace HalideSharp
 
         public void Split(HSVar origVar, HSVar v1, HSVar v2, int factor)
         {
-            Func_Split_VarVarVarInt(_cppobj, origVar._cppobj, v1._cppobj, v2._cppobj, factor);
+            Func_Split_VarVarVarInt(HSUtil.CArg(this), HSUtil.CArg(origVar), HSUtil.CArg(v1), HSUtil.CArg(v2), HSUtil.CArg(factor));
         }
 
         [DllImport(Constants.LibName)]
@@ -197,7 +197,7 @@ namespace HalideSharp
 
         public HSFunc Fuse(HSVar var1, HSVar var2, HSVar fused)
         {
-            Func_Fuse_VarVarVar(_cppobj, var1._cppobj, var2._cppobj, fused._cppobj);
+            Func_Fuse_VarVarVar(HSUtil.CArg(this), HSUtil.CArg(var1), HSUtil.CArg(var2), HSUtil.CArg(fused));
             return this;
         }
 
@@ -206,7 +206,7 @@ namespace HalideSharp
 
         public HSFunc Vectorize(HSVar var1)
         {
-            Func_Vectorize_Var(_cppobj, var1._cppobj);
+            Func_Vectorize_Var(HSUtil.CArg(this), HSUtil.CArg(var1));
             return this;
         }
         
@@ -215,7 +215,7 @@ namespace HalideSharp
 
         public HSFunc Vectorize(HSVar var1, int factor)
         {
-            Func_Vectorize_VarInt(_cppobj, var1._cppobj, factor);
+            Func_Vectorize_VarInt(HSUtil.CArg(this), HSUtil.CArg(var1), HSUtil.CArg(factor));
             return this;
         }
         
@@ -224,7 +224,7 @@ namespace HalideSharp
 
         public void Unroll(HSVar var1)
         {
-            Func_Unroll_Var(_cppobj, var1._cppobj);
+            Func_Unroll_Var(HSUtil.CArg(this), HSUtil.CArg(var1));
         }
 
         [DllImport(Constants.LibName)]
@@ -233,7 +233,7 @@ namespace HalideSharp
 
         public HSFunc Tile(HSVar x, HSVar y, HSVar xo, HSVar yo, HSVar xi, HSVar yi, int xfactor, int yfactor)
         {
-            Func_Tile_VarVarVarVarVarVarIntInt(_cppobj, x._cppobj, y._cppobj, xo._cppobj, yo._cppobj, xi._cppobj, yi._cppobj, xfactor, yfactor);
+            Func_Tile_VarVarVarVarVarVarIntInt(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(xo), HSUtil.CArg(yo), HSUtil.CArg(xi), HSUtil.CArg(yi), HSUtil.CArg(xfactor), HSUtil.CArg(yfactor));
             return this;
         }
 
@@ -242,7 +242,7 @@ namespace HalideSharp
 
         public HSFunc ComputeRoot()
         {
-            Func_ComputeRoot(_cppobj);
+            Func_ComputeRoot(HSUtil.CArg(this));
             return this;
         }
 
@@ -251,7 +251,7 @@ namespace HalideSharp
 
         public HSFunc ComputeAt(HSFunc f, HSVar v)
         {
-            Func_ComputeAt_FuncVar(_cppobj, f._cppobj, v._cppobj);
+            Func_ComputeAt_FuncVar(HSUtil.CArg(this), HSUtil.CArg(f), HSUtil.CArg(v));
             return this;
         }
 
@@ -260,7 +260,7 @@ namespace HalideSharp
 
         public HSFunc StoreRoot()
         {
-            Func_StoreRoot(_cppobj);
+            Func_StoreRoot(HSUtil.CArg(this));
             return this;
         }
 
@@ -269,7 +269,7 @@ namespace HalideSharp
 
         public HSFunc StoreAt(HSFunc f, HSVar v)
         {
-            Func_StoreAt_FuncVar(_cppobj, f._cppobj, v._cppobj);
+            Func_StoreAt_FuncVar(HSUtil.CArg(this), HSUtil.CArg(f), HSUtil.CArg(v));
             return this;
         }
     }

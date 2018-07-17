@@ -186,7 +186,7 @@ namespace HalideSharp
         {
             if (typeof(T) == typeof(byte))
             {
-                CppBuffer.BufferOfByte_SaveImage_String(_cppobj, filename);
+                CppBuffer.BufferOfByte_SaveImage_String(HSUtil.CArg(this), HSUtil.CArg(filename));
             }
             else
             {
@@ -229,7 +229,7 @@ namespace HalideSharp
                 unroll((BufferType, NativeType) in BufferAndNativeTypes)
                 {
                     replacePP(MethodName => concatId(BufferOf, BufferType, _GetVal_IntInt)) {
-                        if(typeof(T) == typeof(NativeType)) { CppBuffer.MethodName(_cppobj, x, y, resultHandle.AddrOfPinnedObject()); return result[0]; }
+                        if(typeof(T) == typeof(NativeType)) { CppBuffer.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(resultHandle)); return result[0]; }
                     }
                 }
                 throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
@@ -253,7 +253,7 @@ namespace HalideSharp
                 unroll((BufferType, NativeType) in BufferAndNativeTypes)
                 {
                     replacePP(MethodName => concatId(BufferOf, BufferType, _GetVal_IntIntInt)) {
-                        if(typeof(T) == typeof(NativeType)) { CppBuffer.MethodName(_cppobj, x, y, z, resultHandle.AddrOfPinnedObject()); return result[0]; }
+                        if(typeof(T) == typeof(NativeType)) { CppBuffer.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z), HSUtil.CArg(resultHandle)); return result[0]; }
                     }
                 }
                 throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
@@ -276,7 +276,7 @@ namespace HalideSharp
                         unroll((BufferType, NativeType) in BufferAndNativeTypes)
                         {
                             replacePP(MethodName => concatId(BufferOf, BufferType, _GetExpr_, $T1, $T2)) {
-                                if(typeof(T) == typeof(NativeType)) { return new HSExpr(CppBuffer.MethodName(_cppobj, x._cppobj, y._cppobj)); }
+                                if(typeof(T) == typeof(NativeType)) { return new HSExpr(CppBuffer.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y))); }
                             }
 
                         }
@@ -299,7 +299,7 @@ namespace HalideSharp
                             unroll((BufferType, NativeType) in BufferAndNativeTypes)
                             {
                                 replacePP(MethodName => concatId(BufferOf, BufferType, _GetExpr_, $T1, $T2, $T3)) {
-                                    if(typeof(T) == typeof(NativeType)) { return new HSExpr(CppBuffer.MethodName(_cppobj, x._cppobj, y._cppobj, z._cppobj)); }
+                                    if(typeof(T) == typeof(NativeType)) { return new HSExpr(CppBuffer.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z))); }
                                 }
                             }
                             throw new NotImplementedException("Buffer type {typeof(T)} unsupported");
@@ -317,7 +317,7 @@ namespace HalideSharp
             unroll((BufferType, NativeType) in BufferAndNativeTypes)
             {
                 replacePP(MethodName => concatId(BufferOf, BufferType, _, SetMin, _IntInt)) {
-                    if(typeof(T) == typeof(NativeType)) { CppBuffer.MethodName(_cppobj, x, y); return; }
+                    if(typeof(T) == typeof(NativeType)) { CppBuffer.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y)); return; }
                 }
             }
             throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
@@ -331,7 +331,7 @@ namespace HalideSharp
                 {
                     unroll ((BufferType, NativeType) in BufferAndNativeTypes) {
                         replacePP(MethodName => concatId(BufferOf, BufferType, _, FieldName)) {
-                            if(typeof(T) == typeof(NativeType)) { return CppBuffer.MethodName(_cppobj); }
+                            if(typeof(T) == typeof(NativeType)) { return CppBuffer.MethodName(HSUtil.CArg(this)); }
                         }
                     }
                     throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");

@@ -22,15 +22,15 @@ namespace HalideSharp
             IntPtr newExpr;
             if (typeof(T) == typeof(float))
             {
-                newExpr = CastToFloat(expr._cppobj);
+                newExpr = CastToFloat(HSUtil.CArg(expr));
             }
             else if (typeof(T) == typeof(byte))
             {
-                newExpr = CastToByte(expr._cppobj);
+                newExpr = CastToByte(HSUtil.CArg(expr));
             }
             else if (typeof(T) == typeof(ushort))
             {
-                newExpr = CastToUshort(expr._cppobj);
+                newExpr = CastToUshort(HSUtil.CArg(expr));
             }
             else
             {
@@ -46,7 +46,7 @@ namespace HalideSharp
         public static HSExpr Min(HSExpr expr, float f)
         {
             // Min uses move semantics.
-            var newExpr = MinExprFloat(expr._cppobj, f);
+            var newExpr = MinExprFloat(HSUtil.CArg(expr), HSUtil.CArg(f));
             return new HSExpr(newExpr);
         }
 
@@ -79,12 +79,12 @@ namespace HalideSharp
                     else if (a is HSVar @var)
                     {
                         typeList[i] = SharedEnums.HSObjectType.HS_Var;
-                        objList[i] = @var._cppobj;
+                        objList[i] = HSUtil.CArg(@var);
                     }
                     else if (a is HSExpr expr)
                     {
                         typeList[i] = SharedEnums.HSObjectType.HS_Expr;
-                        objList[i] = expr._cppobj;
+                        objList[i] = HSUtil.CArg(expr);
                     }
                     else
                     {
@@ -98,7 +98,7 @@ namespace HalideSharp
                 }
                 else
                 {
-                    return new HSExpr(PrintObjectsWhen(when._cppobj, args.Length, typeList, objList));
+                    return new HSExpr(PrintObjectsWhen(HSUtil.CArg(when), args.Length, typeList, objList));
                 }
 
             }
@@ -121,7 +121,7 @@ namespace HalideSharp
 
         public static HSExpr Clamp(HSExpr e, int min, int max)
         {
-            return new HSExpr(ClampExprIntInt(e._cppobj, min, max));
+            return new HSExpr(ClampExprIntInt(HSUtil.CArg(e), HSUtil.CArg(min), HSUtil.CArg(max)));
         }
 
         [DllImport(Constants.LibName, EntryPoint = "clamp_var_int_int")]
@@ -129,7 +129,7 @@ namespace HalideSharp
         
         public static HSExpr Clamp(HSVar v, int min, int max)
         {
-            return new HSExpr(ClampVarIntInt(v._cppobj, min, max));
+            return new HSExpr(ClampVarIntInt(HSUtil.CArg(v), HSUtil.CArg(min), HSUtil.CArg(max)));
         }
 
     }

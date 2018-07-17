@@ -38,7 +38,7 @@ namespace HalideSharp
         
         public static HSExpr operator*(HSExpr expr, float f)
         {
-            return new HSExpr(ExprMultFloat(expr._cppobj, f));
+            return new HSExpr(ExprMultFloat(HSUtil.CArg(expr), HSUtil.CArg(f)));
         }
         #endregion
 
@@ -48,7 +48,7 @@ namespace HalideSharp
 
         public static HSExpr operator +(HSExpr exp, int i)
         {
-            return new HSExpr(ExprPlusInt(exp._cppobj, i));
+            return new HSExpr(ExprPlusInt(HSUtil.CArg(exp), HSUtil.CArg(i)));
         }
         
         [DllImport(Constants.LibName, EntryPoint = "expr_div_int")]
@@ -56,7 +56,7 @@ namespace HalideSharp
 
         public static HSExpr operator /(HSExpr exp, int i)
         {
-            return new HSExpr(ExprDivInt(exp._cppobj, i));
+            return new HSExpr(ExprDivInt(HSUtil.CArg(exp), HSUtil.CArg(i)));
         }
         
         [DllImport(Constants.LibName, EntryPoint = "expr_lt_int")]
@@ -64,7 +64,7 @@ namespace HalideSharp
         
         public static HSExpr operator <(HSExpr exp, int i)
         {
-            return new HSExpr(ExprLtInt(exp._cppobj, i));
+            return new HSExpr(ExprLtInt(HSUtil.CArg(exp), HSUtil.CArg(i)));
         }
         
         [DllImport(Constants.LibName, EntryPoint = "expr_gt_int")]
@@ -72,7 +72,7 @@ namespace HalideSharp
         
         public static HSExpr operator >(HSExpr exp, int i)
         {
-            return new HSExpr(ExprGtInt(exp._cppobj, i));
+            return new HSExpr(ExprGtInt(HSUtil.CArg(exp), HSUtil.CArg(i)));
         }
         #endregion
         
@@ -82,7 +82,7 @@ namespace HalideSharp
 
         public static HSExpr operator +(HSExpr exp1, HSExpr exp2)
         {
-            return new HSExpr(ExprPlusExpr(exp1._cppobj, exp2._cppobj));
+            return new HSExpr(ExprPlusExpr(HSUtil.CArg(exp1), HSUtil.CArg(exp2)));
         }
         
         [DllImport(Constants.LibName, EntryPoint = "expr_minus_expr")]
@@ -90,7 +90,7 @@ namespace HalideSharp
 
         public static HSExpr operator -(HSExpr exp1, HSExpr exp2)
         {
-            return new HSExpr(ExprMinusExpr(exp1._cppobj, exp2._cppobj));
+            return new HSExpr(ExprMinusExpr(HSUtil.CArg(exp1), HSUtil.CArg(exp2)));
         }
         
         [DllImport(Constants.LibName, EntryPoint = "expr_and_expr")]
@@ -98,7 +98,7 @@ namespace HalideSharp
         
         public static HSExpr operator& (HSExpr e1, HSExpr e2)
         {
-            return new HSExpr(ExprAndExpr(e1._cppobj, e2._cppobj));
+            return new HSExpr(ExprAndExpr(HSUtil.CArg(e1), HSUtil.CArg(e2)));
         }
         #endregion
 
@@ -108,7 +108,7 @@ namespace HalideSharp
 
         public static HSExpr operator +(HSExpr exp, HSVar v)
         {
-            return new HSExpr(ExprPlusVar(exp._cppobj, v._cppobj));
+            return new HSExpr(ExprPlusVar(HSUtil.CArg(exp), HSUtil.CArg(v)));
         }
         #endregion
         
@@ -118,7 +118,7 @@ namespace HalideSharp
 
         public static HSExpr operator *(int i, HSExpr exp)
         {
-            return new HSExpr(IntMultExpr(i, exp._cppobj));
+            return new HSExpr(IntMultExpr(HSUtil.CArg(i), HSUtil.CArg(exp)));
         }
         #endregion
         
