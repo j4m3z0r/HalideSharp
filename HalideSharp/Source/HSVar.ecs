@@ -45,6 +45,18 @@ namespace HalideSharp
         }
         ExecAllOperators(VarOperator);
         
+        // <var> <op> <expr>
+        define VarExprOperator($OperatorName, $OperatorMethodName) {
+            replacePP(CFunction => concatId(Operator_Var_, $OperatorName, _Expr)) {
+
+                [DllImport(Constants.LibName)] private static extern IntPtr CFunction(IntPtr v1, IntPtr v2);
+                public static HSExpr $OperatorMethodName(HSVar v1, HSExpr v2) {
+                    return new HSExpr(CFunction(HSUtil.CArg(v1), HSUtil.CArg(v2)));
+                }
+            }
+        }
+        ExecAllOperators(VarExprOperator);
+        
         // <var> <op> <float> AND <float> <op> <var>
         define FloatOperator($OperatorName, $OperatorMethodName) {
             replacePP(CFunction => concatId(Operator_Var_, $OperatorName, _Float)) {
