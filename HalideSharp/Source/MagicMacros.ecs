@@ -2,7 +2,14 @@
 replace(BufferTypes => (Int, Float, Byte));
 replace(BufferAndNativeTypes => ((Int, int), (Float, float), (Byte, byte)));
 
-// Execute the given macro with all permutations of types for 3 arguments.
+// Execute the given macro with all permutations of types for 1 argument.
+define ExecMacro1D($macro2d) {
+    unroll (T1 in (Var, Expr)) {
+        $macro2d(T1);
+    }
+}
+
+// Execute the given macro with all permutations of types for 2 arguments.
 define ExecMacro2D($macro2d) {
     unroll (T1 in (Var, Expr)) {
         unroll(T2 in (Var, Expr)) {
