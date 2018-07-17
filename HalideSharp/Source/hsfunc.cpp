@@ -8,8 +8,8 @@
 
 using namespace Halide;
 
-extern "C" Func *new_func(const char *name) { return new Func(name); }
-extern "C" void delete_func(Func *f) { delete f; }
+extern "C" Func *Func_New_String(const char *name) { return new Func(name); }
+extern "C" void Func_Delete(Func *f) { delete f; }
 
 // 1D indexers
 #define FUNC_INDEXER_1D(T1) \

@@ -9,21 +9,21 @@ namespace HalideSharp
 {
     public class HSFunc : HSObject
     {
-        [DllImport(Constants.LibName, EntryPoint = "new_func")]
-        private static extern IntPtr NewFunc([MarshalAs(Constants.StringType)] string name);
+        [DllImport(Constants.LibName)]
+        private static extern IntPtr Func_New_String([MarshalAs(Constants.StringType)] string name);
         
         public HSFunc(string name)
         {
-            _cppobj = NewFunc(name);
+            _cppobj = Func_New_String(name);
         }
         
-        [DllImport(Constants.LibName, EntryPoint = "delete_func")]
-        private static extern void DeleteFunc(IntPtr obj);
+        [DllImport(Constants.LibName)]
+        private static extern void Func_Delete(IntPtr obj);
         
         ~HSFunc() {
             if (_cppobj != IntPtr.Zero)
             {
-                DeleteFunc(_cppobj);
+                Func_Delete(_cppobj);
             }
         }
 
