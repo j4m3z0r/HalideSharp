@@ -15,3 +15,4 @@ x64/
 HalideSharp/Properties/AssemblyInfo.cs
 HalideSharp/version.txt
 packages
+*.nupkg
