@@ -184,7 +184,7 @@ namespace Lesson12
 
             // Uncomment the next line and comment out the lines above to
             // try CUDA instead.
-            // target.set_feature(Target::CUDA);
+            //target.SetFeature(SharedEnums.HSFeature.CUDA);
 
             // If you want to see all of the OpenCL, Metal, or CUDA API
             // calls done by the pipeline, you can also enable the Debug
@@ -230,7 +230,7 @@ namespace Lesson12
                 }
             }
 
-            Console.WriteLine($"{best_time:0.0000} milliseconds");
+            Console.WriteLine($"{best_time} milliseconds");
         }
 
         public void TestCorrectness(HSBuffer<byte> reference_output)
