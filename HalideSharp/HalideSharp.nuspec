@@ -13,7 +13,8 @@
     <tags>halide image processing nativepackage</tags>
   </metadata>
   <files>
+    <file src="build/HalideSharp.targets" target="build/HalideSharp.targets" />
     <file src="bin/Release/*.dll" target="lib/net471" />
-    <file src="bin/Release/*.so" target="runtimes/linux-x64" />
+    <file src="bin/Release/libhalide-wrapper.so" target="runtimes/linux-x64/native/libhalide-wrapper.so" />
   </files>
 </package>
