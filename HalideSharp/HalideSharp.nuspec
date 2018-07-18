@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>HalideSharp</id>
+    <version>$version$</version>
+    <authors>James Gregory</authors>
+    <owners>jgregory</owners>
+    <licenseUrl>https://github.com/j4m3z0r/HalideSharp/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/j4m3z0r/HalideSharp</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>C# bindings for Halide (http://halide-lang.org/). For Linux-x64 only at this point.</description>
+    <copyright>Copyright 2018 James Gregory</copyright>
+    <tags>halide image processing nativepackage</tags>
+  </metadata>
+  <files>
+    <file src="bin/Release/*.dll" target="lib/net471" />
+    <file src="bin/Release/*.so" target="runtimes/linux-x64" />
+  </files>
+</package>
