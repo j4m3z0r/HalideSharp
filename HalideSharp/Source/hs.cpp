@@ -8,6 +8,7 @@
 
 using namespace Halide;
 
+// TODO: update these functions to the new naming scheme.
 extern "C" Expr *cast_to_float(Expr *expr) {
     auto casted_expr = cast<float>(*expr);
     return new Expr(casted_expr);
@@ -56,3 +57,5 @@ extern "C" Expr* print_objects_when(Expr* condition, int numObjects, enum HSObje
 
 extern "C" Expr* clamp_expr_int_int(Expr* e, int min, int max) { return new Expr(clamp(*e, min, max)); }
 extern "C" Expr* clamp_var_int_int(Var *v, int min, int max) { return new Expr(clamp(*v, min, max)); }
+
+extern "C" Target* Global_GetHostTarget() { return new Target(get_host_target()); }

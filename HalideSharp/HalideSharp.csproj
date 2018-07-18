@@ -59,6 +59,7 @@
     <Compile Include="Source\HSMath.cs" />
     <None Include="Source\HSVar.ecs" />
     <Compile Include="Source\HSObject.cs" />
+    <Compile Include="Source\HSTarget.cs" />
     <Compile Include="Source\HSUtil.cs" />
     <Compile Include="Source\HSVar.out.cs">
       <DependentUpon>Source\HSVar.ecs</DependentUpon>
@@ -74,6 +75,7 @@
     <Content Include="Source\hsfunc.cpp" />
     <Content Include="Source\hsmath.cpp" />
     <Content Include="Source\hsoperators.cpp" />
+    <Content Include="Source\hstarget.cpp" />
     <Content Include="Source\hsvar.cpp" />
     <Content Include="Source\MagicMacros.ecs" />
     <Content Include="Source\magicmacros.h" />

@@ -131,6 +131,13 @@ namespace HalideSharp
         [DllImport(Constants.LibName)] public static extern IntPtr BufferOfByte_LoadImage_String([MarshalAs(Constants.StringType)] string filename);
         
         [DllImport(Constants.LibName)] public static extern IntPtr BufferOfByte_SaveImage_String(IntPtr buffer, [MarshalAs(Constants.StringType)] string filename);
+
+        define CopyToHost($BufferType) {
+            replace(MethodName => concatId(BufferOf, $BufferType, _CopyToHost)) {
+                [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr self);
+            }
+        }
+        ExecMacroAllTypes(CopyToHost);
     }
     
     public class HSBuffer<T> : HSObject
@@ -238,8 +245,6 @@ namespace HalideSharp
             {
                 resultHandle.Free();
             }
-            
-            return result[0];
         }
 
         public T GetVal(int x, int y, int z)
@@ -339,5 +344,16 @@ namespace HalideSharp
             }
         }
         //endregion
+
+        public void CopyToHost()
+        {
+            unroll((BufferType, NativeType) in BufferAndNativeTypes)
+            {
+                replacePP(MethodName => concatId(BufferOf, BufferType, _CopyToHost)) {
+                    if(typeof(T) == typeof(NativeType)) { CppBuffer.MethodName(HSUtil.CArg(this)); return; }
+                }
+            }
+            throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
+        }
     }
 }

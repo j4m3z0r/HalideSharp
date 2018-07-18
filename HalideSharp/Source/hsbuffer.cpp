@@ -40,7 +40,7 @@ GEN(INT_ACCESSOR, Channels, channels)
 GEN(BUFFER_GETVAL_2D, Int)
 
 #define BUFFER_GETVAL_3D(CSTYPE, CPPTYPE, ARGTYPE) \
-    extern "C" void buffer_ ## CSTYPE ## _getval__ ## ARGTYPE ## ARGTYPE ## ARGTYPE(Buffer< CPPTYPE > *b, HST::ARGTYPE x, HST::ARGTYPE y, HST::ARGTYPE z, CPPTYPE *result) { *result = (*b)(x, y, z); }
+    extern "C" void BufferOf ## CSTYPE ## _GetVal_ ## ARGTYPE ## ARGTYPE ## ARGTYPE(Buffer< CPPTYPE > *b, HST::ARGTYPE x, HST::ARGTYPE y, HST::ARGTYPE z, CPPTYPE *result) { *result = (*b)(x, y, z); }
 GEN(BUFFER_GETVAL_3D, Int)
 
 // 2D indexers
@@ -68,3 +68,8 @@ extern "C" Buffer<uint8_t>* BufferOfByte_LoadImage_String(const char *filename) 
 extern "C" void BufferOfByte_SaveImage_String(Buffer<uint8_t> *buf, const char *filename) {
     Tools::save_image(*buf, std::string(filename));
 }
+
+// Copy to host
+#define BUFFER_COPY_TO_HOST(CSTYPE, CPPTYPE) \
+    extern "C" void BufferOf ## CSTYPE ## _CopyToHost(Buffer<CPPTYPE> *self) { self->copy_to_host(); }
+GEN(BUFFER_COPY_TO_HOST)

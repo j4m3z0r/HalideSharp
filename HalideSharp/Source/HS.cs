@@ -132,5 +132,13 @@ namespace HalideSharp
             return new HSExpr(ClampVarIntInt(HSUtil.CArg(v), HSUtil.CArg(min), HSUtil.CArg(max)));
         }
 
+        [DllImport(Constants.LibName)]
+        private static extern IntPtr Global_GetHostTarget();
+
+        public static HSTarget GetHostTarget()
+        {
+            return new HSTarget(Global_GetHostTarget());
+        }
+
     }
 }

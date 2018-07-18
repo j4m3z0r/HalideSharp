@@ -36,5 +36,10 @@ namespace HalideSharp
         {
             return f;
         }
+
+        internal static SharedEnums.HSFeature CArg(SharedEnums.HSFeature f)
+        {
+            return f;
+        }
     }
 }

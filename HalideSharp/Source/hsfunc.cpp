@@ -76,4 +76,48 @@ extern "C" void Func_ComputeAt_FuncVar(Func *self, Func *func, Var *v) { self->c
 extern "C" void Func_StoreRoot(Func *self) { self->store_root(); }
 extern "C" void Func_StoreAt_FuncVar(Func *self, Func *func, Var *v) { self->store_at(*func, *v); }
 extern "C" void Func_CompileJit(Func *self) { self->compile_jit(); }
+extern "C" void Func_CompileJit_Target(Func *self, Target *t) { self->compile_jit(*t); }
 extern "C" void Func_Bound(Func *self, Var *v, int min, int max) { self->bound(*v, min, max); }
+
+// gpu_tile variants
+extern "C" void Func_GpuTile_VarVarVarInt(Func* self, Var* x, Var* bx, Var* tx, int x_size) {
+    self->gpu_tile(*x, *bx, *tx, x_size);
+}
+extern "C" void Func_GpuTile_VarVarInt(Func* self, Var* x, Var* tx, int x_size) {
+    self->gpu_tile(*x, *tx, x_size);
+}
+extern "C" void Func_GpuTile_VarVarVarVarVarVarIntInt(Func* self, Var* x, Var* y, Var* bx, Var* by, Var* tx, Var* ty, int x_size, int y_size) {
+    self->gpu_tile(*x, *y, *bx, *by, *tx, *ty, x_size, y_size);
+}
+extern "C" void Func_GpuTile_VarVarVarVarIntInt(Func* self, Var* x, Var* y, Var* tx, Var* ty, int x_size, int y_size) {
+    self->gpu_tile(*x, *y, *tx, *ty, x_size, y_size);
+}
+extern "C" void Func_GpuTile_VarVarVarVarVarVarVarVarVarIntIntInt(Func* self, Var* x, Var* y, Var* z, Var* bx, Var* by, Var* bz, Var* tx, Var* ty, Var* tz, int x_size, int y_size, int z_size) {
+    self->gpu_tile(*x, *y, *z, *bx, *by, *bz, *tx, *ty, *tz, x_size, y_size, z_size);
+}
+extern "C" void Func_GpuTile_VarVarVarVarVarVarIntIntInt(Func* self, Var* x, Var* y, Var* z, Var* tx, Var* ty, Var* tz, int x_size, int y_size, int z_size) {
+    self->gpu_tile(*x, *y, *z, *tx, *ty, *tz, x_size, y_size, z_size);
+}
+// The docs include these methods, but I can't find it in the header file.
+/*
+extern "C" void Func_GpuTile_VarInt(Func* self, Var* x, int x_size) {
+    self->gpu_tile(*x, x_size);
+}
+extern "C" void Func_GpuTile_VarVarIntInt(Func* self, Var* x, Var* y, int x_size, int y_size) {
+    self->gpu_tile(*x, *y, x_size, y_size);
+}
+extern "C" void Func_GpuTile_VarVarVarIntIntInt(Func* self, Var* x, Var* y, Var* z, int x_size, int y_size, int z_size) {
+    self->gpu_tile(*x, *y, *z, x_size, y_size, z_size);
+}
+*/
+
+// gpu_blocks
+extern "C" void Func_GpuBlocks_Var(Func* self, Var *x) { self->gpu_blocks(*x); }
+extern "C" void Func_GpuBlocks_VarVar(Func* self, Var *x, Var *y) { self->gpu_blocks(*x, *y); }
+extern "C" void Func_GpuBlocks_VarVarVar(Func* self, Var *x, Var *y, Var *z) { self->gpu_blocks(*x, *y, *z); }
+
+// gpu_threads
+extern "C" void Func_GpuThreads_Var(Func* self, Var *x) { self->gpu_threads(*x); }
+extern "C" void Func_GpuThreads_VarVar(Func* self, Var *x, Var *y) { self->gpu_threads(*x, *y); }
+extern "C" void Func_GpuThreads_VarVarVar(Func* self, Var *x, Var *y, Var *z) { self->gpu_threads(*x, *y, *z); }
+
