@@ -22,15 +22,15 @@ namespace HalideSharp
         }
 
         [DllImport(Constants.LibName)]
-        private static extern SharedEnums.HSOperatingSystem Target_GetOperatingSystem(IntPtr target);
+        private static extern HSOperatingSystem Target_GetOperatingSystem(IntPtr target);
 
-        public SharedEnums.HSOperatingSystem OS => Target_GetOperatingSystem(HSUtil.CArg(this));
+        public HSOperatingSystem OS => Target_GetOperatingSystem(HSUtil.CArg(this));
 
 
         [DllImport(Constants.LibName)]
-        private static extern void Target_SetFeature_Feature(IntPtr self, SharedEnums.HSFeature feature);
+        private static extern void Target_SetFeature_Feature(IntPtr self, HSFeature feature);
 
-        public void SetFeature(SharedEnums.HSFeature feature)
+        public void SetFeature(HSFeature feature)
         {
             Target_SetFeature_Feature(HSUtil.CArg(this), HSUtil.CArg(feature));
         }

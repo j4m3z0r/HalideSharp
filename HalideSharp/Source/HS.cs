@@ -51,13 +51,13 @@ namespace HalideSharp
         }
 
         [DllImport(Constants.LibName, EntryPoint = "print_objects_when")]
-        private static extern IntPtr PrintObjectsWhen(IntPtr condition, int numObjects, SharedEnums.HSObjectType[] objTypes, IntPtr[] objects);
+        private static extern IntPtr PrintObjectsWhen(IntPtr condition, int numObjects, HSObjectType[] objTypes, IntPtr[] objects);
         
         public static HSExpr PrintWhen(HSExpr when, params object[] args)
         {
             // Construct a pair of parallel arrays representing the argument list: one for denoting the types of the
             // arguments, the other for pointers to the arguments themselves.
-            var typeList = new SharedEnums.HSObjectType[args.Length];
+            var typeList = new HSObjectType[args.Length];
             var objList = new IntPtr[args.Length];
             var garbage = new List<GCHandle>();
 
@@ -73,17 +73,17 @@ namespace HalideSharp
                         var handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
                         garbage.Add(handle);
 
-                        typeList[i] = SharedEnums.HSObjectType.HS_String;
+                        typeList[i] = HSObjectType.HS_String;
                         objList[i] = handle.AddrOfPinnedObject();
                     }
                     else if (a is HSVar @var)
                     {
-                        typeList[i] = SharedEnums.HSObjectType.HS_Var;
+                        typeList[i] = HSObjectType.HS_Var;
                         objList[i] = HSUtil.CArg(@var);
                     }
                     else if (a is HSExpr expr)
                     {
-                        typeList[i] = SharedEnums.HSObjectType.HS_Expr;
+                        typeList[i] = HSObjectType.HS_Expr;
                         objList[i] = HSUtil.CArg(expr);
                     }
                     else

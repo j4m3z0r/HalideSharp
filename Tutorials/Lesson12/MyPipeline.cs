@@ -173,18 +173,18 @@ namespace Lesson12
             // we're on. OS X doesn't update its OpenCL drivers, so they
             // tend to be broken. CUDA would also be a fine choice on
             // machines with NVidia GPUs.
-            if (target.OS == SharedEnums.HSOperatingSystem.OSX)
+            if (target.OS == HSOperatingSystem.OSX)
             {
-                target.SetFeature(SharedEnums.HSFeature.Metal);
+                target.SetFeature(HSFeature.Metal);
             }
             else
             {
-                target.SetFeature(SharedEnums.HSFeature.OpenCL);
+                target.SetFeature(HSFeature.OpenCL);
             }
 
             // Uncomment the next line and comment out the lines above to
             // try CUDA instead.
-            //target.SetFeature(SharedEnums.HSFeature.CUDA);
+            //target.SetFeature(HSFeature.CUDA);
 
             // If you want to see all of the OpenCL, Metal, or CUDA API
             // calls done by the pipeline, you can also enable the Debug

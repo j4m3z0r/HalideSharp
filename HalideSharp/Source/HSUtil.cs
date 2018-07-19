@@ -32,12 +32,12 @@ namespace HalideSharp
             return h.AddrOfPinnedObject();
         }
 
-        internal static SharedEnums.HSOutputFormat CArg(SharedEnums.HSOutputFormat f)
+        internal static HSOutputFormat CArg(HSOutputFormat f)
         {
             return f;
         }
 
-        internal static SharedEnums.HSFeature CArg(SharedEnums.HSFeature f)
+        internal static HSFeature CArg(HSFeature f)
         {
             return f;
         }

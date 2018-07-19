@@ -39,7 +39,7 @@ namespace Lesson02
             // supports syntax highlighting and code-folding, so it can be
             // nicer to read for large pipelines. Open gradient.html with your
             // browser after running this tutorial.
-            gradient.CompileToLoweredStmt("gradient.html", SharedEnums.HSOutputFormat.HS_HTML);
+            gradient.CompileToLoweredStmt("gradient.html", HSOutputFormat.HS_HTML);
 
             // You can usually figure out what code Halide is generating using
             // this pseudocode. In the next lesson we'll see how to snoop on
