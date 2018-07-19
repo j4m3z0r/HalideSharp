@@ -42,72 +42,70 @@ namespace HalideSharp
     internal class CppBuffer
     {
 
-        //region 2D constructors
-        unroll (BufferType in BufferTypes) {
-            replacePP(MethodName => concatId(BufferOf, BufferType, _New_IntInt)) {
-                [DllImport(Constants.LibName)] public static extern IntPtr MethodName(int width, int height);
+        region("2D constructors") {
+            unroll (BufferType in BufferTypes) {
+                replacePP(MethodName => concatId(BufferOf, BufferType, _New_IntInt)) {
+                    [DllImport(Constants.LibName)] public static extern IntPtr MethodName(int width, int height);
+                }
             }
         }
-        //endregion
 
 
-        //region 3D constructors
-        unroll (BufferType in BufferTypes) {
-            replacePP(MethodName => concatId(BufferOf, BufferType, _New_IntIntInt)) {
-                [DllImport(Constants.LibName)] public static extern IntPtr MethodName(int width, int height, int channels);
+        region("3D constructors") {
+            unroll (BufferType in BufferTypes) {
+                replacePP(MethodName => concatId(BufferOf, BufferType, _New_IntIntInt)) {
+                    [DllImport(Constants.LibName)] public static extern IntPtr MethodName(int width, int height, int channels);
+                }
             }
         }
-        //endregion
 
-        //region destructors
-        unroll(BufferType in BufferTypes) {
-            replacePP(MethodName => concatId(BufferOf, BufferType, _Delete)) {
-                [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr obj);
+        region("destructors") {
+            unroll(BufferType in BufferTypes) {
+                replacePP(MethodName => concatId(BufferOf, BufferType, _Delete)) {
+                    [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr obj);
+                }
             }
         }
-        //endregion
 
-        //region 2D indexers
-        //region int indexers
-        unroll(BufferType in BufferTypes) {
-            replacePP(MethodName => concatId(BufferOf, BufferType, _GetVal_IntInt)) {
-                [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr obj, int x, int y, IntPtr result);
-            }
-        }
-        //endregion
-
-        // 2D indexer entry points
-        define Indexer2D($BufferType, $T1, $T2) {
-            replace(MethodName => concatId(BufferOf, $BufferType, _GetExpr_, $T1, $T2)) {
-                [DllImport(Constants.LibName)] public static extern IntPtr MethodName(IntPtr obj, IntPtr x, IntPtr y);
+        region("2D indexers") {
+            region("int indexers") {
+                unroll(BufferType in BufferTypes) {
+                    replacePP(MethodName => concatId(BufferOf, BufferType, _GetVal_IntInt)) {
+                        [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr obj, int x, int y, IntPtr result);
+                    }
+                }
             }
 
-        }
-        ExecMacroAllTypes2D(Indexer2D);
+            // 2D indexer entry points
+            define Indexer2D($BufferType, $T1, $T2) {
+                replace(MethodName => concatId(BufferOf, $BufferType, _GetExpr_, $T1, $T2)) {
+                    [DllImport(Constants.LibName)] public static extern IntPtr MethodName(IntPtr obj, IntPtr x, IntPtr y);
+                }
 
-        //endregion
+            }
+            ExecMacroAllTypes2D(Indexer2D);
+        }
         
-        //region 3D indexers
-
-        //region int indexers
-        unroll(BufferType in BufferTypes) {
-            replacePP(MethodName => concatId(BufferOf, BufferType, _GetVal_IntIntInt)) {
-                [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr obj, int x, int y, int z, IntPtr result);
-            }
-        }
-        //endregion
-
-        // 3D indexer entry points
-        define Indexer3D($BufferType, $T1, $T2, $T3)
-        {
-            replace(MethodName => concatId(BufferOf, $BufferType, _GetExpr_, $T1, $T2, $T3)) {
-                [DllImport(Constants.LibName)] public static extern IntPtr MethodName(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+        region("3D indexers") {
+            region("int indexers") {
+                unroll(BufferType in BufferTypes) {
+                    replacePP(MethodName => concatId(BufferOf, BufferType, _GetVal_IntIntInt)) {
+                        [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr obj, int x, int y, int z, IntPtr result);
+                    }
+                }
             }
 
-        }
+            // 3D indexer entry points
+            define Indexer3D($BufferType, $T1, $T2, $T3)
+            {
+                replace(MethodName => concatId(BufferOf, $BufferType, _GetExpr_, $T1, $T2, $T3)) {
+                    [DllImport(Constants.LibName)] public static extern IntPtr MethodName(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+                }
 
-        ExecMacroAllTypes3D(Indexer3D);
-        //endregion
+            }
+
+            ExecMacroAllTypes3D(Indexer3D);
+        }
         
         define SetMin($BufferType) {
             replace(MethodName => concatId(BufferOf, $BufferType, _SetMin, _IntInt)) {
@@ -116,16 +114,16 @@ namespace HalideSharp
         }
         ExecMacroAllTypes(SetMin);
 
-        //region Dimension size accessors
-        define Accessors($BufferType) {
-            unroll((DIMENSION) in (Width, Height, Channels)) {
-                replace(MethodName => concatId(BufferOf, $BufferType, _, DIMENSION)) {
-                    [DllImport(Constants.LibName)] public static extern int MethodName(IntPtr obj);
+        region("Dimension size accessors") {
+            define Accessors($BufferType) {
+                unroll((DIMENSION) in (Width, Height, Channels)) {
+                    replace(MethodName => concatId(BufferOf, $BufferType, _, DIMENSION)) {
+                        [DllImport(Constants.LibName)] public static extern int MethodName(IntPtr obj);
+                    }
                 }
             }
+            ExecMacroAllTypes(Accessors);
         }
-        ExecMacroAllTypes(Accessors);
-        //endregion
 
         
         [DllImport(Constants.LibName)] public static extern IntPtr BufferOfByte_LoadImage_String([MarshalAs(Constants.StringType)] string filename);
@@ -272,50 +270,50 @@ namespace HalideSharp
         public T this[int x, int y] => GetVal(x, y);
         public T this[int x, int y, int z] => GetVal(x, y, z);
 
-        //region 2D indexers
-        define Indexer2D($T1, $T2) {
-            replacePP(arg1 => concatId(HS, $T1)) {
-                replacePP(arg2 => concatId(HS, $T2)) {
-                    public HSExpr GetExpr(arg1 x, arg2 y)
-                    {
-                        unroll((BufferType, NativeType) in BufferAndNativeTypes)
-                        {
-                            replacePP(MethodName => concatId(BufferOf, BufferType, _GetExpr_, $T1, $T2)) {
-                                if(typeof(T) == typeof(NativeType)) { return new HSExpr(CppBuffer.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y))); }
-                            }
-
-                        }
-                        throw new NotImplementedException("Buffer type {typeof(T)} unsupported");
-                    }
-                    public HSExpr this[arg1 x, arg2 y] => GetExpr(x, y);
-                }
-            }
-        }
-        ExecMacro2D(Indexer2D);
-        //endregion
-
-        //region 3D indexers
-        define Indexer3D($T1, $T2, $T3) {
-            replacePP(arg1 => concatId(HS, $T1)) {
-                replacePP(arg2 => concatId(HS, $T2)) {
-                    replacePP(arg3 => concatId(HS, $T3)) {
-                        public HSExpr GetExpr(arg1 x, arg2 y, arg3 z)
+        region("2D indexers") {
+            define Indexer2D($T1, $T2) {
+                replacePP(arg1 => concatId(HS, $T1)) {
+                    replacePP(arg2 => concatId(HS, $T2)) {
+                        public HSExpr GetExpr(arg1 x, arg2 y)
                         {
                             unroll((BufferType, NativeType) in BufferAndNativeTypes)
                             {
-                                replacePP(MethodName => concatId(BufferOf, BufferType, _GetExpr_, $T1, $T2, $T3)) {
-                                    if(typeof(T) == typeof(NativeType)) { return new HSExpr(CppBuffer.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z))); }
+                                replacePP(MethodName => concatId(BufferOf, BufferType, _GetExpr_, $T1, $T2)) {
+                                    if(typeof(T) == typeof(NativeType)) { return new HSExpr(CppBuffer.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y))); }
                                 }
+
                             }
                             throw new NotImplementedException("Buffer type {typeof(T)} unsupported");
                         }
-                        public HSExpr this[arg1 x, arg2 y, arg3 z] => GetExpr(x, y, z);
+                        public HSExpr this[arg1 x, arg2 y] => GetExpr(x, y);
                     }
                 }
             }
+            ExecMacro2D(Indexer2D);
         }
-        ExecMacro3D(Indexer3D);
-        //endregion
+
+        region("3D indexers") {
+            define Indexer3D($T1, $T2, $T3) {
+                replacePP(arg1 => concatId(HS, $T1)) {
+                    replacePP(arg2 => concatId(HS, $T2)) {
+                        replacePP(arg3 => concatId(HS, $T3)) {
+                            public HSExpr GetExpr(arg1 x, arg2 y, arg3 z)
+                            {
+                                unroll((BufferType, NativeType) in BufferAndNativeTypes)
+                                {
+                                    replacePP(MethodName => concatId(BufferOf, BufferType, _GetExpr_, $T1, $T2, $T3)) {
+                                        if(typeof(T) == typeof(NativeType)) { return new HSExpr(CppBuffer.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z))); }
+                                    }
+                                }
+                                throw new NotImplementedException("Buffer type {typeof(T)} unsupported");
+                            }
+                            public HSExpr this[arg1 x, arg2 y, arg3 z] => GetExpr(x, y, z);
+                        }
+                    }
+                }
+            }
+            ExecMacro3D(Indexer3D);
+        }
         
         public void SetMin(int x, int y)
         {
@@ -328,22 +326,22 @@ namespace HalideSharp
             throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
         }
 
-        //region simple int accessors
-        unroll (FieldName in (Width, Height, Channels)) {
-            public int FieldName
-            {
-                get
+        region("simple int accessors") {
+            unroll (FieldName in (Width, Height, Channels)) {
+                public int FieldName
                 {
-                    unroll ((BufferType, NativeType) in BufferAndNativeTypes) {
-                        replacePP(MethodName => concatId(BufferOf, BufferType, _, FieldName)) {
-                            if(typeof(T) == typeof(NativeType)) { return CppBuffer.MethodName(HSUtil.CArg(this)); }
+                    get
+                    {
+                        unroll ((BufferType, NativeType) in BufferAndNativeTypes) {
+                            replacePP(MethodName => concatId(BufferOf, BufferType, _, FieldName)) {
+                                if(typeof(T) == typeof(NativeType)) { return CppBuffer.MethodName(HSUtil.CArg(this)); }
+                            }
                         }
+                        throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
                     }
-                    throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
                 }
             }
         }
-        //endregion
 
         public void CopyToHost()
         {

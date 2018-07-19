@@ -27,136 +27,130 @@ namespace HalideSharp
             }
         }
 
-        #region 1D indexers
-        define Indexer1D($T1) {
-            replacePP(GetterName => concatId(Func, _GetExpr_, $T1)) {
-                replacePP(SetterName => concatId(Func, _SetExpr_, $T1, Expr)) {
+        region("1D indexers") {
+            define Indexer1D($T1) {
+                replacePP(GetterName => concatId(Func, _GetExpr_, $T1)) {
+                    replacePP(SetterName => concatId(Func, _SetExpr_, $T1, Expr)) {
 
-                    [DllImport(Constants.LibName)] public static extern IntPtr GetterName(IntPtr obj, IntPtr x);
-                    [DllImport(Constants.LibName)] public static extern void SetterName(IntPtr func, IntPtr x, IntPtr e);
+                        [DllImport(Constants.LibName)] public static extern IntPtr GetterName(IntPtr obj, IntPtr x);
+                        [DllImport(Constants.LibName)] public static extern void SetterName(IntPtr func, IntPtr x, IntPtr e);
 
-                    replacePP(arg1 => concatId(HS, $T1)) {
-                        public HSExpr this[arg1 x]
-                        {
-                            get => new HSExpr(GetterName(HSUtil.CArg(this), HSUtil.CArg(x)));
-                            set => SetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(value));
-                        }
-                    }
-                }
-            }
-        }
-        ExecMacro1D(Indexer1D);
-        #endregion
-
-        #region 2D indexers
-        define Indexer2D($T1, $T2) {
-            replacePP(GetterName => concatId(Func, _GetExpr_, $T1, $T2)) {
-                replacePP(SetterName => concatId(Func, _SetExpr_, $T1, $T2, Expr)) {
-
-                    [DllImport(Constants.LibName)] public static extern IntPtr GetterName(IntPtr obj, IntPtr x, IntPtr y);
-                    [DllImport(Constants.LibName)] public static extern void SetterName(IntPtr func, IntPtr x, IntPtr y, IntPtr e);
-
-                    replacePP(arg1 => concatId(HS, $T1)) {
-                        replacePP(arg2 => concatId(HS, $T2)) {
-                            public HSExpr this[arg1 x, arg2 y]
+                        replacePP(arg1 => concatId(HS, $T1)) {
+                            public HSExpr this[arg1 x]
                             {
-                                get => new HSExpr(GetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y)));
-                                set => SetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(value));
+                                get => new HSExpr(GetterName(HSUtil.CArg(this), HSUtil.CArg(x)));
+                                set => SetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(value));
                             }
                         }
                     }
                 }
             }
+            ExecMacro1D(Indexer1D);
         }
-        ExecMacro2D(Indexer2D);
-        #endregion
 
-        #region 3D indexers
-        define Indexer3D($T1, $T2, $T3) {
-            replacePP(GetterName => concatId(Func, _GetExpr_, $T1, $T2, $T3)) {
-                replacePP(SetterName => concatId(Func, _SetExpr_, $T1, $T2, $T3, Expr)) {
-                    [DllImport(Constants.LibName)] public static extern IntPtr GetterName(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
-                    [DllImport(Constants.LibName)] public static extern void SetterName(IntPtr func, IntPtr x, IntPtr y, IntPtr z, IntPtr e);
+        region("2D indexers") {
+            define Indexer2D($T1, $T2) {
+                replacePP(GetterName => concatId(Func, _GetExpr_, $T1, $T2)) {
+                    replacePP(SetterName => concatId(Func, _SetExpr_, $T1, $T2, Expr)) {
 
-                    replacePP(arg1 => concatId(HS, $T1)) {
-                        replacePP(arg2 => concatId(HS, $T2)) {
-                            replacePP(arg3 => concatId(HS, $T3)) {
-                                public HSExpr this[arg1 x, arg2 y, arg3 z]
+                        [DllImport(Constants.LibName)] public static extern IntPtr GetterName(IntPtr obj, IntPtr x, IntPtr y);
+                        [DllImport(Constants.LibName)] public static extern void SetterName(IntPtr func, IntPtr x, IntPtr y, IntPtr e);
+
+                        replacePP(arg1 => concatId(HS, $T1)) {
+                            replacePP(arg2 => concatId(HS, $T2)) {
+                                public HSExpr this[arg1 x, arg2 y]
                                 {
-                                    get => new HSExpr(GetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z)));
-                                    set => SetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z), HSUtil.CArg(value));
+                                    get => new HSExpr(GetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y)));
+                                    set => SetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(value));
                                 }
                             }
                         }
                     }
                 }
             }
+            ExecMacro2D(Indexer2D);
         }
-        ExecMacro3D(Indexer3D);
-        #endregion
 
-        #region Realize to pre-allocated buffer
+        region("3D indexers") {
+            define Indexer3D($T1, $T2, $T3) {
+                replacePP(GetterName => concatId(Func, _GetExpr_, $T1, $T2, $T3)) {
+                    replacePP(SetterName => concatId(Func, _SetExpr_, $T1, $T2, $T3, Expr)) {
+                        [DllImport(Constants.LibName)] public static extern IntPtr GetterName(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+                        [DllImport(Constants.LibName)] public static extern void SetterName(IntPtr func, IntPtr x, IntPtr y, IntPtr z, IntPtr e);
 
-        unroll (BufferType in BufferTypes) {
-            replacePP(MethodName => concatId(Func_Realize_BufferOf, BufferType)) {
-                [DllImport(Constants.LibName)]
-                private static extern IntPtr MethodName(IntPtr func, IntPtr buff);
+                        replacePP(arg1 => concatId(HS, $T1)) {
+                            replacePP(arg2 => concatId(HS, $T2)) {
+                                replacePP(arg3 => concatId(HS, $T3)) {
+                                    public HSExpr this[arg1 x, arg2 y, arg3 z]
+                                    {
+                                        get => new HSExpr(GetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z)));
+                                        set => SetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z), HSUtil.CArg(value));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
+            ExecMacro3D(Indexer3D);
         }
 
-        public HSBuffer<T> Realize<T>(HSBuffer<T> buffer) where T : struct
-        {
-            unroll((BufferType, NativeType) in (BufferAndNativeTypes)) {
+        region("Realize to pre-allocated buffer") {
+            unroll (BufferType in BufferTypes) {
                 replacePP(MethodName => concatId(Func_Realize_BufferOf, BufferType)) {
-                    if(typeof(T) == typeof(NativeType)) { return new HSBuffer<T>(MethodName(HSUtil.CArg(this), HSUtil.CArg(buffer))); }
+                    [DllImport(Constants.LibName)]
+                    private static extern IntPtr MethodName(IntPtr func, IntPtr buff);
                 }
             }
-            throw new NotImplementedException($"Cannot realize to buffer of type {typeof(T)}");
-        }
 
-        #endregion
-
-        #region Realize to new buffer, 2D
-
-        unroll (BufferType in BufferTypes) {
-            replacePP(MethodName => concatId(Func_RealizeToBufferOf, BufferType, _IntInt)) {
-                [DllImport(Constants.LibName)]
-                private static extern IntPtr MethodName(IntPtr func, int width, int height);
+            public HSBuffer<T> Realize<T>(HSBuffer<T> buffer) where T : struct
+            {
+                unroll((BufferType, NativeType) in (BufferAndNativeTypes)) {
+                    replacePP(MethodName => concatId(Func_Realize_BufferOf, BufferType)) {
+                        if(typeof(T) == typeof(NativeType)) { return new HSBuffer<T>(MethodName(HSUtil.CArg(this), HSUtil.CArg(buffer))); }
+                    }
+                }
+                throw new NotImplementedException($"Cannot realize to buffer of type {typeof(T)}");
             }
         }
-        
-        public HSBuffer<T> Realize<T>(int width, int height) where T : struct
-        {
-            unroll((BufferType, NativeType) in (BufferAndNativeTypes)) {
+
+        region("Realize to new buffer, 2D") {
+            unroll (BufferType in BufferTypes) {
                 replacePP(MethodName => concatId(Func_RealizeToBufferOf, BufferType, _IntInt)) {
-                    if(typeof(T) == typeof(NativeType)) { return new HSBuffer<T>(MethodName(HSUtil.CArg(this), HSUtil.CArg(width), HSUtil.CArg(height))); }
+                    [DllImport(Constants.LibName)]
+                    private static extern IntPtr MethodName(IntPtr func, int width, int height);
                 }
             }
-            throw new NotImplementedException($"Cannot realize to buffer of type {typeof(T)}");
-        }
-
-        #endregion
-        
-        //#region Realize to new buffer, 3D
-
-        unroll (BufferType in BufferTypes) {
-            replacePP(MethodName => concatId(Func_RealizeToBufferOf, BufferType, _IntIntInt)) {
-                [DllImport(Constants.LibName)]
-                private static extern IntPtr MethodName(IntPtr func, int width, int height, int channels);
+            
+            public HSBuffer<T> Realize<T>(int width, int height) where T : struct
+            {
+                unroll((BufferType, NativeType) in (BufferAndNativeTypes)) {
+                    replacePP(MethodName => concatId(Func_RealizeToBufferOf, BufferType, _IntInt)) {
+                        if(typeof(T) == typeof(NativeType)) { return new HSBuffer<T>(MethodName(HSUtil.CArg(this), HSUtil.CArg(width), HSUtil.CArg(height))); }
+                    }
+                }
+                throw new NotImplementedException($"Cannot realize to buffer of type {typeof(T)}");
             }
         }
         
-        public HSBuffer<T> Realize<T>(int width, int height, int channels) where T : struct
-        {
-            unroll((BufferType, NativeType) in (BufferAndNativeTypes)) {
+        region("Realize to new buffer, 3D") {
+            unroll (BufferType in BufferTypes) {
                 replacePP(MethodName => concatId(Func_RealizeToBufferOf, BufferType, _IntIntInt)) {
-                    if(typeof(T) == typeof(NativeType)) { return new HSBuffer<T>(MethodName(HSUtil.CArg(this), HSUtil.CArg(width), HSUtil.CArg(height), HSUtil.CArg(channels))); }
+                    [DllImport(Constants.LibName)]
+                    private static extern IntPtr MethodName(IntPtr func, int width, int height, int channels);
                 }
             }
-            throw new NotImplementedException($"Cannot realize to buffer of type {typeof(T)}");
+            
+            public HSBuffer<T> Realize<T>(int width, int height, int channels) where T : struct
+            {
+                unroll((BufferType, NativeType) in (BufferAndNativeTypes)) {
+                    replacePP(MethodName => concatId(Func_RealizeToBufferOf, BufferType, _IntIntInt)) {
+                        if(typeof(T) == typeof(NativeType)) { return new HSBuffer<T>(MethodName(HSUtil.CArg(this), HSUtil.CArg(width), HSUtil.CArg(height), HSUtil.CArg(channels))); }
+                    }
+                }
+                throw new NotImplementedException($"Cannot realize to buffer of type {typeof(T)}");
+            }
         }
-
-        //#endregion
 
         [DllImport(Constants.LibName)]
         private static extern void Func_TraceStores(IntPtr func);

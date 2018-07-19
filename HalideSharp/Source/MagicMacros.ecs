@@ -29,3 +29,11 @@ define ExecMacro3D($macro3d) {
     }
 }
 
+define region($name, { $(..code); }) {
+    #rawText("\n");
+    #rawText("#region "); #rawText($name);
+    $(..code);
+    #rawText("#endregion // "); #rawText($name);
+    #rawText("\n");
+}
+
