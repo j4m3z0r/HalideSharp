@@ -68,6 +68,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="build\HalideSharp.targets" />
+    <Content Include="..\README.md">
+      <Link>README.md</Link>
+    </Content>
     <Content Include="Development.md" />
     <Content Include="Source\hs.cpp" />
     <Content Include="Source\hsbuffer.cpp" />
