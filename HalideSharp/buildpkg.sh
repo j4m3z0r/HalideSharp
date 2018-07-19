@@ -5,5 +5,5 @@
 
 msbuild HalideSharp.csproj /p:Configuration=Release /t:Clean
 msbuild HalideSharp.csproj /p:Configuration=Release
-nuget pack HalideSharp.csproj -Version `cat version.txt` -MsbuildPath /usr/lib/mono/msbuild/15.0/bin/
+nuget pack HalideSharp.nuspec -Version `cat version.txt` -MsbuildPath /usr/lib/mono/msbuild/15.0/bin/
 
