@@ -17,7 +17,7 @@ HALIDE_LIB := $(HALIDE_DIR)/lib/libHalide.a
 HALIDE_INC := $(HALIDE_DIR)/include
 HALIDE_TOOLS := $(HALIDE_DIR)/tools
 
-LEMP_VERSION := 2.6.2.3
+LEMP_VERSION := -trunk
 LEMP_DIR := $(abspath $(THIRDPARTY_DIR)/LeMP)
 LEMP_BIN := $(LEMP_DIR)/LeMP.exe
 
