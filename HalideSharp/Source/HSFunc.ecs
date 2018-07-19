@@ -176,9 +176,9 @@ namespace HalideSharp
 
         [DllImport(Constants.LibName)]
         private static extern void Func_CompileToLoweredStmt_StringOutputformat(IntPtr func,
-            [MarshalAs(Constants.StringType)] string filename, SharedEnums.HSOutputFormat format);
+            [MarshalAs(Constants.StringType)] string filename, HSOutputFormat format);
         
-        public void CompileToLoweredStmt(string filename, SharedEnums.HSOutputFormat format)
+        public void CompileToLoweredStmt(string filename, HSOutputFormat format)
         {
             Func_CompileToLoweredStmt_StringOutputformat(HSUtil.CArg(this), HSUtil.CArg(filename), HSUtil.CArg(format));
         }
