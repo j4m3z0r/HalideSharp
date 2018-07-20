@@ -17,22 +17,22 @@ namespace HalideSharp
             _cppobj = cppobj;
         }
 
-        [DllImport(Constants.LibName, EntryPoint = "new_expr_int")]
-        private static extern IntPtr NewExprInt(int i);
+        [DllImport(Constants.LibName)]
+        private static extern IntPtr Expr_New_Int(int i);
         
         public HSExpr(int i)
         {
-            _cppobj = NewExprInt(i);
+            _cppobj = Expr_New_Int(i);
         }
 
-        [DllImport(Constants.LibName, EntryPoint = "delete_expr")]
-        private static extern void DeleteExpr(IntPtr obj);
+        [DllImport(Constants.LibName)]
+        private static extern void Expr_Delete(IntPtr obj);
         
         ~HSExpr()
         {
             if (_cppobj != IntPtr.Zero)
             {
-                DeleteExpr(_cppobj);
+                Expr_Delete(_cppobj);
             }
         }
 
@@ -102,15 +102,15 @@ namespace HalideSharp
         }
         ExecAllOperators(IntOperator);
 
-        [DllImport(Constants.LibName, EntryPoint = "expr_to_string")]
-        private static extern IntPtr ExprToString(IntPtr exp);
+        [DllImport(Constants.LibName)]
+        private static extern IntPtr Expr_ToString(IntPtr exp);
 
         [DllImport(Constants.LibC, EntryPoint = "free")]
         private static extern void Free(IntPtr p);
         
         public override string ToString()
         {
-            var stringPtr = ExprToString(_cppobj);
+            var stringPtr = Expr_ToString(_cppobj);
             var result = Marshal.PtrToStringAnsi(stringPtr);
             Free(stringPtr);
 
