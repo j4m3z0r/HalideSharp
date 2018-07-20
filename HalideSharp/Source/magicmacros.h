@@ -21,19 +21,29 @@
     MACRO(Var, Var, Expr) \
     MACRO(Var, Var, Var)
 
+// Ensure the set of types here matches those listed in MagicMacros.ecs.
+
 // GEN will invoke the given macro once for each set of types we handle, passing the C# type
 // as the first argument, the corresponding C++ type as the second argument, and then any
 // further arguments that were specified. Currently it will generate variants for ints, floats,
 // and bytes.
 #define GEN(MACRO, ...) \
     MACRO(Int, int32_t, ## __VA_ARGS__) \
+    MACRO(UInt, uint32_t, ## __VA_ARGS__) \
     MACRO(Float, float, ## __VA_ARGS__) \
-    MACRO(Byte, uint8_t, ## __VA_ARGS__)
+    MACRO(Short, int16_t, ## __VA_ARGS__) \
+    MACRO(UShort, uint16_t, ## __VA_ARGS__) \
+    MACRO(SByte, int8_t, ## __VA_ARGS__) \
+    MACRO(Byte, uint8_t, ## __VA_ARGS__) \
 
 // Short for HalideSharpTypes. Keeping things concise since this will be used everywhere.
 namespace HST {
     typedef int32_t Int;
+    typedef uint32_t UInt;
     typedef float Float;
+    typedef int16_t Short;
+    typedef uint16_t UShort;
+    typedef int8_t SByte;
     typedef uint8_t Byte;
 }
 
