@@ -144,6 +144,7 @@ namespace HalideSharp
         private void CheckType()
         {
             unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                #rawText("// "); #rawText(stringify(BufferType));
                 if(typeof(T) == typeof(NativeType)) {
                     return;
                 }
