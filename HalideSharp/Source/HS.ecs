@@ -1,4 +1,8 @@
-﻿using System;
+﻿#ecs;
+
+includeFile("MagicMacros.ecs");
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -8,36 +12,22 @@ namespace HalideSharp
 {
     public class HS
     {
-        [DllImport(Constants.LibName, EntryPoint = "cast_to_float")]
-        private static extern IntPtr CastToFloat(IntPtr expr);
-        
-        [DllImport(Constants.LibName, EntryPoint = "cast_to_byte")]
-        private static extern IntPtr CastToByte(IntPtr expr);
-        
-        [DllImport(Constants.LibName, EntryPoint = "cast_to_ushort")]
-        private static extern IntPtr CastToUshort(IntPtr expr);
+        unroll ((BufferType, NativeType) in BufferAndNativeTypes) {
+            replacePP(MethodName => concatId(Global_CastTo, BufferType)) {
+                [DllImport(Constants.LibName)] private static extern IntPtr MethodName(IntPtr expr);
+            }
+        }
         
         public static HSExpr Cast<T>(HSExpr expr)
         {
-            IntPtr newExpr;
-            if (typeof(T) == typeof(float))
-            {
-                newExpr = CastToFloat(HSUtil.CArg(expr));
+            unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                replacePP(MethodName => concatId(Global_CastTo, BufferType)) {
+                    if(typeof(T) == typeof(NativeType)) {
+                        return new HSExpr(MethodName(HSUtil.CArg(expr)));
+                    }
+                }
             }
-            else if (typeof(T) == typeof(byte))
-            {
-                newExpr = CastToByte(HSUtil.CArg(expr));
-            }
-            else if (typeof(T) == typeof(ushort))
-            {
-                newExpr = CastToUshort(HSUtil.CArg(expr));
-            }
-            else
-            {
-                throw new NotImplementedException($"Casting not implemented for type {typeof(T)}");
-            }
-            
-            return new HSExpr(newExpr);
+            throw new NotImplementedException($"Casting not implemented for type {typeof(T)}");
         }
 
         [DllImport(Constants.LibName, EntryPoint = "min_expr_float")]
@@ -66,25 +56,25 @@ namespace HalideSharp
                 for (var i = 0; i < args.Length; i++)
                 {
                     var a = args[i];
-                    if (a is string s)
+                    if (a is string)
                     {
                         // Convert to null-terminated UTF8 string. FIXME: get the encoding from the Constants class.
-                        var bytes = Encoding.UTF8.GetBytes(s + '\0');
+                        var bytes = Encoding.UTF8.GetBytes((a as string) + '\0');
                         var handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
                         garbage.Add(handle);
 
                         typeList[i] = HSObjectType.HS_String;
                         objList[i] = handle.AddrOfPinnedObject();
                     }
-                    else if (a is HSVar @var)
+                    else if (a is HSVar)
                     {
                         typeList[i] = HSObjectType.HS_Var;
-                        objList[i] = HSUtil.CArg(@var);
+                        objList[i] = HSUtil.CArg(a as HSVar);
                     }
-                    else if (a is HSExpr expr)
+                    else if (a is HSExpr)
                     {
                         typeList[i] = HSObjectType.HS_Expr;
-                        objList[i] = HSUtil.CArg(expr);
+                        objList[i] = HSUtil.CArg(a as HSExpr);
                     }
                     else
                     {

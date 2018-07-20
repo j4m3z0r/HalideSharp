@@ -42,9 +42,12 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Source\Constants.cs" />
-    <Compile Include="Source\HS.cs" />
+    <None Include="Source\HS.ecs" />
     <None Include="packages.config" />
     <None Include="Source\HSBuffer.ecs" />
+    <Compile Include="Source\HS.out.cs">
+      <DependentUpon>Source\HS.ecs</DependentUpon>
+    </Compile>
     <Compile Include="Source\HSBuffer.out.cs">
       <DependentUpon>Source\HSBuffer.ecs</DependentUpon>
     </Compile>

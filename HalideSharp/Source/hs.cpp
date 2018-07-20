@@ -2,6 +2,8 @@
 #include <vector>
 #include <string>
 
+#include "magicmacros.h"
+
 #define LANGUAGE_C 1
 #include "SharedEnums.cs"
 #undef LANGUAGE_C
@@ -9,20 +11,12 @@
 using namespace Halide;
 
 // TODO: update these functions to the new naming scheme.
-extern "C" Expr *cast_to_float(Expr *expr) {
-    auto casted_expr = cast<float>(*expr);
-    return new Expr(casted_expr);
-}
-
-extern "C" Expr *cast_to_byte(Expr *expr) {
-    auto casted_expr = cast<uint8_t>(*expr);
-    return new Expr(casted_expr);
-}
-
-extern "C" Expr *cast_to_ushort(Expr *expr) {
-    auto casted_expr = cast<uint16_t>(*expr);
-    return new Expr(casted_expr);
-}
+#define GEN_CAST(CSTYPE, CPPTYPE) \
+    extern "C" Expr* Global_CastTo ## CSTYPE(Expr *expr) { \
+        auto casted = cast<CPPTYPE>(*expr); \
+        return new Expr(casted); \
+    }
+GEN(GEN_CAST)
 
 extern "C" Expr* min_expr_float(Expr* expr, float f) {
     return new Expr(min(*expr, f));
