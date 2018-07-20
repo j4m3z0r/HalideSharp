@@ -12,7 +12,7 @@ namespace HalideSharp
 {
     public class HS
     {
-        unroll ((BufferType, NativeType) in BufferAndNativeTypes) {
+        unroll (BufferType in BufferTypes) {
             replacePP(MethodName => concatId(Global_CastTo, BufferType)) {
                 [DllImport(Constants.LibName)] private static extern IntPtr MethodName(IntPtr expr);
             }
