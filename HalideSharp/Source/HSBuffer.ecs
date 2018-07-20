@@ -143,10 +143,12 @@ namespace HalideSharp
     {
         private void CheckType()
         {
-            if (typeof(T) != typeof(int) && typeof(T) != typeof(float) && typeof(T) != typeof(byte))
-            {
-                throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
+            unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                if(typeof(T) == typeof(NativeType)) {
+                    return;
+                }
             }
+            throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
         }
         
         public HSBuffer(int width, int height)
