@@ -71,9 +71,12 @@ namespace HalideSharp
 
         region("2D indexers") {
             region("int indexers") {
-                unroll(BufferType in BufferTypes) {
+                unroll((BufferType, NativeType) in BufferAndNativeTypes) {
                     replacePP(MethodName => concatId(BufferOf, BufferType, _GetVal_IntInt)) {
                         [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr obj, int x, int y, IntPtr result);
+                    }
+                    replacePP(MethodName => concatId(BufferOf, BufferType, _SetVal_IntInt, BufferType, P)) {
+                        [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr obj, int x, int y, IntPtr val);
                     }
                 }
             }
@@ -90,9 +93,12 @@ namespace HalideSharp
         
         region("3D indexers") {
             region("int indexers") {
-                unroll(BufferType in BufferTypes) {
+                unroll((BufferType, NativeType) in BufferAndNativeTypes) {
                     replacePP(MethodName => concatId(BufferOf, BufferType, _GetVal_IntIntInt)) {
                         [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr obj, int x, int y, int z, IntPtr result);
+                    }
+                    replacePP(MethodName => concatId(BufferOf, BufferType, _SetVal_IntIntInt, BufferType, P)) {
+                        [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr obj, int x, int y, int z, IntPtr val);
                     }
                 }
             }
@@ -266,6 +272,27 @@ namespace HalideSharp
             }
         }
 
+        public void SetVal(int x, int y, T val)
+        {
+            var tmp = new T[1];
+            tmp[0] = val;
+            var tmpHandle = GCHandle.Alloc(tmp, GCHandleType.Pinned);
+            try
+            {
+                unroll((BufferType, NativeType) in BufferAndNativeTypes)
+                {
+                    replacePP(MethodName => concatId(BufferOf, BufferType, _SetVal_IntInt, BufferType, P)) {
+                        if(typeof(T) == typeof(NativeType)) { CppBuffer.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(tmpHandle)); return; }
+                    }
+                }
+                throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
+            }
+            finally
+            {
+                tmpHandle.Free();
+            }
+        }
+
         public T GetVal(int x, int y, int z)
         {
             // See above
@@ -288,8 +315,38 @@ namespace HalideSharp
             }
         }
 
-        public T this[int x, int y] => GetVal(x, y);
-        public T this[int x, int y, int z] => GetVal(x, y, z);
+        public void SetVal(int x, int y, int z, T val)
+        {
+            var tmp = new T[1];
+            tmp[0] = val;
+            var tmpHandle = GCHandle.Alloc(tmp, GCHandleType.Pinned);
+            try
+            {
+                unroll((BufferType, NativeType) in BufferAndNativeTypes)
+                {
+                    replacePP(MethodName => concatId(BufferOf, BufferType, _SetVal_IntIntInt, BufferType, P)) {
+                        if(typeof(T) == typeof(NativeType)) { CppBuffer.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z), HSUtil.CArg(tmpHandle)); return; }
+                    }
+                }
+                throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
+            }
+            finally
+            {
+                tmpHandle.Free();
+            }
+        }
+            
+
+        public T this[int x, int y]
+        {
+            get => GetVal(x, y);
+            set => SetVal(x, y, value);
+        }
+        public T this[int x, int y, int z]
+        {
+            get => GetVal(x, y, z);
+            set => SetVal(x, y, z, value);
+        }
 
         region("2D indexers") {
             define Indexer2D($T1, $T2) {

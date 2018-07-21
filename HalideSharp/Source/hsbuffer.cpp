@@ -52,9 +52,17 @@ GEN(DIMENSION)
     extern "C" void BufferOf ## CSTYPE ## _GetVal_ ## ARGTYPE ## ARGTYPE(Buffer< CPPTYPE > *b, HST::ARGTYPE x, HST::ARGTYPE y, CPPTYPE *result) { *result = (*b)(x, y); }
 GEN(BUFFER_GETVAL_2D, Int)
 
+#define BUFFER_SETVAL_2D(CSTYPE, CPPTYPE, ARGTYPE) \
+    extern "C" void BufferOf ## CSTYPE ## _SetVal_ ## ARGTYPE ## ARGTYPE ## CSTYPE ## P(Buffer< CPPTYPE > *b, HST::ARGTYPE x, HST::ARGTYPE y, CPPTYPE *valP) { (*b)(x, y) = *valP; }
+GEN(BUFFER_SETVAL_2D, Int)
+
 #define BUFFER_GETVAL_3D(CSTYPE, CPPTYPE, ARGTYPE) \
     extern "C" void BufferOf ## CSTYPE ## _GetVal_ ## ARGTYPE ## ARGTYPE ## ARGTYPE(Buffer< CPPTYPE > *b, HST::ARGTYPE x, HST::ARGTYPE y, HST::ARGTYPE z, CPPTYPE *result) { *result = (*b)(x, y, z); }
 GEN(BUFFER_GETVAL_3D, Int)
+
+#define BUFFER_SETVAL_3D(CSTYPE, CPPTYPE, ARGTYPE) \
+    extern "C" void BufferOf ## CSTYPE ## _SetVal_ ## ARGTYPE ## ARGTYPE ## ARGTYPE ## CSTYPE ## P(Buffer< CPPTYPE > *b, HST::ARGTYPE x, HST::ARGTYPE y, HST::ARGTYPE z, CPPTYPE *valP) { (*b)(x, y, z) = *valP; }
+GEN(BUFFER_SETVAL_3D, Int)
 
 // 2D indexers
 #define BUFFER_GETEXPR_2D(CSTYPE, CPPTYPE, T1, T2) \
