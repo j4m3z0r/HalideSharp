@@ -53,3 +53,16 @@ extern "C" Expr* clamp_expr_int_int(Expr* e, int min, int max) { return new Expr
 extern "C" Expr* clamp_var_int_int(Var *v, int min, int max) { return new Expr(clamp(*v, min, max)); }
 
 extern "C" Target* Global_GetHostTarget() { return new Target(get_host_target()); }
+
+// Halide has a set of variables defined in its header that can be used anywhere. We expose them here.
+extern "C" Var* Global_Var0() { return &_0; }
+extern "C" Var* Global_Var1() { return &_1; }
+extern "C" Var* Global_Var2() { return &_2; }
+extern "C" Var* Global_Var3() { return &_3; }
+extern "C" Var* Global_Var4() { return &_4; }
+extern "C" Var* Global_Var5() { return &_5; }
+extern "C" Var* Global_Var6() { return &_6; }
+extern "C" Var* Global_Var7() { return &_7; }
+extern "C" Var* Global_Var8() { return &_8; }
+extern "C" Var* Global_Var9() { return &_9; }
+
