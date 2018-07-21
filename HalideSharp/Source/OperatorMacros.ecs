@@ -3,6 +3,7 @@ replace(Operators => (
     (Minus, operator-),
     (Mult, operator*),
     (Div, operator/),
+    (Mod, operator%),
     (And, operator&),
     (Or, operator|),
     (Equals, operator==),

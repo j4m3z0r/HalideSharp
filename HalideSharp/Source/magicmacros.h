@@ -47,4 +47,7 @@ namespace HST {
     typedef uint8_t Byte;
 }
 
+#define DEREF_POINTER(a) (*(a))
+#define DEREF_NOPOINTER(a) (a)
+
 #endif
