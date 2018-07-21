@@ -1,10 +1,57 @@
 #include <Halide.h>
 
+#include "magicmacros.h"
+
 using namespace Halide;
 
-extern "C" Expr *sin_var(Var *v) { return new Expr(sin(*v)); }
-extern "C" Expr *sin_expr(Expr *e) { return new Expr(sin(*e)); }
-extern "C" Expr *cos_var(Var *v) { return new Expr(cos(*v)); }
-extern "C" Expr *cos_expr(Expr *e) { return new Expr(cos(*e)); }
-extern "C" Expr *pow_expr_float(Expr *e, float f) { return new Expr(pow(*e, f)); }
- 
+#define MATHFN_ONE_ARG(CSNAME, CPPNAME, ARGTYPE) \
+    extern "C" Expr* Global_ ## CSNAME ## _ ## ARGTYPE(ARGTYPE *a) { return new Expr(CPPNAME(*a)); }
+
+#define ALL_MATHFN_ONE_ARG(ARGTYPE) \
+    MATHFN_ONE_ARG(Sin, sin, ARGTYPE) \
+    MATHFN_ONE_ARG(Asin, asin, ARGTYPE) \
+    MATHFN_ONE_ARG(Cos, cos, ARGTYPE) \
+    MATHFN_ONE_ARG(Acos, acos, ARGTYPE) \
+    MATHFN_ONE_ARG(Tan, tan, ARGTYPE) \
+    MATHFN_ONE_ARG(Atan, atan, ARGTYPE) \
+    MATHFN_ONE_ARG(Sinh, sinh, ARGTYPE) \
+    MATHFN_ONE_ARG(Asinh, asinh, ARGTYPE) \
+    MATHFN_ONE_ARG(Cosh, cosh, ARGTYPE) \
+    MATHFN_ONE_ARG(Acosh, acosh, ARGTYPE) \
+    MATHFN_ONE_ARG(Tanh, tanh, ARGTYPE) \
+    MATHFN_ONE_ARG(Atanh, atanh, ARGTYPE) \
+    MATHFN_ONE_ARG(Sqrt, sqrt, ARGTYPE) \
+    MATHFN_ONE_ARG(Exp, exp, ARGTYPE) \
+    MATHFN_ONE_ARG(Log, log, ARGTYPE) \
+    MATHFN_ONE_ARG(Erf, erf, ARGTYPE) \
+    MATHFN_ONE_ARG(FastInverse, fast_inverse, ARGTYPE) \
+    MATHFN_ONE_ARG(FastInverseSqrt, fast_inverse_sqrt, ARGTYPE) \
+    MATHFN_ONE_ARG(Floor, floor, ARGTYPE) \
+    MATHFN_ONE_ARG(Ceil, ceil, ARGTYPE) \
+    MATHFN_ONE_ARG(Round, round, ARGTYPE) \
+    MATHFN_ONE_ARG(Trunc, trunc, ARGTYPE) \
+    MATHFN_ONE_ARG(IsNan, is_nan, ARGTYPE) \
+    MATHFN_ONE_ARG(Fract, fract, ARGTYPE)
+
+PERMUTE_ARGS_1D(ALL_MATHFN_ONE_ARG)
+
+#define MATHFN_TWO_ARG(CSNAME, CPPNAME, CSTYPE1, CPPTYPE1, DEREF1, CSTYPE2, CPPTYPE2, DEREF2) \
+    extern "C" Expr* Global_ ## CSNAME ## _ ## CSTYPE1 ## CSTYPE2(CPPTYPE1 a, CPPTYPE2 b) { \
+        return new Expr(CPPNAME(DEREF1(a), DEREF2(b))); \
+    }
+
+#define ALL_MATHFN_TWO_ARG(CSTYPE1, CPPTYPE1, DEREF1, CSTYPE2, CPPTYPE2, DEREF2) \
+    MATHFN_TWO_ARG(Atan2, atan2, CSTYPE1, CPPTYPE1, DEREF1, CSTYPE2, CPPTYPE2, DEREF2) \
+    MATHFN_TWO_ARG(Hypot, hypot, CSTYPE1, CPPTYPE1, DEREF1, CSTYPE2, CPPTYPE2, DEREF2) \
+    MATHFN_TWO_ARG(Pow, pow, CSTYPE1, CPPTYPE1, DEREF1, CSTYPE2, CPPTYPE2, DEREF2) \
+    MATHFN_TWO_ARG(FastPow, fast_pow, CSTYPE1, CPPTYPE1, DEREF1, CSTYPE2, CPPTYPE2, DEREF2)
+
+#define ALL_MATHFN_TWO_ARG_TYPE2(CSTYPE1, CPPTYPE1, DEREF1) \
+    ALL_MATHFN_TWO_ARG(CSTYPE1, CPPTYPE1, DEREF1, Var, Var*, DEREF_POINTER) \
+    ALL_MATHFN_TWO_ARG(CSTYPE1, CPPTYPE1, DEREF1, Expr, Expr*, DEREF_POINTER) \
+    ALL_MATHFN_TWO_ARG(CSTYPE1, CPPTYPE1, DEREF1, Float, float, DEREF_NOPOINTER)
+
+ALL_MATHFN_TWO_ARG_TYPE2(Var, Var*, DEREF_POINTER)
+ALL_MATHFN_TWO_ARG_TYPE2(Expr, Expr*, DEREF_POINTER)
+ALL_MATHFN_TWO_ARG_TYPE2(Float, float, DEREF_NOPOINTER)
+

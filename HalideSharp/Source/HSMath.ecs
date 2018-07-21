@@ -1,0 +1,35 @@
+﻿using System;
+using System.Runtime.InteropServices;
+
+namespace HalideSharp
+{
+    public class HSMath
+    {
+        replace(SingleArgMathFunctions => (Sin, Asin, Cos, Acos, Tan, Atan, Sinh, Asinh, Cosh, Acosh, Tanh, Atanh, Sqrt, Exp, Log, Erf, FastInverse, FastInverseSqrt, Floor, Ceil, Round, Trunc, IsNan, Fract));
+
+        unroll(MathFn in SingleArgMathFunctions) {
+            unroll(ArgType in (Expr, Var)) {
+                replace(MethodName => concatId(Global_, MathFn, _, ArgType),
+                        CSArg => concatId(HS, ArgType)) {
+                    [DllImport(Constants.LibName)]
+                    private static extern IntPtr MethodName(IntPtr arg);
+                    public static HSExpr MathFn(CSArg arg) { return new HSExpr(MethodName(HSUtil.CArg(arg))); }
+                }
+            }
+        }
+
+        replace(DualArgMathFunctions => (Atan2, Hypot, Pow, FastPow));
+        unroll(MathFn in DualArgMathFunctions) {
+            unroll((HSTYPE1, CSTYPE1, CPPTYPE1) in ((HSVar, Var, IntPtr), (HSExpr, Expr, IntPtr), (float, Float, float))) {
+                unroll((HSTYPE2, CSTYPE2, CPPTYPE2) in ((HSVar, Var, IntPtr), (HSExpr, Expr, IntPtr), (float, Float, float))) {
+                    replace(CName => concatId(Global_, MathFn, _, CSTYPE1, CSTYPE2)) {
+                        [DllImport(Constants.LibName)] private static extern IntPtr CName(CPPTYPE1 a, CPPTYPE2 b);
+                        public static HSExpr MathFn(HSTYPE1 a, HSTYPE2 b) {
+                            return new HSExpr(CName(HSUtil.CArg(a), HSUtil.CArg(b)));
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
