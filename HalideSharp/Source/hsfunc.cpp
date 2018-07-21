@@ -52,7 +52,15 @@ extern "C" void Func_CompileToLoweredStmt_StringOutputformat(Func *f, const char
 
 extern "C" void Func_PrintLoopNest(Func* f) { f->print_loop_nest(); }
 
-extern "C" void func_reorder(Func *f, int nrVariables, Var **vars) {
+extern "C" void func_Reorder_Varargs(Func *f, int nrVariables, Var **vars) {
+    std::vector<VarOrRVar> varList;
+    for(int i = 0; i < nrVariables; i++) {
+        varList.push_back(*vars[i]);
+    }
+    f->reorder(varList);
+}
+
+extern "C" void func_ReorderStorage_Varargs(Func *f, int nrVariables, Var **vars) {
     std::vector<VarOrRVar> varList;
     for(int i = 0; i < nrVariables; i++) {
         varList.push_back(*vars[i]);

@@ -190,8 +190,8 @@ namespace HalideSharp
             Func_PrintLoopNest(HSUtil.CArg(this));
         }
 
-        [DllImport(Constants.LibName, EntryPoint = "func_reorder")]
-        private static extern void FuncReorder(IntPtr func, int nrVariables, IntPtr[] vars);
+        [DllImport(Constants.LibName)]
+        private static extern void Func_Reorder_Varargs(IntPtr func, int nrVariables, IntPtr[] vars);
 
         public HSFunc Reorder(params HSVar[] vars)
         {
@@ -201,7 +201,22 @@ namespace HalideSharp
                 varPointers[i] = vars[i]._cppobj;
             }
             
-            FuncReorder(HSUtil.CArg(this), vars.Length, varPointers);
+            Func_Reorder_Varargs(HSUtil.CArg(this), vars.Length, varPointers);
+            return this;
+        }
+
+        [DllImport(Constants.LibName)]
+        private static extern void Func_ReorderStorage_Varargs(IntPtr func, int nrVariables, IntPtr[] vars);
+
+        public HSFunc ReorderStorage(params HSVar[] vars)
+        {
+            var varPointers = new IntPtr[vars.Length];
+            for (var i = 0; i < vars.Length; i++)
+            {
+                varPointers[i] = vars[i]._cppobj;
+            }
+            
+            Func_ReorderStorage_Varargs(HSUtil.CArg(this), vars.Length, varPointers);
             return this;
         }
 
