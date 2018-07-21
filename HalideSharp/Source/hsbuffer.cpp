@@ -29,6 +29,15 @@ GEN(INT_ACCESSOR, Width, width)
 GEN(INT_ACCESSOR, Height, height)
 GEN(INT_ACCESSOR, Channels, channels)
 
+// Dimension accessors -- note that these are readonly for Buffers.
+#define DIMENSION_FIELDS(CSTYPE, CPPTYPE, CSFIELD, CPPFIELD) \
+    extern "C" int BufferOf ## CSTYPE ## _GetDimension ## CSFIELD ## _Int(Buffer<CPPTYPE> *b, int d) { return b->dim(d).CPPFIELD(); }
+#define DIMENSION(CSTYPE, CPPTYPE) \
+    DIMENSION_FIELDS(CSTYPE, CPPTYPE, Stride, stride) \
+    DIMENSION_FIELDS(CSTYPE, CPPTYPE, Extent, extent)
+GEN(DIMENSION)
+
+
 // direct accessors -- to read the data out of the buffer, rather than use it as part of a
 // pipeline.
 

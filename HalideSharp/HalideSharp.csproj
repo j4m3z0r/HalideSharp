@@ -52,6 +52,8 @@
       <DependentUpon>Source\HSBuffer.ecs</DependentUpon>
     </Compile>
     <None Include="Source\HSExpr.ecs" />
+    <Compile Include="Source\HSBufferDimension.cs" />
+    <Compile Include="Source\HSBufferDimensionList.cs" />
     <Compile Include="Source\HSExpr.out.cs">
       <DependentUpon>Source\HSExpr.ecs</DependentUpon>
     </Compile>

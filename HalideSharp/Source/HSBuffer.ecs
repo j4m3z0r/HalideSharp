@@ -2,6 +2,8 @@
 
 includeFile("MagicMacros.ecs");
 
+replace(DimensionFields => (Stride, Extent));
+
 using System;
 using System.Runtime.InteropServices;
 
@@ -125,6 +127,16 @@ namespace HalideSharp
             ExecMacroAllTypes(Accessors);
         }
 
+        region("Dimension accessors") {
+            define Dimension($BufferType) {
+                unroll(FieldName in DimensionFields) {
+                    replace(MethodName => concatId(BufferOf, $BufferType, _GetDimension, FieldName, _Int)) {
+                        [DllImport(Constants.LibName)] internal static extern int MethodName(IntPtr obj, int d);
+                    }
+                }
+            }
+            ExecMacroAllTypes(Dimension);
+        }
         
         [DllImport(Constants.LibName)] public static extern IntPtr BufferOfByte_LoadImage_String([MarshalAs(Constants.StringType)] string filename);
         
@@ -141,6 +153,10 @@ namespace HalideSharp
     public class HSBuffer<T> : HSObject
         where T: struct
     {
+        // The HSBufferDimensionList class is just a proxy to give us way to access the dimensions of the buffer with an indexer.
+        private HSBufferDimensionList<T> _dimensions;
+        public HSBufferDimensionList<T> Dim => _dimensions;
+
         private void CheckType()
         {
             unroll((_, NativeType) in BufferAndNativeTypes) {
@@ -153,6 +169,7 @@ namespace HalideSharp
         
         public HSBuffer(int width, int height)
         {
+            _dimensions = new HSBufferDimensionList<T>(this);
             unroll((BufferType, NativeType) in BufferAndNativeTypes) {
                 replacePP(MethodName => concatId(BufferOf, BufferType, _New_IntInt)) {
                     if(typeof(T) == typeof(NativeType)) { _cppobj = CppBuffer.MethodName(width, height); return; }
@@ -163,6 +180,7 @@ namespace HalideSharp
         
         public HSBuffer(int width, int height, int channels)
         {
+            _dimensions = new HSBufferDimensionList<T>(this);
             unroll((BufferType, NativeType) in BufferAndNativeTypes) {
                 replacePP(MethodName => concatId(BufferOf, BufferType, _New_IntIntInt)) {
                     if(typeof(T) == typeof(NativeType)) { _cppobj = CppBuffer.MethodName(width, height, channels); return; }
@@ -173,6 +191,7 @@ namespace HalideSharp
         
         internal HSBuffer(IntPtr cppobj)
         {
+            _dimensions = new HSBufferDimensionList<T>(this);
             CheckType();
             _cppobj = cppobj;
         }
@@ -337,6 +356,25 @@ namespace HalideSharp
                         unroll ((BufferType, NativeType) in BufferAndNativeTypes) {
                             replacePP(MethodName => concatId(BufferOf, BufferType, _, FieldName)) {
                                 if(typeof(T) == typeof(NativeType)) { return CppBuffer.MethodName(HSUtil.CArg(this)); }
+                            }
+                        }
+                        throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
+                    }
+                }
+            }
+        }
+
+        region("Dimensions") {
+            internal HSBufferDimension<T> GetDimension(int d) {
+                return new HSBufferDimension<T>(this, d);
+            }
+
+            unroll(FieldName in DimensionFields) {
+                replace(MethodName => concatId(GetDimension, FieldName)) {
+                    internal int MethodName(int dim) {
+                        unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                            replacePP(ImplName => concatId(BufferOf, BufferType, _GetDimension, FieldName, _Int)) {
+                                if(typeof(T) == typeof(NativeType)) { return CppBuffer.ImplName(HSUtil.CArg(this), HSUtil.CArg(dim)); }
                             }
                         }
                         throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
