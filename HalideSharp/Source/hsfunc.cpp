@@ -121,3 +121,6 @@ extern "C" void Func_GpuThreads_Var(Func* self, Var *x) { self->gpu_threads(*x);
 extern "C" void Func_GpuThreads_VarVar(Func* self, Var *x, Var *y) { self->gpu_threads(*x, *y); }
 extern "C" void Func_GpuThreads_VarVarVar(Func* self, Var *x, Var *y, Var *z) { self->gpu_threads(*x, *y, *z); }
 
+extern "C" Func* Func_In_Func(Func *self, Func *f) { return new Func(self->in(*f)); }
+extern "C" Func* Func_In(Func *self) { return new Func(self->in()); }
+

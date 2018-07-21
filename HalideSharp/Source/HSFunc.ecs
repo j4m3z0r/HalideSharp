@@ -16,6 +16,11 @@ namespace HalideSharp
         {
             _cppobj = Func_New_String(name);
         }
+
+        internal HSFunc(IntPtr f)
+        {
+            _cppobj = f;
+        }
         
         [DllImport(Constants.LibName)]
         private static extern void Func_Delete(IntPtr obj);
@@ -432,6 +437,18 @@ namespace HalideSharp
         public HSFunc GpuThreads(HSVar x, HSVar y, HSVar z) {
             Func_GpuThreads_VarVarVar(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z));
             return this;
+        }
+
+        [DllImport(Constants.LibName)]
+        private static extern IntPtr Func_In_Func(IntPtr self, IntPtr f);
+        public HSFunc In(HSFunc f) {
+            return new HSFunc(Func_In_Func(HSUtil.CArg(this), HSUtil.CArg(f)));
+        }
+        
+        [DllImport(Constants.LibName)]
+        private static extern IntPtr Func_In(IntPtr self);
+        public HSFunc In() {
+            return new HSFunc(Func_In(HSUtil.CArg(this)));
         }
     }
 }
