@@ -116,15 +116,15 @@ namespace HalideSharp
         }
         ExecMacroAllTypes(SetMin);
 
-        region("Dimension size accessors") {
-            define Accessors($BufferType) {
-                unroll((DIMENSION) in (Width, Height, Channels)) {
+        region("Getters") {
+            define Getters($BufferType) {
+                unroll((DIMENSION) in (Width, Height, Channels, Top, Bottom, Left, Right)) {
                     replace(MethodName => concatId(BufferOf, $BufferType, _, DIMENSION)) {
                         [DllImport(Constants.LibName)] public static extern int MethodName(IntPtr obj);
                     }
                 }
             }
-            ExecMacroAllTypes(Accessors);
+            ExecMacroAllTypes(Getters);
         }
 
         region("Dimension accessors") {
@@ -348,7 +348,7 @@ namespace HalideSharp
         }
 
         region("simple int accessors") {
-            unroll (FieldName in (Width, Height, Channels)) {
+            unroll (FieldName in (Width, Height, Channels, Top, Bottom, Left, Right)) {
                 public int FieldName
                 {
                     get

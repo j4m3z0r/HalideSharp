@@ -28,6 +28,10 @@ GEN(DESTRUCTOR)
 GEN(INT_ACCESSOR, Width, width)
 GEN(INT_ACCESSOR, Height, height)
 GEN(INT_ACCESSOR, Channels, channels)
+GEN(INT_ACCESSOR, Top, top)
+GEN(INT_ACCESSOR, Bottom, bottom)
+GEN(INT_ACCESSOR, Left, left)
+GEN(INT_ACCESSOR, Right, right)
 
 // Dimension accessors -- note that these are readonly for Buffers.
 #define DIMENSION_FIELDS(CSTYPE, CPPTYPE, CSFIELD, CPPFIELD) \
