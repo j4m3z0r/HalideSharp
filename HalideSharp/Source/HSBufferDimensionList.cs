@@ -13,7 +13,7 @@ namespace HalideSharp
         
         internal HSBufferDimensionList(HSBuffer<T> buffer)
         {
-            _buffer = _buffer;
+            _buffer = buffer;
         }
 
         public HSBufferDimension<T> this[int i] => _buffer.GetDimension(i);
