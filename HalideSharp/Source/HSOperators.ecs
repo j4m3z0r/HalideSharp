@@ -1,0 +1,75 @@
+﻿#ecs;
+
+using System;
+using System.Runtime.InteropServices;
+
+namespace HalideSharp
+{
+    replace(HalideTypes => (
+        (Var, IntPtr, HSVar),
+        (Expr, IntPtr, HSExpr),
+        (RDom, IntPtr, HSRDom)));
+
+    replace(NativeTypes => (
+        (Int, int, int),
+        (Float, float, float)));
+
+    replace(Operators => (
+        (Plus, operator+),
+        (Minus, operator-),
+        (Mult, operator*),
+        (Div, operator/),
+        (Mod, operator%),
+        (And, operator&),
+        (Or, operator|),
+        (Equals, operator==),
+        (NotEquals, operator!=),
+        (Gt, operator>),
+        (Lt, operator<),
+        (Gte, operator>=),
+        (Lte, operator<=)));
+
+    // Invoke the given macro with all the operators we know about, passing their name and C# method name.
+    define ExecAllOperators($opmacro) {
+        unroll((OperatorName, MethodName) in Operators) {
+            $opmacro(OperatorName, MethodName);
+        }
+    }
+
+    define GenOperator($OperatorName, $OperatorMethodName, $HalideT1, $NativeT1, $ArgT1, $HalideT2, $NativeT2, $ArgT2) {
+        replacePP(CFunction => concatId(Operator, _, $HalideT1, _, $OperatorName, _, $HalideT2)) {
+            [DllImport(Constants.LibName)] private static extern IntPtr CFunction($NativeT1 a, $NativeT2 b);
+            public static HSExpr $OperatorMethodName($ArgT1 a, $ArgT2 b) {
+                return new HSExpr(CFunction(HSUtil.CArg(a), HSUtil.CArg(b)));
+            }
+        }
+    }
+
+    define AllOperatorTypes($OperatorName, $OperatorMethodName) {
+        // All combinations of Halide types first.
+        unroll((HalideType1, NativeType1, ArgType1) in HalideTypes) {
+            public partial class ArgType1 {
+                unroll((HalideType2, NativeType2, ArgType2) in HalideTypes) {
+                    GenOperator($OperatorName, $OperatorMethodName, HalideType1, NativeType1, ArgType1, HalideType2, NativeType2, ArgType2);
+                }
+            }
+        }
+        
+        // Combination of Halide and native types next -- need to split up so we don't overload int + int, etc.
+        unroll((HalideType1, NativeType1, ArgType1) in HalideTypes) {
+            public partial class ArgType1 {
+                unroll((HalideType2, NativeType2, ArgType2) in NativeTypes) {
+                    GenOperator($OperatorName, $OperatorMethodName, HalideType1, NativeType1, ArgType1, HalideType2, NativeType2, ArgType2);
+                }
+            }
+        }
+        unroll((HalideType2, NativeType2, ArgType2) in HalideTypes) {
+            public partial class ArgType2 {
+                unroll((HalideType1, NativeType1, ArgType1) in NativeTypes) {
+                    GenOperator($OperatorName, $OperatorMethodName, HalideType1, NativeType1, ArgType1, HalideType2, NativeType2, ArgType2);
+                }
+            }
+        }
+    }
+    ExecAllOperators(AllOperatorTypes);
+}

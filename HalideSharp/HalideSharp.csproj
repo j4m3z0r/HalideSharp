@@ -64,6 +64,8 @@
     <None Include="Source\HSVar.ecs" />
     <Compile Include="Source\HSObject.cs" />
     <Compile Include="Source\HSRDom.cs" />
+    <None Include="Source\HSOperators.ecs" />
+    <Compile Include="Source\HSOperators.out.cs" />
     <Compile Include="Source\HSTarget.cs" />
     <Compile Include="Source\HSUtil.cs" />
     <Compile Include="Source\HSVar.out.cs">
@@ -92,7 +94,6 @@
     <Content Include="Source\hsvar.cpp" />
     <Content Include="Source\MagicMacros.ecs" />
     <Content Include="Source\magicmacros.h" />
-    <Content Include="Source\OperatorMacros.ecs" />
   </ItemGroup>
   <ItemGroup>
     <ContentWithTargetPath Include="$(ProjectDir)/Source/libhalide-wrapper.so">

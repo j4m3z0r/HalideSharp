@@ -1,14 +1,12 @@
 ﻿#ecs;
 
-includeFile("OperatorMacros.ecs");
-
 using System;
 using System.Runtime.InteropServices;
 using System.Xml.Schema;
 
 namespace HalideSharp
 {
-    public class HSVar : HSObject
+    public partial class HSVar : HSObject
     {
         public const string CppType = "Var";
         
@@ -33,71 +31,6 @@ namespace HalideSharp
             }
         }
 
-        // <var> <op> <var>
-        define VarOperator($OperatorName, $OperatorMethodName) {
-            replacePP(CFunction => concatId(Operator_Var_, $OperatorName, _Var)) {
-
-                [DllImport(Constants.LibName)] private static extern IntPtr CFunction(IntPtr v1, IntPtr v2);
-                public static HSExpr $OperatorMethodName(HSVar v1, HSVar v2) {
-                    return new HSExpr(CFunction(HSUtil.CArg(v1), HSUtil.CArg(v2)));
-                }
-            }
-        }
-        ExecAllOperators(VarOperator);
-        
-        // <var> <op> <expr>
-        define VarExprOperator($OperatorName, $OperatorMethodName) {
-            replacePP(CFunction => concatId(Operator_Var_, $OperatorName, _Expr)) {
-
-                [DllImport(Constants.LibName)] private static extern IntPtr CFunction(IntPtr v1, IntPtr v2);
-                public static HSExpr $OperatorMethodName(HSVar v1, HSExpr v2) {
-                    return new HSExpr(CFunction(HSUtil.CArg(v1), HSUtil.CArg(v2)));
-                }
-            }
-        }
-        ExecAllOperators(VarExprOperator);
-        
-        // <var> <op> <float> AND <float> <op> <var>
-        define FloatOperator($OperatorName, $OperatorMethodName) {
-            replacePP(CFunction => concatId(Operator_Var_, $OperatorName, _Float)) {
-
-                [DllImport(Constants.LibName)] private static extern IntPtr CFunction(IntPtr v1, float f);
-                public static HSExpr $OperatorMethodName(HSVar v1, float f) {
-                    return new HSExpr(CFunction(HSUtil.CArg(v1), HSUtil.CArg(f)));
-                }
-            }
-
-            replacePP(CFunction => concatId(Operator_Float_, $OperatorName, _Var)) {
-
-                [DllImport(Constants.LibName)] private static extern IntPtr CFunction(float f, IntPtr v1);
-                public static HSExpr $OperatorMethodName(float f, HSVar v1) {
-                    return new HSExpr(CFunction(HSUtil.CArg(f), HSUtil.CArg(v1)));
-                }
-            }
-
-        }
-        ExecAllOperators(FloatOperator);
-
-        // <var> <op> <int> AND <int> <op> <var>
-        define IntOperator($OperatorName, $OperatorMethodName) {
-            replacePP(CFunction => concatId(Operator_Var_, $OperatorName, _Int)) {
-
-                [DllImport(Constants.LibName)] private static extern IntPtr CFunction(IntPtr v1, int i);
-                public static HSExpr $OperatorMethodName(HSVar v1, int i) {
-                    return new HSExpr(CFunction(HSUtil.CArg(v1), HSUtil.CArg(i)));
-                }
-            }
-            
-            replacePP(CFunction => concatId(Operator_Int_, $OperatorName, _Var)) {
-
-                [DllImport(Constants.LibName)] private static extern IntPtr CFunction(int i, IntPtr v1);
-                public static HSExpr $OperatorMethodName(int i, HSVar v1) {
-                    return new HSExpr(CFunction(HSUtil.CArg(i), HSUtil.CArg(v1)));
-                }
-            }
-        }
-        ExecAllOperators(IntOperator);
-        
         // HACK: returning false from both operator true and operator false should force us to never short-circuit,
         // meaning that && will always invoke operator&, which calls C++'s operator&& in the wrapper. In short, this
         // allows for the common (x && y) style conditionals.
