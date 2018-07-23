@@ -12,15 +12,15 @@ replace(BufferAndNativeTypes => (
 
 // Execute the given macro with all permutations of types for 1 argument.
 define ExecMacro1D($macro2d) {
-    unroll (T1 in (Var, Expr)) {
+    unroll (T1 in (Var, Expr, RDom)) {
         $macro2d(T1);
     }
 }
 
 // Execute the given macro with all permutations of types for 2 arguments.
 define ExecMacro2D($macro2d) {
-    unroll (T1 in (Var, Expr)) {
-        unroll(T2 in (Var, Expr)) {
+    unroll (T1 in (Var, Expr, RDom)) {
+        unroll(T2 in (Var, Expr, RDom)) {
             $macro2d(T1, T2);
         }
     }
@@ -28,9 +28,9 @@ define ExecMacro2D($macro2d) {
 
 // Execute the given macro with all permutations of types for 3 arguments.
 define ExecMacro3D($macro3d) {
-    unroll (T1 in (Var, Expr)) {
-        unroll(T2 in (Var, Expr)) {
-            unroll(T3 in (Var, Expr)) {
+    unroll (T1 in (Var, Expr, RDom)) {
+        unroll(T2 in (Var, Expr, RDom)) {
+            unroll(T3 in (Var, Expr, RDom)) {
                 $macro3d(T1, T2, T3);
             }
         }
