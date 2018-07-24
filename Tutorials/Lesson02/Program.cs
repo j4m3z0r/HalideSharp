@@ -7,43 +7,80 @@ namespace Lesson02
     {
         public static int Main(string[] args)
         {
-            // We'll start by defining the simple single-stage imaging
-            // pipeline from lesson 1.
+            // This program defines a single-stage imaging pipeline that
+            // brightens an image.
 
-            // This lesson will be about debugging, but unfortunately in C++,
-            // objects don't know their own names, which makes it hard for us
-            // to understand the generated code. To get around this, you can
-            // pass a string to the Func and Var constructors to give them a
-            // name for debugging purposes.
-            var gradient = new HSFunc("gradient");
+            // First we'll load the input image we wish to brighten.
+            var input = HSBuffer<byte>.LoadImage("rgb.png");
+
+            // See figures/lesson_02_input.jpg for a smaller version.
+
+            // Next we define our Func object that represents our one pipeline
+            // stage.
+            var brighter = new HSFunc("brighter");
+
+            // Our Func will have three arguments, representing the position
+            // in the image and the color channel. Halide treats color
+            // channels as an extra dimension of the image.
             var x = new HSVar("x");
             var y = new HSVar("y");
-            gradient[x, y] = x + y;
+            var c = new HSVar("c");
 
-            // Realize the function to produce an output image. We'll keep it
-            // very small for this lesson.
-            var output = gradient.Realize<int>(8, 8);
+            // Normally we'd probably write the whole function definition on
+            // one line. Here we'll break it apart so we can explain what
+            // we're doing at every step.
 
-            // That line compiled and ran the pipeline. Try running this
-            // lesson with the environment variable HL_DEBUG_CODEGEN set to
-            // 1. It will print out the various stages of compilation, and a
-            // pseudocode representation of the final pipeline.
+            // For each pixel of the input image.
+            var value = input[x, y, c];
 
-            // If you set HL_DEBUG_CODEGEN to a higher number, you can see
-            // more and more details of how Halide compiles your pipeline.
-            // Setting HL_DEBUG_CODEGEN=2 shows the Halide code at each stage
-            // of compilation, and also the llvm bitcode we generate at the
-            // end.
+            // Cast it to a floating point value.
+            value = HS.Cast<float>(value);
 
-            // Halide will also output an HTML version of this output, which
-            // supports syntax highlighting and code-folding, so it can be
-            // nicer to read for large pipelines. Open gradient.html with your
-            // browser after running this tutorial.
-            gradient.CompileToLoweredStmt("gradient.html", HSOutputFormat.HS_HTML);
+            // Multiply it by 1.5 to brighten it. Halide represents real
+            // numbers as floats, not doubles, so we stick an 'f' on the end
+            // of our constant.
+            value = value * 1.5f;
 
-            // You can usually figure out what code Halide is generating using
-            // this pseudocode. In the next lesson we'll see how to snoop on
-            // Halide at runtime.
+            // Clamp it to be less than 255, so we don't get overflow when we
+            // cast it back to an 8-bit unsigned int.
+            value = HS.Min(value, 255.0f);
+
+            // Cast it back to an 8-bit unsigned integer.
+            value = HS.Cast<byte>(value);
+
+            // Define the function.
+            brighter[x, y, c] = value;
+
+            // The equivalent one-liner to all of the above is:
+            //
+            // brighter(x, y, c) = Halide::cast<uint8_t>(min(input(x, y, c) * 1.5f, 255));
+            //
+            // In the shorter version:
+            // - I skipped the cast to float, because multiplying by 1.5f does
+            //   that automatically.
+            // - I also used an integer constant as the second argument in the
+            //   call to min, because it gets cast to float to be compatible
+            //   with the first argument.
+            // - I left the Halide:: off the call to min. It's unnecessary due
+            //   to Koenig lookup.
+
+            // Remember, all we've done so far is build a representation of a
+            // Halide program in memory. We haven't actually processed any
+            // pixels yet. We haven't even compiled that Halide program yet.
+
+            // So now we'll realize the Func. The size of the output image
+            // should match the size of the input image. If we just wanted to
+            // brighten a portion of the input image we could request a
+            // smaller size. If we request a larger size Halide will throw an
+            // error at runtime telling us we're trying to read out of bounds
+            // on the input image.
+            var output =
+                brighter.Realize<byte>(input.Width, input.Height, input.Channels);
+
+            // Save the output for inspection. It should look like a bright parrot.
+            output.SaveImage("brighter.png");
+
+            // See figures/lesson_02_output.jpg for a small version of the output.
 
             Console.WriteLine("Success!");
             return 0;
