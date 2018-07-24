@@ -17,7 +17,7 @@ namespace HalideSharp
                     VarName => concatId(_, num)) {
                 [DllImport(Constants.LibName)]
                 private static extern IntPtr CName();
-                public static readonly HSVar VarName = new HSVar(CName());
+                public static readonly HSVar VarName = new HSVar(CName(), true);
             }
         }
 
