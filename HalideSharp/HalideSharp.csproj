@@ -92,6 +92,7 @@
     <Content Include="Source\hsrdom.cpp" />
     <Content Include="Source\hstarget.cpp" />
     <Content Include="Source\hsvar.cpp" />
+    <Content Include="Source\Indexer.ecs" />
     <Content Include="Source\MagicMacros.ecs" />
     <Content Include="Source\magicmacros.h" />
   </ItemGroup>

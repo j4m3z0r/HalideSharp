@@ -1,6 +1,6 @@
 ﻿#ecs;
 
-includeFile("MagicMacros.ecs");
+includeFile("Indexer.ecs");
 
 replace(DimensionFields => (Stride, Extent));
 
@@ -12,31 +12,6 @@ define ExecMacroAllTypes($macro) {
     unroll(BufferType in BufferTypes) {
         $macro(BufferType);
     }
-}
-
-// Execute the given macro with all permutations of types for 3 arguments, plus all types for the
-// container object (eg: Buffer<float>, Buffer<byte>, etc).
-define ExecMacroAllTypes2D($macro2d) {
-    define TypedEval($T1, $T2) {
-        unroll (BufferType in BufferTypes) {
-            $macro2d(BufferType, $T1, $T2);
-        }
-    }
-    ExecMacro2D(TypedEval);
-}
-
-// Execute the given macro with all permutations of types for 3 arguments, plus all types for the
-// container object (eg: Buffer<float>, Buffer<byte>, etc).
-define ExecMacroAllTypes3D($macro3d)
-{
-    define TypedEval($T1, $T2, $T3)
-    {
-        unroll (BufferType in BufferTypes)
-        {
-            $macro3d(BufferType, $T1, $T2, $T3);
-        }
-    }
-    ExecMacro3D(TypedEval);
 }
 
 namespace HalideSharp
@@ -51,7 +26,6 @@ namespace HalideSharp
                 }
             }
         }
-
 
         region("3D constructors") {
             unroll (BufferType in BufferTypes) {
@@ -71,7 +45,7 @@ namespace HalideSharp
 
         region("2D indexers") {
             region("int indexers") {
-                unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                unroll((BufferType, _) in BufferAndNativeTypes) {
                     replacePP(MethodName => concatId(BufferOf, BufferType, _GetVal_IntInt)) {
                         [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr obj, int x, int y, IntPtr result);
                     }
@@ -81,19 +55,12 @@ namespace HalideSharp
                 }
             }
 
-            // 2D indexer entry points
-            define Indexer2D($BufferType, $T1, $T2) {
-                replace(MethodName => concatId(BufferOf, $BufferType, _GetExpr_, $T1, $T2)) {
-                    [DllImport(Constants.LibName)] public static extern IntPtr MethodName(IntPtr obj, IntPtr x, IntPtr y);
-                }
-
-            }
-            ExecMacroAllTypes2D(Indexer2D);
+            GenIndexerImports2D(Buffer);
         }
         
         region("3D indexers") {
             region("int indexers") {
-                unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                unroll((BufferType, _) in BufferAndNativeTypes) {
                     replacePP(MethodName => concatId(BufferOf, BufferType, _GetVal_IntIntInt)) {
                         [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr obj, int x, int y, int z, IntPtr result);
                     }
@@ -103,16 +70,7 @@ namespace HalideSharp
                 }
             }
 
-            // 3D indexer entry points
-            define Indexer3D($BufferType, $T1, $T2, $T3)
-            {
-                replace(MethodName => concatId(BufferOf, $BufferType, _GetExpr_, $T1, $T2, $T3)) {
-                    [DllImport(Constants.LibName)] public static extern IntPtr MethodName(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
-                }
-
-            }
-
-            ExecMacroAllTypes3D(Indexer3D);
+            GenIndexerImports3D(Buffer);
         }
         
         define SetMin($BufferType) {
@@ -349,48 +307,17 @@ namespace HalideSharp
         }
 
         region("2D indexers") {
-            define Indexer2D($T1, $T2) {
-                replacePP(arg1 => concatId(HS, $T1)) {
-                    replacePP(arg2 => concatId(HS, $T2)) {
-                        public HSExpr GetExpr(arg1 x, arg2 y)
-                        {
-                            unroll((BufferType, NativeType) in BufferAndNativeTypes)
-                            {
-                                replacePP(MethodName => concatId(BufferOf, BufferType, _GetExpr_, $T1, $T2)) {
-                                    if(typeof(T) == typeof(NativeType)) { return new HSExpr(CppBuffer.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y))); }
-                                }
-
-                            }
-                            throw new NotImplementedException("Buffer type {typeof(T)} unsupported");
-                        }
-                        public HSExpr this[arg1 x, arg2 y] => GetExpr(x, y);
-                    }
-                }
+            define BufferIndexer2D($T1, $T2) {
+                Indexer2D(Buffer, $T1, $T2);
             }
-            ExecMacro2D(Indexer2D);
+            ExecMacro2D(BufferIndexer2D);
         }
 
         region("3D indexers") {
-            define Indexer3D($T1, $T2, $T3) {
-                replacePP(arg1 => concatId(HS, $T1)) {
-                    replacePP(arg2 => concatId(HS, $T2)) {
-                        replacePP(arg3 => concatId(HS, $T3)) {
-                            public HSExpr GetExpr(arg1 x, arg2 y, arg3 z)
-                            {
-                                unroll((BufferType, NativeType) in BufferAndNativeTypes)
-                                {
-                                    replacePP(MethodName => concatId(BufferOf, BufferType, _GetExpr_, $T1, $T2, $T3)) {
-                                        if(typeof(T) == typeof(NativeType)) { return new HSExpr(CppBuffer.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z))); }
-                                    }
-                                }
-                                throw new NotImplementedException("Buffer type {typeof(T)} unsupported");
-                            }
-                            public HSExpr this[arg1 x, arg2 y, arg3 z] => GetExpr(x, y, z);
-                        }
-                    }
-                }
+            define BufferIndexer3D($T1, $T2, $T3) {
+                Indexer3D(Buffer, $T1, $T2, $T3);
             }
-            ExecMacro3D(Indexer3D);
+            ExecMacro3D(BufferIndexer3D);
         }
         
         public void SetMin(int x, int y)

@@ -1,0 +1,94 @@
+#ecs;
+
+includeFile("MagicMacros.ecs");
+
+// Execute the given macro with all permutations of types for 3 arguments, plus all types for the
+// container object (eg: Buffer<float>, Buffer<byte>, etc).
+define ExecMacroAllTypes2D($ContainerType, $macro2d) {
+    define TypedEval($T1, $T2) {
+        unroll (BufferType in BufferTypes) {
+            $macro2d($ContainerType, BufferType, $T1, $T2);
+        }
+    }
+    ExecMacro2D(TypedEval);
+}
+
+// Execute the given macro with all permutations of types for 3 arguments, plus all types for the
+// container object (eg: Buffer<float>, Buffer<byte>, etc).
+define ExecMacroAllTypes3D($ContainerType, $macro3d)
+{
+    define TypedEval($T1, $T2, $T3)
+    {
+        unroll (BufferType in BufferTypes)
+        {
+            $macro3d($ContainerType, BufferType, $T1, $T2, $T3);
+        }
+    }
+    ExecMacro3D(TypedEval);
+}
+
+// DllImport generators
+// 2D indexer entry points
+define IndexerImports2D($Container, $Type, $T1, $T2) {
+    replace(MethodName => concatId($Container, Of, $Type, _GetExpr_, $T1, $T2)) {
+        [DllImport(Constants.LibName)] public static extern IntPtr MethodName(IntPtr obj, IntPtr x, IntPtr y);
+    }
+}
+
+define GenIndexerImports2D($ContainerType) {
+    ExecMacroAllTypes2D($ContainerType, IndexerImports2D);
+}
+
+// 3D indexer entry points
+define IndexerImports3D($Container, $Type, $T1, $T2, $T3)
+{
+    replace(MethodName => concatId($Container, Of, $Type, _GetExpr_, $T1, $T2, $T3)) {
+        [DllImport(Constants.LibName)] public static extern IntPtr MethodName(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
+    }
+}
+
+define GenIndexerImports3D($ContainerType) {
+    ExecMacroAllTypes3D($ContainerType, IndexerImports3D);
+}
+// End DllImport genreators.
+
+// Actual indexer generators
+define Indexer2D($ContainerType, $T1, $T2) {
+    replacePP(arg1 => concatId(HS, $T1),
+              arg2 => concatId(HS, $T2)) {
+        public HSExpr GetExpr(arg1 x, arg2 y)
+        {
+            unroll((BufferType, NativeType) in BufferAndNativeTypes)
+            {
+                replacePP(MethodName => concatId($ContainerType, Of, BufferType, _GetExpr_, $T1, $T2),
+                          ClassName => concatId(Cpp, $ContainerType)) {
+                    if(typeof(T) == typeof(NativeType)) { return new HSExpr(ClassName.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y))); }
+                }
+
+            }
+            throw new NotImplementedException("Buffer type {typeof(T)} unsupported");
+        }
+        public HSExpr this[arg1 x, arg2 y] => GetExpr(x, y);
+    }
+}
+
+define Indexer3D($ContainerType, $T1, $T2, $T3) {
+    replacePP(arg1 => concatId(HS, $T1),
+              arg2 => concatId(HS, $T2),
+              arg3 => concatId(HS, $T3)) {
+        public HSExpr GetExpr(arg1 x, arg2 y, arg3 z)
+        {
+            unroll((BufferType, NativeType) in BufferAndNativeTypes)
+            {
+                replacePP(MethodName => concatId($ContainerType, Of, BufferType, _GetExpr_, $T1, $T2, $T3),
+                          ClassName => concatId(Cpp, $ContainerType)) {
+                    if(typeof(T) == typeof(NativeType)) { return new HSExpr(ClassName.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z))); }
+                }
+
+            }
+            throw new NotImplementedException("Buffer type {typeof(T)} unsupported");
+        }
+        public HSExpr this[arg1 x, arg2 y, arg3 z] => GetExpr(x, y, z);
+    }
+}
+// End indexer generators
