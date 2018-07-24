@@ -1,0 +1,132 @@
+#ecs;
+
+using System;
+using System.Runtime.InteropServices;
+
+includeFile("Indexer.ecs");
+
+namespace HalideSharp
+{
+    internal class CppImageParam
+    {
+        region("Constructors") {
+            unroll(BufferType in BufferTypes) {
+                replacePP(MethodName => concatId(ImageParamOf, BufferType, _New_Int)) {
+                    [DllImport(Constants.LibName)] public static extern IntPtr MethodName(int d);
+                }
+
+                replacePP(MethodName => concatId(ImageParamOf, BufferType, _New_IntString)) {
+                    [DllImport(Constants.LibName)] public static extern IntPtr MethodName(int d, [MarshalAs(Constants.StringType)] string n);
+                }
+            }
+        }
+
+        region("Destructors") {
+            unroll(BufferType in BufferTypes) {
+                replacePP(MethodName => concatId(ImageParamOf, BufferType, _Delete)) {
+                    [DllImport(Constants.LibName)] public static extern IntPtr MethodName(IntPtr ip);
+                }
+            }
+        }
+
+        region("Setters") {
+            unroll(BufferType in BufferTypes) {
+                replacePP(MethodName => concatId(ImageParamOf, BufferType, _Set_, BufferOf, BufferType)) {
+                    [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr self, IntPtr buff);
+                }
+            }
+        }
+
+        region("In") {
+            unroll(BufferType in BufferTypes) {
+                replacePP(MethodName => concatId(ImageParamOf, BufferType, _In_, Func)) {
+                    [DllImport(Constants.LibName)] public static extern IntPtr MethodName(IntPtr self, IntPtr func);
+                }
+            }
+        }
+
+        region("2D Indexers") {
+            GenIndexerImports2D(ImageParam);
+        }
+
+        region("3D Indexers") {
+            GenIndexerImports3D(ImageParam);
+        }
+
+    }
+
+    public class HSImageParam<T> : HSObject where T: struct
+    {
+        region("Constructors") {
+            public HSImageParam(int d)
+            {
+                unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                    replacePP(MethodName => concatId(ImageParamOf, BufferType, _New_Int)) {
+                        if(typeof(T) == typeof(NativeType)) { _cppobj = CppImageParam.MethodName(HSUtil.CArg(d)); return; }
+                    }
+                }
+                throw new NotImplementedException($"ImageParam type {typeof(T)} unsupported");
+            }
+
+            public HSImageParam(int d, string n)
+            {
+                unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                    replacePP(MethodName => concatId(ImageParamOf, BufferType, _New_IntString)) {
+                        if(typeof(T) == typeof(NativeType)) { _cppobj = CppImageParam.MethodName(HSUtil.CArg(d), HSUtil.CArg(n)); return; }
+                    }
+                }
+                throw new NotImplementedException($"ImageParam type {typeof(T)} unsupported");
+            }
+        }
+
+        region("Destructor") {
+            ~HSImageParam()
+            {
+                unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                    replacePP(MethodName => concatId(ImageParamOf, BufferType, _Delete)) {
+                        if(typeof(T) == typeof(NativeType)) { CppImageParam.MethodName(HSUtil.CArg(this)); return; }
+                    }
+                }
+                throw new NotImplementedException($"ImageParam type {typeof(T)} unsupported");
+            }
+        }
+
+        region("Setters") {
+            public void Set(HSBuffer<T> buff) {
+                unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                    replacePP(MethodName => concatId(ImageParamOf, BufferType, _Set_, BufferOf, BufferType)) {
+                        if(typeof(T) == typeof(NativeType)) { CppImageParam.MethodName(HSUtil.CArg(this), HSUtil.CArg(buff)); return; }
+                    }
+                }
+                throw new NotImplementedException($"ImageParam type {typeof(T)} unsupported");
+            }
+        }
+
+        region("In") {
+            public HSFunc In(HSFunc f) {
+                unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                    replacePP(MethodName => concatId(ImageParamOf, BufferType, _In_Func)) {
+                        if(typeof(T) == typeof(NativeType)) { return new HSFunc(CppImageParam.MethodName(HSUtil.CArg(this), HSUtil.CArg(f))); }
+                    }
+                }
+                throw new NotImplementedException($"ImageParam type {typeof(T)} unsupported");
+            }
+        }
+            
+
+        region("2D indexers") {
+            define ImageParamIndexer2D($T1, $T2) {
+                Indexer2D(ImageParam, $T1, $T2);
+            }
+            ExecMacro2D(ImageParamIndexer2D);
+        }
+
+        region("3D indexers") {
+            define ImageParamIndexer3D($T1, $T2, $T3) {
+                Indexer3D(ImageParam, $T1, $T2, $T3);
+            }
+            ExecMacro3D(ImageParamIndexer3D);
+        }
+        
+    }
+}

@@ -62,6 +62,10 @@
       <DependentUpon>Source\HSFunc.ecs</DependentUpon>
     </Compile>
     <None Include="Source\HSVar.ecs" />
+    <None Include="Source\HSImageParam.ecs" />
+    <Compile Include="Source\HSImageParam.out.cs">
+      <DependentUpon>Source\HSImageParam.ecs</DependentUpon>
+    </Compile>
     <Compile Include="Source\HSObject.cs" />
     <Compile Include="Source\HSRDom.cs" />
     <None Include="Source\HSOperators.ecs" />
@@ -83,6 +87,7 @@
     <Content Include="Source\hsbuffer.cpp" />
     <Content Include="Source\hsexpr.cpp" />
     <Content Include="Source\hsfunc.cpp" />
+    <Content Include="Source\hsimageparam.cpp" />
     <Content Include="Source\hsmath.cpp" />
     <None Include="Source\HSMath.ecs" />
     <Compile Include="Source\HSMath.out.cs">
