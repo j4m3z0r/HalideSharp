@@ -1,50 +1,86 @@
 #ifndef __MAGIC_MACROS_H__
 #define __MAGIC_MACROS_H__
 
-#define PERMUTE_ARGS_1D(MACRO) \
-    MACRO(Expr) \
-    MACRO(Var) \
-    MACRO(RDom)
+#define DEREF_POINTER(a) (*(a))
+#define DEREF_NOPOINTER(a) (a)
 
-#define PERMUTE_ARGS_2D(MACRO) \
-    MACRO(Expr, Expr) \
-    MACRO(Expr, Var) \
-    MACRO(Expr, RDom) \
-    MACRO(Var, Expr) \
-    MACRO(Var, Var) \
-    MACRO(Var, RDom) \
-    MACRO(RDom, Expr) \
-    MACRO(RDom, Var) \
-    MACRO(RDom, RDom)
+/**
+ * The PERMUTE_ARGS_<n>D macros invoke the given macro with all the
+ * combinations of types for <n> arguments. This is necessary since indexers
+ * are able to take any combination of variables, expressions, args, ints, etc
+ * as arguments. The repetition of the argument types across all macros seems
+ * to be necessary -- a "meta-macro" that takes the given macro as an argument
+ * and a continuation macro won't expand the continuation. This is the least
+ * bad formulation of this I was able to find.
+ **/
 
-#define PERMUTE_ARGS_3D(MACRO) \
-    MACRO(Expr, Expr, Expr) \
-    MACRO(Expr, Expr, Var) \
-    MACRO(Expr, Expr, RDom) \
-    MACRO(Expr, Var, Expr) \
-    MACRO(Expr, Var, Var) \
-    MACRO(Expr, Var, RDom) \
-    MACRO(Expr, RDom, Expr) \
-    MACRO(Expr, RDom, Var) \
-    MACRO(Expr, RDom, RDom) \
-    MACRO(Var, Expr, Expr) \
-    MACRO(Var, Expr, Var) \
-    MACRO(Var, Expr, RDom) \
-    MACRO(Var, Var, Expr) \
-    MACRO(Var, Var, Var) \
-    MACRO(Var, Var, RDom) \
-    MACRO(Var, RDom, Expr) \
-    MACRO(Var, RDom, Var) \
-    MACRO(Var, RDom, RDom) \
-    MACRO(RDom, Expr, Expr) \
-    MACRO(RDom, Expr, Var) \
-    MACRO(RDom, Expr, RDom) \
-    MACRO(RDom, Var, Expr) \
-    MACRO(RDom, Var, Var) \
-    MACRO(RDom, Var, RDom) \
-    MACRO(RDom, RDom, Expr) \
-    MACRO(RDom, RDom, Var) \
-    MACRO(RDom, RDom, RDom)
+// T0, T1,..., Tn each substitute a value for the nth argument. The T* macros
+// should be considered "private" -- callers should use the PERMUTE_ARGS
+// macros.
+#define T0(macro, ...) \
+    macro(__VA_ARGS__)
+
+#define T1(macro, ...)  \
+    T0(macro, Expr, __VA_ARGS__) \
+    T0(macro, Var, __VA_ARGS__) \
+    T0(macro, RDom, __VA_ARGS__) \
+    T0(macro, Int, __VA_ARGS__) \
+    T0(macro, Float, __VA_ARGS__)
+
+#define T2(macro, ...) \
+    T1(macro, Expr, __VA_ARGS__) \
+    T1(macro, Var, __VA_ARGS__) \
+    T1(macro, RDom, __VA_ARGS__) \
+    T1(macro, Int, __VA_ARGS__) \
+    T1(macro, Float, __VA_ARGS__)
+
+#define PERMUTE_ARGS_1D(macro) \
+    T0(macro, Expr) \
+    T0(macro, Var) \
+    T0(macro, RDom) \
+    T0(macro, Int) \
+    T0(macro, Float)
+
+#define PERMUTE_ARGS_2D(macro) \
+    T1(macro, Expr) \
+    T1(macro, Var) \
+    T1(macro, RDom) \
+    T1(macro, Int) \
+    T1(macro, Float)
+
+#define PERMUTE_ARGS_3D(macro) \
+    T2(macro, Expr) \
+    T2(macro, Var) \
+    T2(macro, RDom) \
+    T2(macro, Int) \
+    T2(macro, Float) \
+
+/**
+ * The _argtype macros are used to convert the type names used in the PERMUTE
+ * macros into the types of the arguments that the function should accept.
+ * Callers should use the argtype macro, rather than doing the concatenation
+ * themselves.
+ **/
+#define Expr_argtype Expr*
+#define Var_argtype Var*
+#define RDom_argtype RDom*
+#define Int_argtype int
+#define Float_argtype int
+
+#define argtype(a) a ## _argtype
+
+/**
+ * The _deref macros indicate how to dereference an argument of the given type,
+ * as mapped through the _argtype macros. Eg: ints do not need to be
+ * dereferenced, whereas Expr*'s do.
+ **/
+#define Var_deref(p) (*(p))
+#define Expr_deref(p) (*(p))
+#define RDom_deref(p) (*(p))
+#define Int_deref(p) (p)
+#define Float_deref(p) (p)
+
+#define deref(type, val) type ## _deref(val)
 
 // Ensure the set of types here matches those listed in MagicMacros.ecs.
 
@@ -70,20 +106,5 @@
     MACRO(UShort, uint16_t, UInt(16), ## __VA_ARGS__) \
     MACRO(SByte, int8_t, Int(8), ## __VA_ARGS__) \
     MACRO(Byte, uint8_t, UInt(8), ## __VA_ARGS__)
-
-
-// Short for HalideSharpTypes. Keeping things concise since this will be used everywhere.
-namespace HST {
-    typedef int32_t Int;
-    typedef uint32_t UInt;
-    typedef float Float;
-    typedef int16_t Short;
-    typedef uint16_t UShort;
-    typedef int8_t SByte;
-    typedef uint8_t Byte;
-}
-
-#define DEREF_POINTER(a) (*(a))
-#define DEREF_NOPOINTER(a) (a)
 
 #endif

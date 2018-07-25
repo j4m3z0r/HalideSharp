@@ -1,6 +1,6 @@
 ﻿#ecs;
 
-includeFile("MagicMacros.ecs");
+includeFile("Indexer.ecs");
 
 using System;
 using System.Runtime.InteropServices;
@@ -55,21 +55,20 @@ namespace HalideSharp
 
         region("2D indexers") {
             define Indexer2D($T1, $T2) {
-                replacePP(GetterName => concatId(Func, _GetExpr_, $T1, $T2)) {
-                    replacePP(SetterName => concatId(Func, _SetExpr_, $T1, $T2, Expr)) {
+                replacePP(GetterName => concatId(Func, _GetExpr_, $T1, $T2),
+                          SetterName => concatId(Func, _SetExpr_, $T1, $T2, Expr),
+                          carg1 => CTypeForArg($T1),
+                          carg2 => CTypeForArg($T2),
+                          csarg1 => CSTypeForArg($T1),
+                          csarg2 => CSTypeForArg($T2)) {
 
-                        [DllImport(Constants.LibName)] public static extern IntPtr GetterName(IntPtr obj, IntPtr x, IntPtr y);
-                        [DllImport(Constants.LibName)] public static extern void SetterName(IntPtr func, IntPtr x, IntPtr y, IntPtr e);
+                [DllImport(Constants.LibName)] public static extern IntPtr GetterName(IntPtr obj, carg1 x, carg2 y);
+                [DllImport(Constants.LibName)] public static extern void SetterName(IntPtr func, carg1 x, carg2 y, IntPtr e);
 
-                        replacePP(arg1 => concatId(HS, $T1)) {
-                            replacePP(arg2 => concatId(HS, $T2)) {
-                                public HSExpr this[arg1 x, arg2 y]
-                                {
-                                    get => new HSExpr(GetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y)));
-                                    set => SetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(value));
-                                }
-                            }
-                        }
+                    public HSExpr this[csarg1 x, csarg2 y]
+                    {
+                        get => new HSExpr(GetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y)));
+                        set => SetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(value));
                     }
                 }
             }
@@ -78,22 +77,22 @@ namespace HalideSharp
 
         region("3D indexers") {
             define Indexer3D($T1, $T2, $T3) {
-                replacePP(GetterName => concatId(Func, _GetExpr_, $T1, $T2, $T3)) {
-                    replacePP(SetterName => concatId(Func, _SetExpr_, $T1, $T2, $T3, Expr)) {
-                        [DllImport(Constants.LibName)] public static extern IntPtr GetterName(IntPtr obj, IntPtr x, IntPtr y, IntPtr z);
-                        [DllImport(Constants.LibName)] public static extern void SetterName(IntPtr func, IntPtr x, IntPtr y, IntPtr z, IntPtr e);
+                replacePP(GetterName => concatId(Func, _GetExpr_, $T1, $T2, $T3),
+                          SetterName => concatId(Func, _SetExpr_, $T1, $T2, $T3, Expr),
+                          carg1 => CTypeForArg($T1),
+                          carg2 => CTypeForArg($T2),
+                          carg3 => CTypeForArg($T3),
+                          csarg1 => CSTypeForArg($T1),
+                          csarg2 => CSTypeForArg($T2),
+                          csarg3 => CSTypeForArg($T3)) {
 
-                        replacePP(arg1 => concatId(HS, $T1)) {
-                            replacePP(arg2 => concatId(HS, $T2)) {
-                                replacePP(arg3 => concatId(HS, $T3)) {
-                                    public HSExpr this[arg1 x, arg2 y, arg3 z]
-                                    {
-                                        get => new HSExpr(GetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z)));
-                                        set => SetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z), HSUtil.CArg(value));
-                                    }
-                                }
-                            }
-                        }
+                    [DllImport(Constants.LibName)] public static extern IntPtr GetterName(IntPtr obj, carg1 x, carg2 y, carg3 z);
+                    [DllImport(Constants.LibName)] public static extern void SetterName(IntPtr func, carg1 x, carg2 y, carg3 z, IntPtr e);
+
+                    public HSExpr this[csarg1 x, csarg2 y, csarg3 z]
+                    {
+                        get => new HSExpr(GetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z)));
+                        set => SetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z), HSUtil.CArg(value));
                     }
                 }
             }

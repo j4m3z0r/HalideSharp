@@ -1,5 +1,9 @@
 #include <Halide.h>
 
+// NOTE: this file uses a *lot* of preprocessor magic that isn't particularly
+// intuitive. Please read magicmacros.h before making changes to this file to
+// get a sense for how it all works.
+
 #include "magicmacros.h"
 
 #define LANGUAGE_C 1
@@ -13,20 +17,64 @@ extern "C" void Func_Delete(Func *f) { delete f; }
 
 // 1D indexers
 #define FUNC_INDEXER_1D(T1) \
-    extern "C" Expr* Func_GetExpr_ ## T1(Func* f, T1* x) { return new Expr((*f)(*x)); } \
-    extern "C" void Func_SetExpr_ ## T1 ## Expr(Func* f, T1* x, Expr* e) { (*f)(*x) = *e; }
-PERMUTE_ARGS_1D(FUNC_INDEXER_1D)
+    extern "C" Expr* Func_GetExpr_ ## T1( \
+        Func* f, \
+        argtype(T1) x \
+    ) { \
+        return new Expr((*f)(deref(T1, x))); \
+    } \
+    \
+    extern "C" void Func_SetExpr_ ## T1 ## Expr( \
+        Func* f, \
+        argtype(T1) x, \
+        Expr* e \
+    ) { \
+        (*f)(deref(T1, x)) = *e; \
+    }
 
 // 2D indexers
 #define FUNC_INDEXER_2D(T1, T2) \
-    extern "C" Expr* Func_GetExpr_ ## T1 ## T2(Func* f, T1* x, T2* y) { return new Expr((*f)(*x, *y)); } \
-    extern "C" void Func_SetExpr_ ## T1 ## T2 ## Expr(Func* f, T1* x, T2* y, Expr* e) { (*f)(*x, *y) = *e; }
-PERMUTE_ARGS_2D(FUNC_INDEXER_2D)
+    extern "C" Expr* Func_GetExpr_ ## T1 ## T2( \
+        Func* f, \
+        argtype(T1) x, \
+        argtype(T2) y \
+    ) { \
+        return new Expr((*f)(deref(T1, x), deref(T2, y))); \
+    } \
+    \
+    extern "C" void Func_SetExpr_ ## T1 ## T2 ## Expr( \
+        Func* f, \
+        argtype(T1) x, \
+        argtype(T2) y, \
+        Expr* e \
+    ) { \
+        (*f)(deref(T1, x), deref(T2, y)) = *e; \
+    }
+
 
 // 3D indexers
 #define FUNC_INDEXER_3D(T1, T2, T3) \
-    extern "C" Expr* Func_GetExpr_ ## T1 ## T2 ##  T3(Func* f, T1* x, T2* y, T3 *z) { return new Expr((*f)(*x, *y, *z)); } \
-    extern "C" void Func_SetExpr_ ## T1 ## T2 ## T3 ## Expr(Func* f, T1* x, T2* y, T3* z, Expr* e) { (*f)(*x, *y, *z) = *e; }
+    extern "C" Expr* Func_GetExpr_ ## T1 ## T2 ## T3( \
+        Func* f, \
+        argtype(T1) x, \
+        argtype(T2) y, \
+        argtype(T3) z \
+    ) { \
+        return new Expr((*f)(deref(T1, x), deref(T2, y), deref(T3, z))); \
+    } \
+    \
+    extern "C" void Func_SetExpr_ ## T1 ## T2 ## T3 ## Expr( \
+        Func* f, \
+        argtype(T1) x, \
+        argtype(T2) y, \
+        argtype(T3) z, \
+        Expr* e \
+    ) { \
+        (*f)(deref(T1, x), deref(T2, y), deref(T3, z)) = *e; \
+    }
+
+PERMUTE_ARGS_1D(FUNC_INDEXER_1D)
+PERMUTE_ARGS_2D(FUNC_INDEXER_2D)
 PERMUTE_ARGS_3D(FUNC_INDEXER_3D)
 
 #define FUNC_REALIZE_TO_BUFF(CSTYPE, CPPTYPE) \

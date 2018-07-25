@@ -26,14 +26,28 @@ GEN(IMAGEPARAM_SET);
 
 // 2D indexers
 #define IMAGEPARAM_GETEXPR_2D(CSTYPE, CPPTYPE, T1, T2) \
-    extern "C" Expr* ImageParamOf ## CSTYPE ## _GetExpr_ ## T1 ## T2 (ImageParam *self, T1 *x, T2 *y) { return new Expr((*self)(*x, *y)); }
-#define IMAGEPARAM_GETEXPR_2D_ALLTYPES(T1, T2) GEN(IMAGEPARAM_GETEXPR_2D, T1, T2)
-PERMUTE_ARGS_2D(IMAGEPARAM_GETEXPR_2D_ALLTYPES)
+    extern "C" Expr* ImageParamOf ## CSTYPE ## _GetExpr_ ## T1 ## T2 ( \
+        ImageParam *self, \
+        argtype(T1) x, \
+        argtype(T2) y \
+    ) { \
+        return new Expr((*self)(deref(T1, x), deref(T2, y))); \
+    }
 
 // 3D indexers
 #define IMAGEPARAM_GETEXPR_3D(CSTYPE, CPPTYPE, T1, T2, T3) \
-    extern "C" Expr* ImageParamOf ## CSTYPE ## _GetExpr_ ## T1 ## T2 ## T3(ImageParam *self, T1 *x, T2 *y, T3 *z) { return new Expr((*self)(*x, *y, *z)); }
+    extern "C" Expr* ImageParamOf ## CSTYPE ## _GetExpr_ ## T1 ## T2 ## T3( \
+        ImageParam *self, \
+        argtype(T1) x, \
+        argtype(T2) y, \
+        argtype(T3) z \
+    ) { \
+        return new Expr((*self)(deref(T1, x), deref(T2, y), deref(T3, z))); \
+    }
+
+#define IMAGEPARAM_GETEXPR_2D_ALLTYPES(T1, T2) GEN(IMAGEPARAM_GETEXPR_2D, T1, T2)
 #define IMAGEPARAM_GETEXPR_3D_ALLTYPES(T1, T2, T3) GEN(IMAGEPARAM_GETEXPR_3D, T1, T2, T3)
+PERMUTE_ARGS_2D(IMAGEPARAM_GETEXPR_2D_ALLTYPES)
 PERMUTE_ARGS_3D(IMAGEPARAM_GETEXPR_3D_ALLTYPES)
 
 #define IMAGEPARAM_IN_FUNC(CSTYPE, CPPTYPE) \

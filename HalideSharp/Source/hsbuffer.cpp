@@ -48,33 +48,78 @@ GEN(DIMENSION)
 // Don't really need to pass int in here, but it means this fits the pattern of the GEN macro.
 // Similarly, it takes us more lines to do this with the macro, but it means we'll get the
 // definitions for other buffer types for free, if/when we add them.
-#define BUFFER_GETVAL_2D(CSTYPE, CPPTYPE, ARGTYPE) \
-    extern "C" void BufferOf ## CSTYPE ## _GetVal_ ## ARGTYPE ## ARGTYPE(Buffer< CPPTYPE > *b, HST::ARGTYPE x, HST::ARGTYPE y, CPPTYPE *result) { *result = (*b)(x, y); }
+#define BUFFER_GETVAL_2D(CSTYPE, CPPTYPE, T) \
+    extern "C" void BufferOf ## CSTYPE ## _GetVal_ ## T ## T( \
+        Buffer< CPPTYPE > *b, \
+        argtype(T) x, \
+        argtype(T) y, \
+        CPPTYPE *result \
+    ) { \
+        *result = (*b)(x, y); \
+    }
 GEN(BUFFER_GETVAL_2D, Int)
 
-#define BUFFER_SETVAL_2D(CSTYPE, CPPTYPE, ARGTYPE) \
-    extern "C" void BufferOf ## CSTYPE ## _SetVal_ ## ARGTYPE ## ARGTYPE ## CSTYPE ## P(Buffer< CPPTYPE > *b, HST::ARGTYPE x, HST::ARGTYPE y, CPPTYPE *valP) { (*b)(x, y) = *valP; }
+#define BUFFER_SETVAL_2D(CSTYPE, CPPTYPE, T) \
+    extern "C" void BufferOf ## CSTYPE ## _SetVal_ ## T ## T ## CSTYPE ## P( \
+        Buffer< CPPTYPE > *b, \
+        argtype(T) x, \
+        argtype(T) y, \
+        CPPTYPE *valP \
+    ) { \
+        (*b)(x, y) = *valP; \
+    }
 GEN(BUFFER_SETVAL_2D, Int)
 
-#define BUFFER_GETVAL_3D(CSTYPE, CPPTYPE, ARGTYPE) \
-    extern "C" void BufferOf ## CSTYPE ## _GetVal_ ## ARGTYPE ## ARGTYPE ## ARGTYPE(Buffer< CPPTYPE > *b, HST::ARGTYPE x, HST::ARGTYPE y, HST::ARGTYPE z, CPPTYPE *result) { *result = (*b)(x, y, z); }
+#define BUFFER_GETVAL_3D(CSTYPE, CPPTYPE, T) \
+    extern "C" void BufferOf ## CSTYPE ## _GetVal_ ## T ## T ## T( \
+        Buffer< CPPTYPE > *b, \
+        argtype(T) x, \
+        argtype(T) y, \
+        argtype(T) z, \
+        CPPTYPE *result \
+    ) { \
+        *result = (*b)(x, y, z); \
+    }
 GEN(BUFFER_GETVAL_3D, Int)
 
-#define BUFFER_SETVAL_3D(CSTYPE, CPPTYPE, ARGTYPE) \
-    extern "C" void BufferOf ## CSTYPE ## _SetVal_ ## ARGTYPE ## ARGTYPE ## ARGTYPE ## CSTYPE ## P(Buffer< CPPTYPE > *b, HST::ARGTYPE x, HST::ARGTYPE y, HST::ARGTYPE z, CPPTYPE *valP) { (*b)(x, y, z) = *valP; }
+#define BUFFER_SETVAL_3D(CSTYPE, CPPTYPE, T) \
+    extern "C" void BufferOf ## CSTYPE ## _SetVal_ ## T ## T ## T ## CSTYPE ## P(Buffer< CPPTYPE > *b, argtype(T) x, argtype(T) y, argtype(T) z, CPPTYPE *valP) { (*b)(x, y, z) = *valP; }
 GEN(BUFFER_SETVAL_3D, Int)
 
 // 2D indexers
 #define BUFFER_GETEXPR_2D(CSTYPE, CPPTYPE, T1, T2) \
-    extern "C" Expr* BufferOf ## CSTYPE ## _GetExpr_ ## T1 ## T2 (Buffer< CPPTYPE > *b, T1 *x, T2 *y) { return new Expr((*b)(*x, *y)); }
-#define BUFFER_GETEXPR_2D_ALLTYPES(T1, T2) GEN(BUFFER_GETEXPR_2D, T1, T2)
-PERMUTE_ARGS_2D(BUFFER_GETEXPR_2D_ALLTYPES)
+    extern "C" Expr* BufferOf ## CSTYPE ## _GetExpr_ ## T1 ## T2 ( \
+        Buffer< CPPTYPE > *b, \
+        argtype(T1) x, \
+        argtype(T2) y \
+    ) { \
+        return new Expr((*b)(deref(T1, x), deref(T2, y))); \
+    }
 
 // 3D indexers
 #define BUFFER_GETEXPR_3D(CSTYPE, CPPTYPE, T1, T2, T3) \
-    extern "C" Expr* BufferOf ## CSTYPE ## _GetExpr_ ## T1 ## T2 ## T3(Buffer< CPPTYPE > *b, T1 *x, T2 *y, T3 *z) { return new Expr((*b)(*x, *y, *z)); }
+    extern "C" Expr* BufferOf ## CSTYPE ## _GetExpr_ ## T1 ## T2 ## T3( \
+        Buffer< CPPTYPE > *b, \
+        argtype(T1) x, \
+        argtype(T2) y, \
+        argtype(T3) z \
+    ) { \
+        return new Expr((*b)(deref(T1, x), deref(T2, y), deref(T3, z))); \
+    }
+
+#define BUFFER_GETEXPR_2D_ALLTYPES(T1, T2) GEN(BUFFER_GETEXPR_2D, T1, T2)
 #define BUFFER_GETEXPR_3D_ALLTYPES(T1, T2, T3) GEN(BUFFER_GETEXPR_3D, T1, T2, T3)
+PERMUTE_ARGS_2D(BUFFER_GETEXPR_2D_ALLTYPES)
 PERMUTE_ARGS_3D(BUFFER_GETEXPR_3D_ALLTYPES)
+
+// ToArray implementations
+#define BUFFER_TOARRAY(CSTYPE, CPPTYPE) \
+    extern "C" void BufferOf ## CSTYPE ## _CopyToArray_ ## CSTYPE ## p(Buffer<CPPTYPE> *self, CPPTYPE *result) { \
+        self->copy_to_host(); \
+        const auto internalBuff = self->get(); \
+        memcpy((void*)result, (void*)internalBuff->begin(), internalBuff->size_in_bytes()); \
+    }
+GEN(BUFFER_TOARRAY)
 
 // Set min
 #define BUFFER_SETMIN_2D(CSTYPE, CPPTYPE) \
