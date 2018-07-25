@@ -16,6 +16,13 @@ GEN(CONSTRUCTOR_2D)
     extern "C" Buffer<CPPTYPE> *BufferOf ## CSTYPE ## _New_IntIntInt(int width, int height, int channels) { return new Buffer<CPPTYPE>(width, height, channels); }
 GEN(CONSTRUCTOR_3D)
 
+// 3D constructors with data pointer
+#define CONSTRUCTOR_3D_DATA(CSTYPE, CPPTYPE) \
+    extern "C" Buffer<CPPTYPE> *BufferOf ## CSTYPE ## _New_BytepIntIntInt(void *data, int width, int height, int channels) { \
+        return new Buffer<CPPTYPE>((CPPTYPE*) data, width, height, channels); \
+    }
+GEN(CONSTRUCTOR_3D_DATA)
+
 // destructors
 #define DESTRUCTOR(CSTYPE, CPPTYPE) \
     extern "C" void BufferOf ## CSTYPE ## _Delete(Buffer<CPPTYPE> *b) { delete b; }

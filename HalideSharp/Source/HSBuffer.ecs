@@ -34,6 +34,14 @@ namespace HalideSharp
                 }
             }
         }
+        
+        region("3D constructors with data array") {
+            unroll (BufferType in BufferTypes) {
+                replacePP(MethodName => concatId(BufferOf, BufferType, _New_BytepIntIntInt)) {
+                    [DllImport(Constants.LibName)] public static extern IntPtr MethodName(IntPtr dataP, int width, int height, int channels);
+                }
+            }
+        }
 
         region("destructors") {
             unroll(BufferType in BufferTypes) {
@@ -60,7 +68,7 @@ namespace HalideSharp
         
         region("3D indexers") {
             region("int indexers") {
-                unroll((BufferType, _) in BufferAndNativeTypes) {
+                unroll(BufferType in BufferTypes) {
                     replacePP(MethodName => concatId(BufferOf, BufferType, _GetVal_IntIntInt)) {
                         [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr obj, int x, int y, int z, IntPtr result);
                     }
@@ -71,6 +79,14 @@ namespace HalideSharp
             }
 
             GenIndexerImports3D(Buffer);
+        }
+
+        region("ToArray implementations") {
+            unroll(BufferType in BufferTypes) {
+                replacePP(MethodName => concatId(BufferOf, BufferType, _CopyToArray_, BufferType, p)) {
+                    [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr self, IntPtr resultPointer);
+                }
+            }
         }
         
         define SetMin($BufferType) {
@@ -120,6 +136,8 @@ namespace HalideSharp
         // The HSBufferDimensionList class is just a proxy to give us way to access the dimensions of the buffer with an indexer.
         private HSBufferDimensionList<T> _dimensions;
         public HSBufferDimensionList<T> Dim => _dimensions;
+        private byte[] _hostBuffer = null;
+        private GCHandle _hostBufferHandle;
 
         private void CheckType()
         {
@@ -150,6 +168,28 @@ namespace HalideSharp
                     if(typeof(T) == typeof(NativeType)) { _cppobj = CppBuffer.MethodName(width, height, channels); return; }
                 }
             }
+            throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
+        }
+
+        // As of right now, we assume that host applications pass image data around as byte arrays.
+        public HSBuffer(byte[] data, int width, int height, int channels)
+        {
+            // According to https://stackoverflow.com/questions/39779149/initializing-halide-buffer-in-c, Buffers don't maintain
+            // their own copy of the data, so we hold a reference to the passed data, pin it, and release the handle in the
+            // destructor.
+            _dimensions = new HSBufferDimensionList<T>(this);
+            _hostBuffer = data;
+            _hostBufferHandle = GCHandle.Alloc(data, GCHandleType.Pinned);
+
+            unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                replacePP(MethodName => concatId(BufferOf, BufferType, _New_BytepIntIntInt)) {
+                    if(typeof(T) == typeof(NativeType)) {
+                        _cppobj = CppBuffer.MethodName(HSUtil.CArg(_hostBufferHandle), HSUtil.CArg(width), HSUtil.CArg(height), HSUtil.CArg(channels));
+                        return;
+                    }
+                }
+            }
+
             throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
         }
         
@@ -191,6 +231,11 @@ namespace HalideSharp
             {
                 return;
             }
+
+            if(_hostBuffer != null) {
+                _hostBufferHandle.Free();
+            }
+
             unroll((BufferType, NativeType) in BufferAndNativeTypes) {
                 replacePP(MethodName => concatId(BufferOf, BufferType, _Delete)) {
                     if(typeof(T) == (typeof(NativeType))) { CppBuffer.MethodName(_cppobj); return; }
@@ -318,6 +363,32 @@ namespace HalideSharp
                 Indexer3D(Buffer, $T1, $T2, $T3);
             }
             ExecMacro3D(BufferIndexer3D);
+        }
+
+        region("ToArray") {
+            public T[] ToArray()
+            {
+                // Calculate how large the array needs to be
+                var nrVals = Width * Height * Channels;
+                var result = new T[nrVals];
+                var resultHandle = GCHandle.Alloc(result, GCHandleType.Pinned);
+                try
+                {
+                    unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                        if(typeof(T) == typeof(NativeType)) {
+                            replacePP(MethodName => concatId(BufferOf, BufferType, _CopyToArray_, BufferType, p)) {
+                                CppBuffer.MethodName(HSUtil.CArg(this), HSUtil.CArg(resultHandle));
+                                return result;
+                            }
+                        }
+                    }
+                    throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
+                }
+                finally
+                {
+                    resultHandle.Free();
+                }
+            }
         }
         
         public void SetMin(int x, int y)
