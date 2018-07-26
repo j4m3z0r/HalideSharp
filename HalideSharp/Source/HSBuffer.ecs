@@ -18,6 +18,13 @@ namespace HalideSharp
 {
     internal class CppBuffer
     {
+        region("1D constructors") {
+            unroll (BufferType in BufferTypes) {
+                replacePP(MethodName => concatId(BufferOf, BufferType, _New_Int)) {
+                    [DllImport(Constants.LibName)] public static extern IntPtr MethodName(int size);
+                }
+            }
+        }
 
         region("2D constructors") {
             unroll (BufferType in BufferTypes) {
@@ -57,6 +64,21 @@ namespace HalideSharp
                     [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr obj);
                 }
             }
+        }
+
+        region("1D indexers") {
+            region("int indexers") {
+                unroll((BufferType, _) in BufferAndNativeTypes) {
+                    replacePP(MethodName => concatId(BufferOf, BufferType, _GetVal_Int)) {
+                        [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr obj, int x, IntPtr result);
+                    }
+                    replacePP(MethodName => concatId(BufferOf, BufferType, _SetVal_Int, BufferType, P)) {
+                        [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr obj, int x, IntPtr val);
+                    }
+                }
+            }
+
+            GenIndexerImports1D(Buffer);
         }
 
         region("2D indexers") {
@@ -152,6 +174,17 @@ namespace HalideSharp
             unroll((_, NativeType) in BufferAndNativeTypes) {
                 if(typeof(T) == typeof(NativeType)) {
                     return;
+                }
+            }
+            throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
+        }
+
+        public HSBuffer(int size)
+        {
+            _dimensions = new HSBufferDimensionList<T>(this);
+            unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                replacePP(MethodName => concatId(BufferOf, BufferType, _New_Int)) {
+                    if(typeof(T) == typeof(NativeType)) { _cppobj = CppBuffer.MethodName(size); return; }
                 }
             }
             throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
@@ -268,6 +301,54 @@ namespace HalideSharp
             throw new NotImplementedException($"No destructor for type {typeof(T)}");
         }
 
+        region("1D value getters and setters") {
+            public T GetVal(int x)
+            {
+                var result = new T[1];
+                var resultHandle = GCHandle.Alloc(result, GCHandleType.Pinned);
+                try {
+                    unroll((BufferType, NativeType) in BufferAndNativeTypes)
+                    {
+                        replacePP(MethodName => concatId(BufferOf, BufferType, _GetVal_Int)) {
+                            if(typeof(T) == typeof(NativeType)) {
+                                CppBuffer.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(resultHandle));
+                                return result[0];
+                            }
+                        }
+                    }
+                    throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
+                }
+                finally
+                {
+                    resultHandle.Free();
+                }
+            }
+            
+            public void SetVal(int x, T val)
+            {
+                var tmp = new T[1];
+                tmp[0] = val;
+                var tmpHandle = GCHandle.Alloc(tmp, GCHandleType.Pinned);
+                try
+                {
+                    unroll((BufferType, NativeType) in BufferAndNativeTypes)
+                    {
+                        replacePP(MethodName => concatId(BufferOf, BufferType, _SetVal_Int, BufferType, P)) {
+                            if(typeof(T) == typeof(NativeType)) {
+                                CppBuffer.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(tmpHandle));
+                                return;
+                            }
+                        }
+                    }
+                    throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
+                }
+                finally
+                {
+                    tmpHandle.Free();
+                }
+            }
+        }
+
         public T GetVal(int x, int y)
         {
             // Here's what's going on with this piece of pure artisinal C#: over in C++ land, Halide::Buffer is a
@@ -363,7 +444,11 @@ namespace HalideSharp
             }
         }
             
-
+        public T this[int x]
+        {
+            get => GetVal(x);
+            set => SetVal(x, value);
+        }
         public T this[int x, int y]
         {
             get => GetVal(x, y);
@@ -375,6 +460,12 @@ namespace HalideSharp
             set => SetVal(x, y, z, value);
         }
 
+        region("1D indexers") {
+            define BufferIndexer1D($T1) {
+                Indexer1D(Buffer, $T1);
+            }
+            ExecMacro1D(BufferIndexer1D);
+        }
         region("2D indexers") {
             define BufferIndexer2D($T1, $T2) {
                 Indexer2D(Buffer, $T1, $T2);

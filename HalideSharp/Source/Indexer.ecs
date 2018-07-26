@@ -2,7 +2,18 @@
 
 includeFile("MagicMacros.ecs");
 
-// Execute the given macro with all permutations of types for 3 arguments, plus all types for the
+// Execute the given macro with all permutations of types for 1 arguments, plus all types for the
+// container object (eg: Buffer<float>, Buffer<byte>, etc).
+define ExecMacroAllTypes1D($ContainerType, $macro1d) {
+    define TypedEval($T1) {
+        unroll (BufferType in BufferTypes) {
+            $macro1d($ContainerType, BufferType, $T1);
+        }
+    }
+    ExecMacro1D(TypedEval);
+}
+
+// Execute the given macro with all permutations of types for 2 arguments, plus all types for the
 // container object (eg: Buffer<float>, Buffer<byte>, etc).
 define ExecMacroAllTypes2D($ContainerType, $macro2d) {
     define TypedEval($T1, $T2) {
@@ -33,6 +44,18 @@ define CTypeForArg($T) {
 }
 
 // DllImport generators
+// 1D indexer entry points
+define IndexerImports1D($Container, $Type, $T1) {
+    replace(MethodName => concatId($Container, Of, $Type, _GetExpr_, $T1),
+            Arg1Type => CTypeForArg($T1)) {
+        [DllImport(Constants.LibName)] public static extern IntPtr MethodName(IntPtr obj, Arg1Type x);
+    }
+}
+
+define GenIndexerImports1D($ContainerType) {
+    ExecMacroAllTypes1D($ContainerType, IndexerImports1D);
+}
+
 // 2D indexer entry points
 define IndexerImports2D($Container, $Type, $T1, $T2) {
     replace(MethodName => concatId($Container, Of, $Type, _GetExpr_, $T1, $T2),
@@ -68,6 +91,26 @@ define CSTypeForArg($T) {
     else concatId(HS, $T);
 }
 
+define Indexer1D($ContainerType, $T1) {
+    replacePP(arg1 => CSTypeForArg($T1)) {
+        public HSExpr GetExpr(arg1 x)
+        {
+            unroll((BufferType, NativeType) in BufferAndNativeTypes)
+            {
+                replacePP(MethodName => concatId($ContainerType, Of, BufferType, _GetExpr_, $T1),
+                          ClassName => concatId(Cpp, $ContainerType)) {
+                    if(typeof(T) == typeof(NativeType)) {
+                        return new HSExpr(ClassName.MethodName(HSUtil.CArg(this), HSUtil.CArg(x)));
+                    }
+                }
+
+            }
+            throw new NotImplementedException("Buffer type {typeof(T)} unsupported");
+        }
+        public HSExpr this[arg1 x] => GetExpr(x);
+    }
+}
+
 define Indexer2D($ContainerType, $T1, $T2) {
     replacePP(arg1 => CSTypeForArg($T1),
               arg2 => CSTypeForArg($T2)) {
@@ -77,7 +120,9 @@ define Indexer2D($ContainerType, $T1, $T2) {
             {
                 replacePP(MethodName => concatId($ContainerType, Of, BufferType, _GetExpr_, $T1, $T2),
                           ClassName => concatId(Cpp, $ContainerType)) {
-                    if(typeof(T) == typeof(NativeType)) { return new HSExpr(ClassName.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y))); }
+                    if(typeof(T) == typeof(NativeType)) {
+                        return new HSExpr(ClassName.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y)));
+                    }
                 }
 
             }
@@ -97,7 +142,9 @@ define Indexer3D($ContainerType, $T1, $T2, $T3) {
             {
                 replacePP(MethodName => concatId($ContainerType, Of, BufferType, _GetExpr_, $T1, $T2, $T3),
                           ClassName => concatId(Cpp, $ContainerType)) {
-                    if(typeof(T) == typeof(NativeType)) { return new HSExpr(ClassName.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z))); }
+                    if(typeof(T) == typeof(NativeType)) {
+                        return new HSExpr(ClassName.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z)));
+                    }
                 }
 
             }

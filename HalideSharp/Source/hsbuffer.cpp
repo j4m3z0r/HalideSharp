@@ -6,6 +6,11 @@
 
 using namespace Halide;
 
+// 1D constructors
+#define CONSTRUCTOR_1D(CSTYPE, CPPTYPE) \
+    extern "C" Buffer<CPPTYPE> *BufferOf ## CSTYPE ## _New_Int(int size) { return new Buffer<CPPTYPE>(size); }
+GEN(CONSTRUCTOR_1D)
+
 // 2D constructors
 #define CONSTRUCTOR_2D(CSTYPE, CPPTYPE) \
     extern "C" Buffer<CPPTYPE> *BufferOf ## CSTYPE ## _New_IntInt(int width, int height) { return new Buffer<CPPTYPE>(width, height); }
@@ -84,6 +89,16 @@ GEN(DIMENSION)
     }
 GEN(BUFFER_GETVAL_2D, Int)
 
+#define BUFFER_SETVAL_1D(CSTYPE, CPPTYPE, T) \
+    extern "C" void BufferOf ## CSTYPE ## _SetVal_ ## T ## CSTYPE ## P( \
+        Buffer< CPPTYPE > *b, \
+        argtype(T) x, \
+        CPPTYPE *valP \
+    ) { \
+        (*b)(x) = *valP; \
+    }
+GEN(BUFFER_SETVAL_1D, Int)
+
 #define BUFFER_SETVAL_2D(CSTYPE, CPPTYPE, T) \
     extern "C" void BufferOf ## CSTYPE ## _SetVal_ ## T ## T ## CSTYPE ## P( \
         Buffer< CPPTYPE > *b, \
@@ -111,6 +126,15 @@ GEN(BUFFER_GETVAL_3D, Int)
     extern "C" void BufferOf ## CSTYPE ## _SetVal_ ## T ## T ## T ## CSTYPE ## P(Buffer< CPPTYPE > *b, argtype(T) x, argtype(T) y, argtype(T) z, CPPTYPE *valP) { (*b)(x, y, z) = *valP; }
 GEN(BUFFER_SETVAL_3D, Int)
 
+// 1D indexers
+#define BUFFER_GETEXPR_1D(CSTYPE, CPPTYPE, T1) \
+    extern "C" Expr* BufferOf ## CSTYPE ## _GetExpr_ ## T1 ( \
+        Buffer< CPPTYPE > *b, \
+        argtype(T1) x \
+    ) { \
+        return new Expr((*b)(deref(T1, x))); \
+    }
+
 // 2D indexers
 #define BUFFER_GETEXPR_2D(CSTYPE, CPPTYPE, T1, T2) \
     extern "C" Expr* BufferOf ## CSTYPE ## _GetExpr_ ## T1 ## T2 ( \
@@ -132,8 +156,11 @@ GEN(BUFFER_SETVAL_3D, Int)
         return new Expr((*b)(deref(T1, x), deref(T2, y), deref(T3, z))); \
     }
 
+#define BUFFER_GETEXPR_1D_ALLTYPES(T1) GEN(BUFFER_GETEXPR_1D, T1)
 #define BUFFER_GETEXPR_2D_ALLTYPES(T1, T2) GEN(BUFFER_GETEXPR_2D, T1, T2)
 #define BUFFER_GETEXPR_3D_ALLTYPES(T1, T2, T3) GEN(BUFFER_GETEXPR_3D, T1, T2, T3)
+
+PERMUTE_ARGS_1D(BUFFER_GETEXPR_1D_ALLTYPES)
 PERMUTE_ARGS_2D(BUFFER_GETEXPR_2D_ALLTYPES)
 PERMUTE_ARGS_3D(BUFFER_GETEXPR_3D_ALLTYPES)
 
