@@ -21,7 +21,7 @@ LEMP_VERSION := -trunk
 LEMP_DIR := $(abspath $(THIRDPARTY_DIR)/LeMP)
 LEMP_BIN := $(LEMP_DIR)/LeMP.exe
 
-CXXFLAGS := -O0 -g -I$(HALIDE_INC) -I$(HALIDE_TOOLS) `libpng-config --cflags` -fPIC
+CXXFLAGS := -O2 -g -I$(HALIDE_INC) -I$(HALIDE_TOOLS) `libpng-config --cflags` -fPIC
 LDFLAGS := $(HALIDE_LIB) `libpng-config --ldflags` -ljpeg -lpthread -ldl -fPIC
 
 CXX := g++ -std=c++11
