@@ -66,3 +66,27 @@ extern "C" Var* Global_Var7() { return &_7; }
 extern "C" Var* Global_Var8() { return &_8; }
 extern "C" Var* Global_Var9() { return &_9; }
 
+extern "C" Expr* Global_Select_ExprExprExpr(Expr* condition, Expr* trueVal, Expr* falseVal)
+{
+    return new Expr(select(*condition, *trueVal, *falseVal));
+}
+
+extern "C" Expr* Global_Select_ExprExprExprExprVarargs(Expr* c0, Expr* v0, Expr* c1, Expr* v1, int numArgs, Expr** args)
+{
+    // Unlike Func::Reorder, there is no variant of select() that accepts a
+    // vector of arguments -- presumably so that the requirement for an odd
+    // number of arguments can be asserted at compile time. We don't have a
+    // super great way to represent a requirement that there be an odd number
+    // of arguments in C#, so we just throw an exception at runtime in C# if
+    // the user passes an invalid number of arguments.
+    switch(numArgs) {
+        case 1: return new Expr(select(*c0, *v0, *c1, *v1, *args[0]));
+        case 3: return new Expr(select(*c0, *v0, *c1, *v1, *args[0], *args[1], *args[2]));
+        case 5: return new Expr(select(*c0, *v0, *c1, *v1, *args[0], *args[1], *args[2], *args[3], *args[4]));
+        case 7: return new Expr(select(*c0, *v0, *c1, *v1, *args[0], *args[1], *args[2], *args[3], *args[4], *args[5], *args[6]));
+        case 9: return new Expr(select(*c0, *v0, *c1, *v1, *args[0], *args[1], *args[2], *args[3], *args[4], *args[5], *args[6], *args[7], *args[8]));
+    }
+
+    return nullptr;
+}
+

@@ -139,5 +139,32 @@ namespace HalideSharp
             return new HSTarget(Global_GetHostTarget());
         }
 
+        [DllImport(Constants.LibName)]
+        private static extern IntPtr Global_Select_ExprExprExpr(IntPtr condition, IntPtr trueVal, IntPtr falseVal);
+        public static HSExpr Select(HSExpr condition, HSExpr trueVal, HSExpr falseVal)
+        {
+            return new HSExpr(Global_Select_ExprExprExpr(HSUtil.CArg(condition), HSUtil.CArg(trueVal), HSUtil.CArg(falseVal)));
+        }
+
+        [DllImport(Constants.LibName)]
+        private static extern IntPtr Global_Select_ExprExprExprExprVarargs(IntPtr c0, IntPtr v0, IntPtr c1, IntPtr v1, int numArgs, IntPtr[] args);
+        public static HSExpr Select(HSExpr c0, HSExpr v0, HSExpr c1, HSExpr v1, params HSExpr[] args)
+        {
+            if(args.Length > 10 || args.Length < 1 || args.Length % 2 != 1)
+            {
+                throw new NotImplementedException("Only 1, 3, 5, 7 or 9 varargs are supported.");
+            }
+
+            var objList = new IntPtr[args.Length];
+            for (var i = 0; i < args.Length; i++)
+            {
+                objList[i] = HSUtil.CArg(args[i]);
+            }
+
+            return new HSExpr(Global_Select_ExprExprExprExprVarargs(
+                HSUtil.CArg(c0), HSUtil.CArg(v0),
+                HSUtil.CArg(c1), HSUtil.CArg(v1),
+                args.Length, objList));
+        }
     }
 }
