@@ -43,6 +43,14 @@ namespace HalideSharp
             }
         }
 
+        region("3D make_interleaved with data array") {
+            unroll (BufferType in BufferTypes) {
+                replacePP(MethodName => concatId(BufferOf, BufferType, _MakeInterleaved_, BufferType, pIntIntInt)) {
+                    [DllImport(Constants.LibName)] public static extern IntPtr MethodName(IntPtr dataP, int width, int height, int channels);
+                }
+            }
+        }
+
         region("destructors") {
             unroll(BufferType in BufferTypes) {
                 replacePP(MethodName => concatId(BufferOf, BufferType, _Delete)) {
@@ -172,7 +180,7 @@ namespace HalideSharp
         }
 
         // As of right now, we assume that host applications pass image data around as byte arrays.
-        public HSBuffer(byte[] data, int width, int height, int channels)
+        public HSBuffer(byte[] data, int width, int height, int channels, bool interleaved=false)
         {
             // According to https://stackoverflow.com/questions/39779149/initializing-halide-buffer-in-c, Buffers don't maintain
             // their own copy of the data, so we hold a reference to the passed data, pin it, and release the handle in the
@@ -182,17 +190,33 @@ namespace HalideSharp
             _hostBufferHandle = GCHandle.Alloc(data, GCHandleType.Pinned);
 
             unroll((BufferType, NativeType) in BufferAndNativeTypes) {
-                replacePP(MethodName => concatId(BufferOf, BufferType, _New_BytepIntIntInt)) {
-                    if(typeof(T) == typeof(NativeType)) {
-                        _cppobj = CppBuffer.MethodName(HSUtil.CArg(_hostBufferHandle), HSUtil.CArg(width), HSUtil.CArg(height), HSUtil.CArg(channels));
-                        return;
+                if(typeof(T) == typeof(NativeType)) {
+                    if(interleaved)
+                    {
+                        replacePP(MethodName => concatId(BufferOf, BufferType, _MakeInterleaved_, BufferType, pIntIntInt)) {
+                            _cppobj = CppBuffer.MethodName(HSUtil.CArg(_hostBufferHandle), HSUtil.CArg(width), HSUtil.CArg(height), HSUtil.CArg(channels));
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        replacePP(MethodName => concatId(BufferOf, BufferType, _New_BytepIntIntInt)) {
+                            _cppobj = CppBuffer.MethodName(HSUtil.CArg(_hostBufferHandle), HSUtil.CArg(width), HSUtil.CArg(height), HSUtil.CArg(channels));
+                            return;
+                        }
                     }
                 }
             }
 
             throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
         }
-        
+       
+        // For the time being, we only accept byte[]s as input, which is about as close as we get to a void * in C#.
+        public static HSBuffer<T> MakeInterleaved(byte[] data, int width, int height, int channels)
+        {
+            return new HSBuffer<T>(data, width, height, channels, true);
+        }
+
         internal HSBuffer(IntPtr cppobj)
         {
             _dimensions = new HSBufferDimensionList<T>(this);

@@ -16,6 +16,18 @@ GEN(CONSTRUCTOR_2D)
     extern "C" Buffer<CPPTYPE> *BufferOf ## CSTYPE ## _New_IntIntInt(int width, int height, int channels) { return new Buffer<CPPTYPE>(width, height, channels); }
 GEN(CONSTRUCTOR_3D)
 
+#define MAKE_INTERLEAVED_3D(CSTYPE, CPPTYPE) \
+    extern "C" Buffer<CPPTYPE> *BufferOf ## CSTYPE ## _MakeInterleaved_ ## CSTYPE ## p ## IntIntInt( \
+        CPPTYPE *data, \
+        int width, \
+        int height, \
+        int channels \
+    ) { \
+        return new Buffer<CPPTYPE>(Buffer<CPPTYPE>::make_interleaved(data, width, height, channels)); \
+    }
+GEN(MAKE_INTERLEAVED_3D)
+
+
 // 3D constructors with data pointer
 #define CONSTRUCTOR_3D_DATA(CSTYPE, CPPTYPE) \
     extern "C" Buffer<CPPTYPE> *BufferOf ## CSTYPE ## _New_BytepIntIntInt(void *data, int width, int height, int channels) { \
@@ -41,11 +53,17 @@ GEN(INT_ACCESSOR, Left, left)
 GEN(INT_ACCESSOR, Right, right)
 
 // Dimension accessors -- note that these are readonly for Buffers.
-#define DIMENSION_FIELDS(CSTYPE, CPPTYPE, CSFIELD, CPPFIELD) \
-    extern "C" int BufferOf ## CSTYPE ## _GetDimension ## CSFIELD ## _Int(Buffer<CPPTYPE> *b, int d) { return b->dim(d).CPPFIELD(); }
+#define GET_DIMENSION_FIELD(CSTYPE, CPPTYPE, CSFIELD, CPPFIELD) \
+    extern "C" int BufferOf ## CSTYPE ## _GetDimension ## CSFIELD ## _Int( \
+        Buffer<CPPTYPE> *b, \
+        int d \
+    ) { \
+        return b->dim(d).CPPFIELD(); \
+    }
+
 #define DIMENSION(CSTYPE, CPPTYPE) \
-    DIMENSION_FIELDS(CSTYPE, CPPTYPE, Stride, stride) \
-    DIMENSION_FIELDS(CSTYPE, CPPTYPE, Extent, extent)
+    GET_DIMENSION_FIELD(CSTYPE, CPPTYPE, Stride, stride) \
+    GET_DIMENSION_FIELD(CSTYPE, CPPTYPE, Extent, extent)
 GEN(DIMENSION)
 
 
