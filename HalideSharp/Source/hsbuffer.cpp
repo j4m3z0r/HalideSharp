@@ -137,12 +137,25 @@ GEN(BUFFER_SETVAL_3D, Int)
 PERMUTE_ARGS_2D(BUFFER_GETEXPR_2D_ALLTYPES)
 PERMUTE_ARGS_3D(BUFFER_GETEXPR_3D_ALLTYPES)
 
-// ToArray implementations
+// FIXME: this is pretty clearly wrong, in that it ignores the structure of the input buffer and just writes out
+// interleaved data, assuming that the axes are width, height and color channel. Need to revisit this once we have
+// enough mechanisms in place to be able to specify the shape of output data, but this works well enough to be able to
+// start doing useful work.
 #define BUFFER_TOARRAY(CSTYPE, CPPTYPE) \
     extern "C" void BufferOf ## CSTYPE ## _CopyToArray_ ## CSTYPE ## p(Buffer<CPPTYPE> *self, CPPTYPE *result) { \
-        self->copy_to_host(); \
-        const auto internalBuff = self->get(); \
-        memcpy((void*)result, (void*)internalBuff->begin(), internalBuff->size_in_bytes()); \
+        CPPTYPE *out = result; \
+        if(self->dimensions() == 3) { \
+            int imax = self->dim(0).extent(); \
+            int jmax = self->dim(1).extent(); \
+            int kmax = self->dim(2).extent(); \
+            for(int j = 0; j < jmax; j++) { \
+                for(int i = 0; i < imax; i++) { \
+                    for(int k = 0; k < kmax; k++) { \
+                        *out++ = (*self)(i, j, k); \
+                    } \
+                } \
+            } \
+        } \
     }
 GEN(BUFFER_TOARRAY)
 
