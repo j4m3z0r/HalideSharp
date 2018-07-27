@@ -10,6 +10,13 @@ replace(BufferAndNativeTypes => (
     (SByte, sbyte),
     (Byte, byte)));
 
+// Execute the given macro with all variations of containing types specified.
+define ExecMacroAllTypes($macro) {
+    unroll(BufferType in BufferTypes) {
+        $macro(BufferType);
+    }
+}
+
 // Execute the given macro with all permutations of types for 1 argument.
 define ExecMacro1D($macro2d) {
     unroll (T1 in (Var, Expr, RDom)) {

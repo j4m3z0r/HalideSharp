@@ -7,13 +7,6 @@ replace(DimensionFields => (Stride, Extent));
 using System;
 using System.Runtime.InteropServices;
 
-// Execute the given macro with all variations of containing types specified.
-define ExecMacroAllTypes($macro) {
-    unroll(BufferType in BufferTypes) {
-        $macro(BufferType);
-    }
-}
-
 namespace HalideSharp
 {
     internal class CppBuffer
@@ -68,7 +61,7 @@ namespace HalideSharp
 
         region("1D indexers") {
             region("int indexers") {
-                unroll((BufferType, _) in BufferAndNativeTypes) {
+                unroll(BufferType in BufferTypes) {
                     replacePP(MethodName => concatId(BufferOf, BufferType, _GetVal_Int)) {
                         [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr obj, int x, IntPtr result);
                     }
@@ -83,7 +76,7 @@ namespace HalideSharp
 
         region("2D indexers") {
             region("int indexers") {
-                unroll((BufferType, _) in BufferAndNativeTypes) {
+                unroll(BufferType in BufferTypes) {
                     replacePP(MethodName => concatId(BufferOf, BufferType, _GetVal_IntInt)) {
                         [DllImport(Constants.LibName)] public static extern void MethodName(IntPtr obj, int x, int y, IntPtr result);
                     }
@@ -544,7 +537,9 @@ namespace HalideSharp
                     internal int MethodName(int dim) {
                         unroll((BufferType, NativeType) in BufferAndNativeTypes) {
                             replacePP(ImplName => concatId(BufferOf, BufferType, _GetDimension, FieldName, _Int)) {
-                                if(typeof(T) == typeof(NativeType)) { return CppBuffer.ImplName(HSUtil.CArg(this), HSUtil.CArg(dim)); }
+                                if(typeof(T) == typeof(NativeType)) {
+                                    return CppBuffer.ImplName(HSUtil.CArg(this), HSUtil.CArg(dim));
+                                }
                             }
                         }
                         throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
@@ -558,7 +553,10 @@ namespace HalideSharp
             unroll((BufferType, NativeType) in BufferAndNativeTypes)
             {
                 replacePP(MethodName => concatId(BufferOf, BufferType, _CopyToHost)) {
-                    if(typeof(T) == typeof(NativeType)) { CppBuffer.MethodName(HSUtil.CArg(this)); return; }
+                    if(typeof(T) == typeof(NativeType)) {
+                        CppBuffer.MethodName(HSUtil.CArg(this));
+                        return;
+                    }
                 }
             }
             throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");

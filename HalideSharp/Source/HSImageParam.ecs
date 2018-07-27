@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 
 includeFile("Indexer.ecs");
 
+replace(DimensionFields => (Stride, Extent));
+
 namespace HalideSharp
 {
     internal class CppImageParam
@@ -45,21 +47,63 @@ namespace HalideSharp
             }
         }
 
+        region("1D Indexers") {
+            region("int indexers") {
+                unroll(BufferType in BufferTypes) {
+                    replacePP(MethodName => concatId(ImageParamOf, BufferType, _GetExpr_Int)) {
+                        [DllImport(Constants.LibName)] public static extern IntPtr MethodName(IntPtr obj, int x);
+                    }
+                }
+            }
+            GenIndexerImports1D(ImageParam);
+        }
         region("2D Indexers") {
+            region("int indexers") {
+                unroll(BufferType in BufferTypes) {
+                    replacePP(MethodName => concatId(ImageParamOf, BufferType, _GetExpr_IntInt)) {
+                        [DllImport(Constants.LibName)] public static extern IntPtr MethodName(IntPtr obj, int x, int y);
+                    }
+                }
+            }
             GenIndexerImports2D(ImageParam);
         }
 
         region("3D Indexers") {
+            region("int indexers") {
+                unroll(BufferType in BufferTypes) {
+                    replacePP(MethodName => concatId(ImageParamOf, BufferType, _GetExpr_IntIntInt)) {
+                        [DllImport(Constants.LibName)] public static extern IntPtr MethodName(IntPtr obj, int x, int y, int z);
+                    }
+                }
+            }
             GenIndexerImports3D(ImageParam);
         }
+        
+        region("Dimension accessors") {
+            define Dimension($BufferType) {
+                unroll(FieldName in DimensionFields) {
+                    replace(MethodName => concatId(ImageParamOf, $BufferType, _GetDimension, FieldName, _Int)) {
+                        [DllImport(Constants.LibName)] internal static extern IntPtr MethodName(IntPtr obj, int d);
+                    }
 
+                    replace(MethodName => concatId(ImageParamOf, $BufferType, _SetDimension, FieldName, _IntInt)) {
+                        [DllImport(Constants.LibName)] internal static extern void MethodName(IntPtr self, int d, int val);
+                    }
+                }
+            }
+            ExecMacroAllTypes(Dimension);
+        }
     }
 
     public class HSImageParam<T> : HSObject where T: struct
     {
+        private HSImageParamDimensionList<T> _dimensions;
+        public HSImageParamDimensionList<T> Dim => _dimensions;
+
         region("Constructors") {
             public HSImageParam(int d)
             {
+                _dimensions = new HSImageParamDimensionList<T>(this);
                 unroll((BufferType, NativeType) in BufferAndNativeTypes) {
                     replacePP(MethodName => concatId(ImageParamOf, BufferType, _New_Int)) {
                         if(typeof(T) == typeof(NativeType)) { _cppobj = CppImageParam.MethodName(HSUtil.CArg(d)); return; }
@@ -70,6 +114,7 @@ namespace HalideSharp
 
             public HSImageParam(int d, string n)
             {
+                _dimensions = new HSImageParamDimensionList<T>(this);
                 unroll((BufferType, NativeType) in BufferAndNativeTypes) {
                     replacePP(MethodName => concatId(ImageParamOf, BufferType, _New_IntString)) {
                         if(typeof(T) == typeof(NativeType)) { _cppobj = CppImageParam.MethodName(HSUtil.CArg(d), HSUtil.CArg(n)); return; }
@@ -114,7 +159,16 @@ namespace HalideSharp
         }
             
 
+        region("1D indexers") {
+            Indexer1D(ImageParam, Int);
+            define ImageParamIndexer1D($T1) {
+                Indexer1D(ImageParam, $T1);
+            }
+            ExecMacro1D(ImageParamIndexer1D);
+        }
+
         region("2D indexers") {
+            Indexer2D(ImageParam, Int, Int);
             define ImageParamIndexer2D($T1, $T2) {
                 Indexer2D(ImageParam, $T1, $T2);
             }
@@ -122,11 +176,46 @@ namespace HalideSharp
         }
 
         region("3D indexers") {
+            Indexer3D(ImageParam, Int, Int, Int);
             define ImageParamIndexer3D($T1, $T2, $T3) {
                 Indexer3D(ImageParam, $T1, $T2, $T3);
             }
             ExecMacro3D(ImageParamIndexer3D);
         }
-        
+
+        region("Dimensions") {
+            internal HSImageParamDimension<T> GetDimension(int d) {
+                return new HSImageParamDimension<T>(this, d);
+            }
+
+            unroll(FieldName in DimensionFields) {
+                replace(MethodName => concatId(GetDimension, FieldName)) {
+                    internal HSExpr MethodName(int dim) {
+                        unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                            replacePP(ImplName => concatId(ImageParamOf, BufferType, _GetDimension, FieldName, _Int)) {
+                                if(typeof(T) == typeof(NativeType)) {
+                                    return new HSExpr(CppImageParam.ImplName(HSUtil.CArg(this), HSUtil.CArg(dim)));
+                                }
+                            }
+                        }
+                        throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
+                    }
+                }
+
+                replace(MethodName => concatId(SetDimension, FieldName)) {
+                    internal void MethodName(int dim, int val) {
+                        unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                            replacePP(ImplName => concatId(ImageParamOf, BufferType, _SetDimension, FieldName, _IntInt)) {
+                                if(typeof(T) == typeof(NativeType)) {
+                                    CppImageParam.ImplName(HSUtil.CArg(this), HSUtil.CArg(dim), HSUtil.CArg(val));
+                                    return;
+                                }
+                            }
+                        }
+                        throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
+                    }
+                }
+            }
+        }
     }
 }
