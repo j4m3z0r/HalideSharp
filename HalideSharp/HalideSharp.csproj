@@ -153,6 +153,6 @@
     <MakeDir Directories="$(MSBuildProjectDirectory)\Properties" Condition="!Exists('$(MSBuildProjectDirectory)\Properties')" />
     <!-- Write out an AssemblyInfo.cs file with the version info generated
          above. -->
-    <AssemblyInfo CodeLanguage="CS" OutputFile="$(MSBuildProjectDirectory)\Properties\AssemblyInfo.cs" AssemblyTitle="HalideSharp" AssemblyDescription="C# Bindings for Halide (http://halide-lang.org/)" AssemblyConfiguration="" AssemblyCompany="" AssemblyProduct="HalideSharp" AssemblyCopyright="Copyright (c) James Gregory 2018" AssemblyTrademark="" ComVisible="false" CLSCompliant="true" Guid="D84E250C-9E9C-4854-A2BF-9D1F9D045499" AssemblyVersion="$(Major).$(Minor).$(Build).$(Revision)" AssemblyFileVersion="$(Major).$(Minor).$(Build).$(Revision)" />
+    <AssemblyInfo CodeLanguage="CS" OutputFile="$(MSBuildProjectDirectory)\Properties\AssemblyInfo.cs" AssemblyTitle="HalideSharp" AssemblyDescription="C# Bindings for Halide (http://halide-lang.org/)" AssemblyConfiguration="" AssemblyCompany="" AssemblyProduct="HalideSharp" AssemblyCopyright="Copyright (c) James Gregory 2018" AssemblyTrademark="" ComVisible="false" CLSCompliant="false" Guid="D84E250C-9E9C-4854-A2BF-9D1F9D045499" AssemblyVersion="$(Major).$(Minor).$(Build).$(Revision)" AssemblyFileVersion="$(Major).$(Minor).$(Build).$(Revision)" />
   </Target>
 </Project>
