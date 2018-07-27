@@ -72,6 +72,9 @@
     <Compile Include="Source\HSImageParamDimension.cs" />
     <Compile Include="Source\HSImageParamDimensionList.cs" />
     <Compile Include="Source\HSObject.cs" />
+    <Compile Include="Source\HSParam.out.cs">
+      <DependentUpon>Source\HSParam.ecs</DependentUpon>
+    </Compile>
     <Compile Include="Source\HSRDom.cs" />
     <None Include="Source\HSOperators.ecs" />
     <Compile Include="Source\HSOperators.out.cs" />

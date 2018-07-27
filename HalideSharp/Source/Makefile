@@ -62,4 +62,5 @@ Indexer.ecs: MagicMacros.ecs
 HS.out.cs: MagicMacros.ecs
 HSFunc.out.cs: Indexer.ecs
 HSImageParam.out.cs: Indexer.ecs
+HSParam.out.cs: MagicMacros.ecs
 

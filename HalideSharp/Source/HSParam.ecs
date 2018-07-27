@@ -1,0 +1,168 @@
+#ecs;
+
+using System;
+using System.Runtime.InteropServices;
+
+includeFile("MagicMacros.ecs");
+
+namespace HalideSharp
+{
+    internal class CppParam
+    {
+        region("Constructors") {
+            unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                replacePP(MethodName => concatId(ParamOf, BufferType, _New)) {
+                    [DllImport(Constants.LibName)] internal static extern IntPtr MethodName();
+                }
+                
+                replacePP(MethodName => concatId(ParamOf, BufferType, _New, _, BufferType)) {
+                    [DllImport(Constants.LibName)] internal static extern IntPtr MethodName(NativeType v);
+                }
+
+                replacePP(MethodName => concatId(ParamOf, BufferType, _New_String)) {
+                    [DllImport(Constants.LibName)] internal static extern IntPtr MethodName([MarshalAs(Constants.StringType)] string name);
+                }
+                
+                replacePP(MethodName => concatId(ParamOf, BufferType, _New, _String, BufferType)) {
+                    [DllImport(Constants.LibName)] internal static extern IntPtr MethodName([MarshalAs(Constants.StringType)] string name, NativeType v);
+                }
+            }
+        }
+
+        region("Destructors") {
+            unroll(BufferType in BufferTypes) {
+                replacePP(MethodName => concatId(ParamOf, BufferType, _Delete)) {
+                    [DllImport(Constants.LibName)] internal static extern void MethodName(IntPtr self);
+                }
+            }
+        }
+
+        region("Getter and setter") {
+            unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                replacePP(MethodName => concatId(ParamOf, BufferType, _Set_, BufferType)) {
+                    [DllImport(Constants.LibName)] internal static extern void MethodName(IntPtr self, NativeType val);
+                }
+
+                replacePP(MethodName => concatId(ParamOf, BufferType, _Get)) {
+                    [DllImport(Constants.LibName)] internal static extern NativeType MethodName(IntPtr self);
+                }
+            }
+        }
+
+        region("Expr wrapper") {
+            unroll(BufferType in BufferTypes) {
+                replacePP(MethodName => concatId(ParamOf, BufferType, _ToExpr)) {
+                    [DllImport(Constants.LibName)] internal static extern IntPtr MethodName(IntPtr self);
+                }
+            }
+        }
+    }
+
+    public class HSParam<T> : HSObject where T: struct
+    {
+
+        region("Constructors") {
+            public HSParam() {
+                unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                    if(typeof(T) == typeof(NativeType)) {
+                        replacePP(MethodName => concatId(ParamOf, BufferType, _New)) {
+                            _cppobj = CppParam.MethodName();
+                            return;
+                        }
+                    }
+                }
+                throw new NotImplementedException($"Param type {typeof(T)} unsupported");
+            }
+
+            public HSParam(T val) {
+                unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                    if(typeof(T) == typeof(NativeType)) {
+                        replacePP(MethodName => concatId(ParamOf, BufferType, _New_, BufferType)) {
+                            T[] tmp = { val };
+                            _cppobj = CppParam.MethodName((tmp as NativeType[])[0]);
+                            return;
+                        }
+                    } 
+                }
+                throw new NotImplementedException($"Param of type {typeof(T)} unsupported");
+            }
+
+            public HSParam(string name) {
+                unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                    if(typeof(T) == typeof(NativeType)) {
+                        replacePP(MethodName => concatId(ParamOf, BufferType, _New_, String)) {
+                            _cppobj = CppParam.MethodName(HSUtil.CArg(name));
+                            return;
+                        }
+                    }
+                }
+                throw new NotImplementedException($"Param type {typeof(T)} unsupported");
+            }
+
+            public HSParam(string name, T val) {
+                unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                    if(typeof(T) == typeof(NativeType)) {
+                        replacePP(MethodName => concatId(ParamOf, BufferType, _New_, String, BufferType)) {
+                            T[] tmp = { val };
+                            _cppobj = CppParam.MethodName(HSUtil.CArg(name), (tmp as NativeType[])[0]);
+                            return;
+                        }
+                    }
+                }
+                throw new NotImplementedException($"Param of type {typeof(T)} unsupported");
+            }
+        }
+
+        ~HSParam() {
+            unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                if(typeof(T) == typeof(NativeType)) {
+                    replacePP(MethodName => concatId(ParamOf, BufferType, _Delete)) {
+                        CppParam.MethodName(HSUtil.CArg(this));
+                    }
+                }
+            }
+        }
+
+        region("Getter and setter") {
+            public void Set(T val) {
+                unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                    if(typeof(T) == typeof(NativeType)) {
+                        replacePP(MethodName => concatId(ParamOf, BufferType, _Set_, BufferType)) {
+                            T[] tmp = { val };
+                            CppParam.MethodName(HSUtil.CArg(this), (tmp as NativeType[])[0]);
+                            return;
+                        }
+                    }
+                }
+                throw new NotImplementedException($"Param of type {typeof(T)} unsupported");
+            }
+
+            public T Get() {
+                unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                    if(typeof(T) == typeof(NativeType)) {
+                        replacePP(MethodName => concatId(ParamOf, BufferType, _Get)) {
+                            NativeType[] tmp = {
+                                CppParam.MethodName(HSUtil.CArg(this))
+                            };
+                            return (tmp as T[])[0];
+                        }
+                    }
+                }
+                throw new NotImplementedException($"Param type {typeof(T)} unsupported");
+            }
+        }
+
+        region("Type conversion") {
+            public static implicit operator HSExpr(HSParam<T> p) {
+                unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                    if(typeof(T) == typeof(NativeType)) {
+                        replacePP(MethodName => concatId(ParamOf, BufferType, _ToExpr)) {
+                            return new HSExpr(CppParam.MethodName(HSUtil.CArg(p)));
+                        }
+                    }
+                }
+                throw new NotImplementedException($"Param type {typeof(T)} unsupported");
+            }
+        }
+    }
+}
