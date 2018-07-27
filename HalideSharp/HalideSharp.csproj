@@ -66,6 +66,9 @@
     <Compile Include="Source\HSImageParam.out.cs">
       <DependentUpon>Source\HSImageParam.ecs</DependentUpon>
     </Compile>
+    <Compile Include="Source\HSMath.out.cs">
+      <DependentUpon>Source\HSMath.ecs</DependentUpon>
+    </Compile>
     <Compile Include="Source\HSImageParamDimension.cs" />
     <Compile Include="Source\HSImageParamDimensionList.cs" />
     <Compile Include="Source\HSObject.cs" />
@@ -85,23 +88,22 @@
       <Link>README.md</Link>
     </Content>
     <Content Include="Development.md" />
-    <Content Include="Source\hs.cpp" />
-    <Content Include="Source\hsbuffer.cpp" />
-    <Content Include="Source\hsexpr.cpp" />
-    <Content Include="Source\hsfunc.cpp" />
-    <Content Include="Source\hsimageparam.cpp" />
-    <Content Include="Source\hsmath.cpp" />
+    <None Include="Source\hs.cpp" />
+    <None Include="Source\hsbuffer.cpp" />
+    <None Include="Source\hsexpr.cpp" />
+    <None Include="Source\hsfunc.cpp" />
+    <None Include="Source\hsimageparam.cpp" />
+    <None Include="Source\hsmath.cpp" />
     <None Include="Source\HSMath.ecs" />
-    <Compile Include="Source\HSMath.out.cs">
-      <DependentUpon>Source\HSMath.ecs</DependentUpon>
-    </Compile>
-    <Content Include="Source\hsoperators.cpp" />
-    <Content Include="Source\hsrdom.cpp" />
-    <Content Include="Source\hstarget.cpp" />
-    <Content Include="Source\hsvar.cpp" />
-    <Content Include="Source\Indexer.ecs" />
-    <Content Include="Source\MagicMacros.ecs" />
-    <Content Include="Source\magicmacros.h" />
+    <None Include="Source\hsoperators.cpp" />
+    <None Include="Source\hsparam.cpp" />
+    <None Include="Source\HSParam.ecs" />
+    <None Include="Source\hsrdom.cpp" />
+    <None Include="Source\hstarget.cpp" />
+    <None Include="Source\hsvar.cpp" />
+    <None Include="Source\Indexer.ecs" />
+    <None Include="Source\MagicMacros.ecs" />
+    <None Include="Source\magicmacros.h" />
   </ItemGroup>
   <ItemGroup>
     <ContentWithTargetPath Include="$(ProjectDir)/Source/libhalide-wrapper.so">
