@@ -51,3 +51,15 @@ $(TARGET): $(OBJECTS) $(THIRDPARTY_LIBS)
 clean:
 	rm -f $(TARGET) $(OBJECTS) $(ECS_OUTPUTS)
 	rm -rf $(HALIDE_DIR) $(LEMP_DIR)
+
+
+# There isn't a neat dependency generator for LeMP at present so we just
+# enumerate dependencies here by hand. This isn't critical (a clean build will
+# work just fine without this), but is convenient when developing so that
+# changes to included files will trigger rebuilding the appropriate .out.cs
+# files
+Indexer.ecs: MagicMacros.ecs
+HS.out.cs: MagicMacros.ecs
+HSFunc.out.cs: Indexer.ecs
+HSImageParam.out.cs: Indexer.ecs
+
