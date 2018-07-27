@@ -19,14 +19,14 @@ namespace HalideSharp
             _dimension = d;
         }
 
-        public int Stride
+        public int Stride()
         {
-            get => _buffer.GetDimensionStride(_dimension);
+            return _buffer.GetDimensionStride(_dimension);
         }
 
-        public int Extent
+        public int Extent()
         {
-            get => _buffer.GetDimensionExtent(_dimension);
+            return _buffer.GetDimensionExtent(_dimension);
         }
     }
 }
