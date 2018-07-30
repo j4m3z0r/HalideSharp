@@ -18,10 +18,6 @@ using namespace Halide;
     }
 GEN(GEN_CAST)
 
-extern "C" Expr* min_expr_float(Expr* expr, float f) {
-    return new Expr(min(*expr, f));
-}
-
 extern "C" Expr* print_objects_when(Expr* condition, int numObjects, enum HSObjectType *types, void **objects) {
     std::vector<Expr> args;
     for(int i = 0; i < numObjects; i++) {

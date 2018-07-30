@@ -43,7 +43,7 @@ namespace Lesson02
 
             // Clamp it to be less than 255, so we don't get overflow when we
             // cast it back to an 8-bit unsigned int.
-            value = HS.Min(value, 255.0f);
+            value = HSMath.Min(value, 255.0f);
 
             // Cast it back to an 8-bit unsigned integer.
             value = HS.Cast<byte>(value);

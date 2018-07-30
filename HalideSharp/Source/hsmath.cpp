@@ -37,19 +37,24 @@ using namespace Halide;
 
 PERMUTE_ARGS_1D(ALL_MATHFN_ONE_ARG)
 
+// Note: we construct a new Expr object wrapping each of the args to avoid
+// amgiguous method resolution (specifically when both arguments are ints)
 #define MATHFN_TWO_ARG(CSNAME, CPPNAME, CSTYPE1, CSTYPE2) \
     extern "C" Expr* Global_ ## CSNAME ## _ ## CSTYPE1 ## CSTYPE2( \
         argtype(CSTYPE1) a, \
         argtype(CSTYPE2) b \
     ) { \
-        return new Expr(CPPNAME(deref(CSTYPE1, a), deref(CSTYPE2, b))); \
+        return new Expr(CPPNAME(Expr(deref(CSTYPE1, a)), Expr(deref(CSTYPE2, b)))); \
     }
 
 #define ALL_MATHFN_TWO_ARG(CSTYPE1, CSTYPE2) \
     MATHFN_TWO_ARG(Atan2, atan2, CSTYPE1, CSTYPE2) \
     MATHFN_TWO_ARG(Hypot, hypot, CSTYPE1, CSTYPE2) \
     MATHFN_TWO_ARG(Pow, pow, CSTYPE1, CSTYPE2) \
-    MATHFN_TWO_ARG(FastPow, fast_pow, CSTYPE1, CSTYPE2)
+    MATHFN_TWO_ARG(FastPow, fast_pow, CSTYPE1, CSTYPE2) \
+    MATHFN_TWO_ARG(Min, min, CSTYPE1, CSTYPE2) \
+    MATHFN_TWO_ARG(Max, max, CSTYPE1, CSTYPE2)
+
 
 PERMUTE_ARGS_2D(ALL_MATHFN_TWO_ARG)
 

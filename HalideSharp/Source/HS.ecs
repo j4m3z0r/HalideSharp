@@ -39,16 +39,6 @@ namespace HalideSharp
             throw new NotImplementedException($"Casting not implemented for type {typeof(T)}");
         }
 
-        [DllImport(Constants.LibName, EntryPoint = "min_expr_float")]
-        private static extern IntPtr MinExprFloat(IntPtr expr, float f);
-
-        public static HSExpr Min(HSExpr expr, float f)
-        {
-            // Min uses move semantics.
-            var newExpr = MinExprFloat(HSUtil.CArg(expr), HSUtil.CArg(f));
-            return new HSExpr(newExpr);
-        }
-
         [DllImport(Constants.LibName, EntryPoint = "print_objects_when")]
         private static extern IntPtr PrintObjectsWhen(IntPtr condition, int numObjects, HSObjectType[] objTypes, IntPtr[] objects);
         
