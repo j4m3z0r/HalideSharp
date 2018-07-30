@@ -105,20 +105,28 @@ namespace HalideSharp
             return PrintWhen(null, args);
         }
 
-        [DllImport(Constants.LibName, EntryPoint = "clamp_expr_int_int")]
-        private static extern IntPtr ClampExprIntInt(IntPtr e, int min, int max);
+		[DllImport(Constants.LibName)] private static extern IntPtr Global_Clamp_ExprIntInt(IntPtr e, int min, int max);
+		public static HSExpr Clamp(HSExpr e, int min, int max)
+		{
+			return new HSExpr(Global_Clamp_ExprIntInt(HSUtil.CArg(e), HSUtil.CArg(min), HSUtil.CArg(max)));
+		}
 
-        public static HSExpr Clamp(HSExpr e, int min, int max)
-        {
-            return new HSExpr(ClampExprIntInt(HSUtil.CArg(e), HSUtil.CArg(min), HSUtil.CArg(max)));
-        }
+		[DllImport(Constants.LibName)] private static extern IntPtr Global_Clamp_ExprFloatFloat(IntPtr e, float min, float max);
+		public static HSExpr Clamp(HSExpr e, float min, float max)
+		{
+			return new HSExpr(Global_Clamp_ExprFloatFloat(HSUtil.CArg(e), HSUtil.CArg(min), HSUtil.CArg(max)));
+		}
 
-        [DllImport(Constants.LibName, EntryPoint = "clamp_var_int_int")]
-        private static extern IntPtr ClampVarIntInt(IntPtr v, int min, int max);
-        
+        [DllImport(Constants.LibName)] private static extern IntPtr Global_Clamp_VarIntInt(IntPtr v, int min, int max);
         public static HSExpr Clamp(HSVar v, int min, int max)
         {
-            return new HSExpr(ClampVarIntInt(HSUtil.CArg(v), HSUtil.CArg(min), HSUtil.CArg(max)));
+            return new HSExpr(Global_Clamp_VarIntInt(HSUtil.CArg(v), HSUtil.CArg(min), HSUtil.CArg(max)));
+        }
+
+        [DllImport(Constants.LibName)] private static extern IntPtr Global_Clamp_VarFloatFloat(IntPtr v, float min, float max);
+        public static HSExpr Clamp(HSVar v, float min, float max)
+        {
+            return new HSExpr(Global_Clamp_VarFloatFloat(HSUtil.CArg(v), HSUtil.CArg(min), HSUtil.CArg(max)));
         }
 
         [DllImport(Constants.LibName)]
