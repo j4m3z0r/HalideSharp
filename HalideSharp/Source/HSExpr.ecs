@@ -1,5 +1,7 @@
 ﻿#ecs;
 
+includeFile("MagicMacros.ecs");
+
 using System;
 using System.CodeDom;
 using System.Runtime.InteropServices;
@@ -10,17 +12,37 @@ namespace HalideSharp
     {
         public const string CppType = "Expr";
         
-        internal HSExpr(IntPtr cppobj)
-        {
-            _cppobj = cppobj;
+        region("Constructors") {
+            internal HSExpr(IntPtr cppobj)
+            {
+                _cppobj = cppobj;
+            }
+
+            [DllImport(Constants.LibName)]
+            private static extern IntPtr Expr_New_Int(int i);
+            public HSExpr(int i)
+            {
+                _cppobj = Expr_New_Int(i);
+            }
+
+            [DllImport(Constants.LibName)]
+            private static extern IntPtr Expr_New_Float(float f);
+            public HSExpr(float f)
+            {
+                _cppobj = Expr_New_Float(f);
+            }
         }
 
-        [DllImport(Constants.LibName)]
-        private static extern IntPtr Expr_New_Int(int i);
-        
-        public HSExpr(int i)
-        {
-            _cppobj = Expr_New_Int(i);
+        region("Implicit type converters") {
+            public static implicit operator HSExpr(int i)
+            {
+                return new HSExpr(i);
+            }
+
+            public static implicit operator HSExpr(float f)
+            {
+                return new HSExpr(f);
+            }
         }
 
         [DllImport(Constants.LibName)]

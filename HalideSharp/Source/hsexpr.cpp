@@ -7,6 +7,10 @@ extern "C" Expr* Expr_New_Int(int i) {
     return new Expr(i);
 }
 
+extern "C" Expr* Expr_New_Float(float f) {
+    return new Expr(f);
+}
+
 extern "C" void Expr_Delete(Expr *e) {
     delete e;
 }

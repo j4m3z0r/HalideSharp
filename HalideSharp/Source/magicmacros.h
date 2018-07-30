@@ -23,37 +23,27 @@
 #define T1(macro, ...)  \
     T0(macro, Expr, __VA_ARGS__) \
     T0(macro, Var, __VA_ARGS__) \
-    T0(macro, RDom, __VA_ARGS__) \
-    T0(macro, Int, __VA_ARGS__) \
-    T0(macro, Float, __VA_ARGS__)
+    T0(macro, RDom, __VA_ARGS__)
 
 #define T2(macro, ...) \
     T1(macro, Expr, __VA_ARGS__) \
     T1(macro, Var, __VA_ARGS__) \
-    T1(macro, RDom, __VA_ARGS__) \
-    T1(macro, Int, __VA_ARGS__) \
-    T1(macro, Float, __VA_ARGS__)
+    T1(macro, RDom, __VA_ARGS__)
 
 #define PERMUTE_ARGS_1D(macro) \
     T0(macro, Expr) \
     T0(macro, Var) \
-    T0(macro, RDom) \
-    T0(macro, Int) \
-    T0(macro, Float)
+    T0(macro, RDom)
 
 #define PERMUTE_ARGS_2D(macro) \
     T1(macro, Expr) \
     T1(macro, Var) \
-    T1(macro, RDom) \
-    T1(macro, Int) \
-    T1(macro, Float)
+    T1(macro, RDom)
 
 #define PERMUTE_ARGS_3D(macro) \
     T2(macro, Expr) \
     T2(macro, Var) \
-    T2(macro, RDom) \
-    T2(macro, Int) \
-    T2(macro, Float) \
+    T2(macro, RDom)
 
 /**
  * The _argtype macros are used to convert the type names used in the PERMUTE

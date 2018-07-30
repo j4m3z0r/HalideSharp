@@ -29,10 +29,9 @@ define ExecMacro1D($macro2d) {
 // buffers (or for other types, we define the (int, int) behavior directly so
 // that it's clear what's happening.
 define ExecMacro2D($macro2d) {
-    unroll (T1 in (Var, Expr, RDom, Int)) {
-        unroll(T2 in (Var, Expr, RDom, Int)) {
-            static if(!(T1 `code==` Int && T2 `code==` Int))
-                $macro2d(T1, T2);
+    unroll (T1 in (Var, Expr, RDom)) {
+        unroll(T2 in (Var, Expr, RDom)) {
+            $macro2d(T1, T2);
         }
     }
 }
@@ -42,11 +41,10 @@ define ExecMacro2D($macro2d) {
 // from buffers (or for other types, we define the (int, int) behavior directly
 // so that it's clear what's happening.
 define ExecMacro3D($macro3d) {
-    unroll (T1 in (Var, Expr, RDom, Int)) {
-        unroll(T2 in (Var, Expr, RDom, Int)) {
-            unroll(T3 in (Var, Expr, RDom, Int)) {
-                static if(!(T1 `code==` Int && T2 `code==` Int && T3 `code==` Int))
-                    $macro3d(T1, T2, T3);
+    unroll (T1 in (Var, Expr, RDom)) {
+        unroll(T2 in (Var, Expr, RDom)) {
+            unroll(T3 in (Var, Expr, RDom)) {
+                $macro3d(T1, T2, T3);
             }
         }
     }

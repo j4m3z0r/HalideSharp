@@ -20,8 +20,8 @@ namespace HalideSharp
 
         replace(DualArgMathFunctions => (Atan2, Hypot, Pow, FastPow, Min, Max, AbsD));
         unroll(MathFn in DualArgMathFunctions) {
-            unroll((HSTYPE1, CSTYPE1, CPPTYPE1) in ((HSVar, Var, IntPtr), (HSExpr, Expr, IntPtr), (float, Float, float))) {
-                unroll((HSTYPE2, CSTYPE2, CPPTYPE2) in ((HSVar, Var, IntPtr), (HSExpr, Expr, IntPtr), (float, Float, float))) {
+            unroll((HSTYPE1, CSTYPE1, CPPTYPE1) in ((HSVar, Var, IntPtr), (HSExpr, Expr, IntPtr))) {
+                unroll((HSTYPE2, CSTYPE2, CPPTYPE2) in ((HSVar, Var, IntPtr), (HSExpr, Expr, IntPtr))) {
                     replace(CName => concatId(Global_, MathFn, _, CSTYPE1, CSTYPE2)) {
                         [DllImport(Constants.LibName)] private static extern IntPtr CName(CPPTYPE1 a, CPPTYPE2 b);
                         public static HSExpr MathFn(HSTYPE1 a, HSTYPE2 b) {
