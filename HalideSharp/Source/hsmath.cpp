@@ -33,7 +33,8 @@ using namespace Halide;
     MATHFN_ONE_ARG(Round, round, T) \
     MATHFN_ONE_ARG(Trunc, trunc, T) \
     MATHFN_ONE_ARG(IsNan, is_nan, T) \
-    MATHFN_ONE_ARG(Fract, fract, T)
+    MATHFN_ONE_ARG(Fract, fract, T) \
+    MATHFN_ONE_ARG(Abs, abs, T)
 
 PERMUTE_ARGS_1D(ALL_MATHFN_ONE_ARG)
 
@@ -53,7 +54,8 @@ PERMUTE_ARGS_1D(ALL_MATHFN_ONE_ARG)
     MATHFN_TWO_ARG(Pow, pow, CSTYPE1, CSTYPE2) \
     MATHFN_TWO_ARG(FastPow, fast_pow, CSTYPE1, CSTYPE2) \
     MATHFN_TWO_ARG(Min, min, CSTYPE1, CSTYPE2) \
-    MATHFN_TWO_ARG(Max, max, CSTYPE1, CSTYPE2)
+    MATHFN_TWO_ARG(Max, max, CSTYPE1, CSTYPE2) \
+    MATHFN_TWO_ARG(AbsD, absd, CSTYPE1, CSTYPE2)
 
 
 PERMUTE_ARGS_2D(ALL_MATHFN_TWO_ARG)
