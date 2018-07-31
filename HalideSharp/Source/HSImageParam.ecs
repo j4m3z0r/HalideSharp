@@ -48,34 +48,13 @@ namespace HalideSharp
         }
 
         region("1D Indexers") {
-            region("int indexers") {
-                unroll(BufferType in BufferTypes) {
-                    replacePP(MethodName => concatId(ImageParamOf, BufferType, _GetExpr_Int)) {
-                        [DllImport(Constants.LibName)] public static extern IntPtr MethodName(IntPtr obj, int x);
-                    }
-                }
-            }
             GenIndexerImports1D(ImageParam);
         }
         region("2D Indexers") {
-            region("int indexers") {
-                unroll(BufferType in BufferTypes) {
-                    replacePP(MethodName => concatId(ImageParamOf, BufferType, _GetExpr_IntInt)) {
-                        [DllImport(Constants.LibName)] public static extern IntPtr MethodName(IntPtr obj, int x, int y);
-                    }
-                }
-            }
             GenIndexerImports2D(ImageParam);
         }
 
         region("3D Indexers") {
-            region("int indexers") {
-                unroll(BufferType in BufferTypes) {
-                    replacePP(MethodName => concatId(ImageParamOf, BufferType, _GetExpr_IntIntInt)) {
-                        [DllImport(Constants.LibName)] public static extern IntPtr MethodName(IntPtr obj, int x, int y, int z);
-                    }
-                }
-            }
             GenIndexerImports3D(ImageParam);
         }
         
@@ -160,7 +139,6 @@ namespace HalideSharp
             
 
         region("1D indexers") {
-            Indexer1D(ImageParam, Int);
             define ImageParamIndexer1D($T1) {
                 Indexer1D(ImageParam, $T1);
             }
@@ -168,7 +146,6 @@ namespace HalideSharp
         }
 
         region("2D indexers") {
-            Indexer2D(ImageParam, Int, Int);
             define ImageParamIndexer2D($T1, $T2) {
                 Indexer2D(ImageParam, $T1, $T2);
             }
@@ -176,7 +153,6 @@ namespace HalideSharp
         }
 
         region("3D indexers") {
-            Indexer3D(ImageParam, Int, Int, Int);
             define ImageParamIndexer3D($T1, $T2, $T3) {
                 Indexer3D(ImageParam, $T1, $T2, $T3);
             }
