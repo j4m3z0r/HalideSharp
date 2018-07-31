@@ -8,7 +8,7 @@ namespace HalideSharp
         [DllImport(Constants.LibName)]
         private static extern IntPtr RDom_New_IntInt(int min, int extent);
         
-        public HSRDom(int min, int extent)
+        public HSRDom(int min, int extent) : base()
         {
             _cppobj = RDom_New_IntInt(min, extent);
         }

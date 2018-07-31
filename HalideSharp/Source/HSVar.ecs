@@ -14,14 +14,14 @@ namespace HalideSharp
         
         [DllImport(Constants.LibName)] private static extern IntPtr Var_New_String([MarshalAs(Constants.StringType)] string name);
         
-        public HSVar(string name)
+        public HSVar(string name) : base()
         {
             Name = name;
             _cppobj = Var_New_String(name);
         }
 
         /// @immortal is a hack to prevent calling the destructor on the global _0, _1, etc variables.
-        internal HSVar(IntPtr cppobj, bool immortal=false)
+        internal HSVar(IntPtr cppobj, bool immortal=false) : base()
         {
             _immortal = immortal;
             _cppobj = cppobj;

@@ -5,7 +5,7 @@ namespace HalideSharp
 {
     public class HSTarget : HSObject
     {
-        internal HSTarget(IntPtr obj)
+        internal HSTarget(IntPtr obj) : base()
         {
             _cppobj = obj;
         }

@@ -172,7 +172,7 @@ namespace HalideSharp
             throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
         }
 
-        public HSBuffer(int size)
+        public HSBuffer(int size) : base()
         {
             _dimensions = new HSBufferDimensionList<T>(this);
             unroll((BufferType, NativeType) in BufferAndNativeTypes) {
@@ -183,7 +183,7 @@ namespace HalideSharp
             throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
         }
         
-        public HSBuffer(int width, int height)
+        public HSBuffer(int width, int height) : base()
         {
             _dimensions = new HSBufferDimensionList<T>(this);
             unroll((BufferType, NativeType) in BufferAndNativeTypes) {
@@ -194,7 +194,7 @@ namespace HalideSharp
             throw new NotImplementedException($"Buffer type {typeof(T)} unsupported");
         }
         
-        public HSBuffer(int width, int height, int channels)
+        public HSBuffer(int width, int height, int channels) : base()
         {
             _dimensions = new HSBufferDimensionList<T>(this);
             unroll((BufferType, NativeType) in BufferAndNativeTypes) {
@@ -206,7 +206,7 @@ namespace HalideSharp
         }
 
         // As of right now, we assume that host applications pass image data around as byte arrays.
-        public HSBuffer(byte[] data, int width, int height, int channels, bool interleaved=false)
+        public HSBuffer(byte[] data, int width, int height, int channels, bool interleaved=false) : base()
         {
             // According to https://stackoverflow.com/questions/39779149/initializing-halide-buffer-in-c, Buffers don't maintain
             // their own copy of the data, so we hold a reference to the passed data, pin it, and release the handle in the
@@ -243,7 +243,7 @@ namespace HalideSharp
             return new HSBuffer<T>(data, width, height, channels, true);
         }
 
-        internal HSBuffer(IntPtr cppobj)
+        internal HSBuffer(IntPtr cppobj) : base()
         {
             _dimensions = new HSBufferDimensionList<T>(this);
             CheckType();

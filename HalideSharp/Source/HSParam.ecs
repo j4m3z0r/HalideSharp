@@ -62,7 +62,8 @@ namespace HalideSharp
     {
 
         region("Constructors") {
-            public HSParam() {
+            public HSParam() : base()
+            {
                 unroll((BufferType, NativeType) in BufferAndNativeTypes) {
                     if(typeof(T) == typeof(NativeType)) {
                         replacePP(MethodName => concatId(ParamOf, BufferType, _New)) {
@@ -74,7 +75,8 @@ namespace HalideSharp
                 throw new NotImplementedException($"Param type {typeof(T)} unsupported");
             }
 
-            public HSParam(T val) {
+            public HSParam(T val) : base()
+            {
                 unroll((BufferType, NativeType) in BufferAndNativeTypes) {
                     if(typeof(T) == typeof(NativeType)) {
                         replacePP(MethodName => concatId(ParamOf, BufferType, _New_, BufferType)) {
@@ -87,7 +89,8 @@ namespace HalideSharp
                 throw new NotImplementedException($"Param of type {typeof(T)} unsupported");
             }
 
-            public HSParam(string name) {
+            public HSParam(string name) : base()
+            {
                 unroll((BufferType, NativeType) in BufferAndNativeTypes) {
                     if(typeof(T) == typeof(NativeType)) {
                         replacePP(MethodName => concatId(ParamOf, BufferType, _New_, String)) {
@@ -99,7 +102,8 @@ namespace HalideSharp
                 throw new NotImplementedException($"Param type {typeof(T)} unsupported");
             }
 
-            public HSParam(string name, T val) {
+            public HSParam(string name, T val) : base()
+            {
                 unroll((BufferType, NativeType) in BufferAndNativeTypes) {
                     if(typeof(T) == typeof(NativeType)) {
                         replacePP(MethodName => concatId(ParamOf, BufferType, _New_, String, BufferType)) {

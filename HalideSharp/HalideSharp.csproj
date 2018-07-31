@@ -54,6 +54,7 @@
     <None Include="Source\HSExpr.ecs" />
     <Compile Include="Source\HSBufferDimension.cs" />
     <Compile Include="Source\HSBufferDimensionList.cs" />
+    <Compile Include="Source\HSError.cs" />
     <Compile Include="Source\HSExpr.out.cs">
       <DependentUpon>Source\HSExpr.ecs</DependentUpon>
     </Compile>
@@ -86,6 +87,7 @@
     <Compile Include="Source\SharedEnums.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Source\hserror.cpp" />
     <None Include="build\HalideSharp.targets" />
     <Content Include="..\README.md">
       <Link>README.md</Link>

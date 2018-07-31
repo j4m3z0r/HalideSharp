@@ -13,21 +13,21 @@ namespace HalideSharp
         public const string CppType = "Expr";
         
         region("Constructors") {
-            internal HSExpr(IntPtr cppobj)
+            internal HSExpr(IntPtr cppobj) : base()
             {
                 _cppobj = cppobj;
             }
 
             [DllImport(Constants.LibName)]
             private static extern IntPtr Expr_New_Int(int i);
-            public HSExpr(int i)
+            public HSExpr(int i) : base()
             {
                 _cppobj = Expr_New_Int(i);
             }
 
             [DllImport(Constants.LibName)]
             private static extern IntPtr Expr_New_Float(float f);
-            public HSExpr(float f)
+            public HSExpr(float f) : base()
             {
                 _cppobj = Expr_New_Float(f);
             }

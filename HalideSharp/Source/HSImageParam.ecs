@@ -101,7 +101,7 @@ namespace HalideSharp
         public HSImageParamDimensionList<T> Dim => _dimensions;
 
         region("Constructors") {
-            public HSImageParam(int d)
+            public HSImageParam(int d) : base()
             {
                 _dimensions = new HSImageParamDimensionList<T>(this);
                 unroll((BufferType, NativeType) in BufferAndNativeTypes) {
@@ -112,7 +112,7 @@ namespace HalideSharp
                 throw new NotImplementedException($"ImageParam type {typeof(T)} unsupported");
             }
 
-            public HSImageParam(int d, string n)
+            public HSImageParam(int d, string n) : base()
             {
                 _dimensions = new HSImageParamDimensionList<T>(this);
                 unroll((BufferType, NativeType) in BufferAndNativeTypes) {

@@ -12,12 +12,12 @@ namespace HalideSharp
         [DllImport(Constants.LibName)]
         private static extern IntPtr Func_New_String([MarshalAs(Constants.StringType)] string name);
         
-        public HSFunc(string name)
+        public HSFunc(string name) : base()
         {
             _cppobj = Func_New_String(name);
         }
 
-        internal HSFunc(IntPtr f)
+        internal HSFunc(IntPtr f) : base()
         {
             _cppobj = f;
         }
