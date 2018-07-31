@@ -171,6 +171,7 @@ PERMUTE_ARGS_3D(BUFFER_GETEXPR_3D_ALLTYPES)
 #define BUFFER_TOARRAY(CSTYPE, CPPTYPE) \
     extern "C" void BufferOf ## CSTYPE ## _CopyToArray_ ## CSTYPE ## p(Buffer<CPPTYPE> *self, CPPTYPE *result) { \
         CPPTYPE *out = result; \
+        self->copy_to_host(); \
         if(self->dimensions() == 3) { \
             int imax = self->dim(0).extent(); \
             int jmax = self->dim(1).extent(); \
@@ -181,6 +182,19 @@ PERMUTE_ARGS_3D(BUFFER_GETEXPR_3D_ALLTYPES)
                         *out++ = (*self)(i, j, k); \
                     } \
                 } \
+            } \
+        } else if(self->dimensions() == 2) { \
+            int imax = self->dim(0).extent(); \
+            int jmax = self->dim(1).extent(); \
+            for(int j = 0; j < jmax; j++) { \
+                for(int i = 0; i < imax; i++) { \
+                    *out++ = (*self)(i, j); \
+                } \
+            } \
+        } else if(self->dimensions() == 1) { \
+            int imax = self->dim(0).extent(); \
+            for(int i = 0; i < imax; i++) { \
+                *out++ = (*self)(i); \
             } \
         } \
     }
