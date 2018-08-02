@@ -161,7 +161,9 @@ namespace HalideSharp
                 unroll((BufferType, NativeType) in BufferAndNativeTypes) {
                     if(typeof(T) == typeof(NativeType)) {
                         replacePP(MethodName => concatId(ParamOf, BufferType, _ToExpr)) {
-                            return new HSExpr(CppParam.MethodName(HSUtil.CArg(p)));
+                            var result = new HSExpr(CppParam.MethodName(HSUtil.CArg(p)));
+                            result.AddRef(p);
+                            return result;
                         }
                     }
                 }

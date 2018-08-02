@@ -40,7 +40,9 @@ namespace HalideSharp
         replacePP(CFunction => concatId(Operator, _, $HalideT1, _, $OperatorName, _, $HalideT2)) {
             [DllImport(Constants.LibName)] private static extern IntPtr CFunction($NativeT1 a, $NativeT2 b);
             public static HSExpr $OperatorMethodName($ArgT1 a, $ArgT2 b) {
-                return new HSExpr(CFunction(HSUtil.CArg(a), HSUtil.CArg(b)));
+                var result = new HSExpr(CFunction(HSUtil.CArg(a), HSUtil.CArg(b)));
+                result.AddRef(a, b);
+                return result;
             }
         }
     }

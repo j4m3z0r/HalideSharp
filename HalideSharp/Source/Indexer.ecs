@@ -93,14 +93,16 @@ define CSTypeForArg($T) {
 
 define Indexer1D($ContainerType, $T1) {
     replacePP(arg1 => CSTypeForArg($T1)) {
-        public HSExpr GetExpr(arg1 x)
+        private HSExpr GetExpr(arg1 x)
         {
             unroll((BufferType, NativeType) in BufferAndNativeTypes)
             {
                 replacePP(MethodName => concatId($ContainerType, Of, BufferType, _GetExpr_, $T1),
                           ClassName => concatId(Cpp, $ContainerType)) {
                     if(typeof(T) == typeof(NativeType)) {
-                        return new HSExpr(ClassName.MethodName(HSUtil.CArg(this), HSUtil.CArg(x)));
+                        var result = new HSExpr(ClassName.MethodName(HSUtil.CArg(this), HSUtil.CArg(x)));
+                        result.AddRef(this, x);
+                        return result;
                     }
                 }
 
@@ -114,14 +116,16 @@ define Indexer1D($ContainerType, $T1) {
 define Indexer2D($ContainerType, $T1, $T2) {
     replacePP(arg1 => CSTypeForArg($T1),
               arg2 => CSTypeForArg($T2)) {
-        public HSExpr GetExpr(arg1 x, arg2 y)
+        private HSExpr GetExpr(arg1 x, arg2 y)
         {
             unroll((BufferType, NativeType) in BufferAndNativeTypes)
             {
                 replacePP(MethodName => concatId($ContainerType, Of, BufferType, _GetExpr_, $T1, $T2),
                           ClassName => concatId(Cpp, $ContainerType)) {
                     if(typeof(T) == typeof(NativeType)) {
-                        return new HSExpr(ClassName.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y)));
+                        var result = new HSExpr(ClassName.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y)));
+                        result.AddRef(this, x, y);
+                        return result;
                     }
                 }
 
@@ -136,14 +140,16 @@ define Indexer3D($ContainerType, $T1, $T2, $T3) {
     replacePP(arg1 => CSTypeForArg($T1),
               arg2 => CSTypeForArg($T2),
               arg3 => CSTypeForArg($T3)) {
-        public HSExpr GetExpr(arg1 x, arg2 y, arg3 z)
+        private HSExpr GetExpr(arg1 x, arg2 y, arg3 z)
         {
             unroll((BufferType, NativeType) in BufferAndNativeTypes)
             {
                 replacePP(MethodName => concatId($ContainerType, Of, BufferType, _GetExpr_, $T1, $T2, $T3),
                           ClassName => concatId(Cpp, $ContainerType)) {
                     if(typeof(T) == typeof(NativeType)) {
-                        return new HSExpr(ClassName.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z)));
+                        var result = new HSExpr(ClassName.MethodName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z)));
+                        result.AddRef(this, x, y, z);
+                        return result;
                     }
                 }
 

@@ -115,8 +115,14 @@ namespace HalideSharp
             }
         }
 
+
+        // Buffers can be large objects, and we'll only ever have one of them set, so just maintain our own reference
+        // to the currently set buffer, rather than using the AddRef mechanism, which would keep every buffer we ever
+        // used around essentially forever.
+        private HSBuffer<T> _currentBuffer;
         region("Setters") {
             public void Set(HSBuffer<T> buff) {
+                _currentBuffer = buff;
                 unroll((BufferType, NativeType) in BufferAndNativeTypes) {
                     replacePP(MethodName => concatId(ImageParamOf, BufferType, _Set_, BufferOf, BufferType)) {
                         if(typeof(T) == typeof(NativeType)) { CppImageParam.MethodName(HSUtil.CArg(this), HSUtil.CArg(buff)); return; }
@@ -130,7 +136,11 @@ namespace HalideSharp
             public HSFunc In(HSFunc f) {
                 unroll((BufferType, NativeType) in BufferAndNativeTypes) {
                     replacePP(MethodName => concatId(ImageParamOf, BufferType, _In_Func)) {
-                        if(typeof(T) == typeof(NativeType)) { return new HSFunc(CppImageParam.MethodName(HSUtil.CArg(this), HSUtil.CArg(f))); }
+                        if(typeof(T) == typeof(NativeType)) {
+                            var result =  new HSFunc(CppImageParam.MethodName(HSUtil.CArg(this), HSUtil.CArg(f)));
+                            result.AddRef(this, f);
+                            return result;
+                        }
                     }
                 }
                 throw new NotImplementedException($"ImageParam type {typeof(T)} unsupported");
@@ -170,7 +180,9 @@ namespace HalideSharp
                         unroll((BufferType, NativeType) in BufferAndNativeTypes) {
                             replacePP(ImplName => concatId(ImageParamOf, BufferType, _GetDimension, FieldName, _Int)) {
                                 if(typeof(T) == typeof(NativeType)) {
-                                    return new HSExpr(CppImageParam.ImplName(HSUtil.CArg(this), HSUtil.CArg(dim)));
+                                    var result = new HSExpr(CppImageParam.ImplName(HSUtil.CArg(this), HSUtil.CArg(dim)));
+                                    result.AddRef(this);
+                                    return result;
                                 }
                             }
                         }

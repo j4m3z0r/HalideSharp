@@ -43,8 +43,15 @@ namespace HalideSharp
                         replacePP(arg1 => concatId(HS, $T1)) {
                             public HSExpr this[arg1 x]
                             {
-                                get => new HSExpr(GetterName(HSUtil.CArg(this), HSUtil.CArg(x)));
-                                set => SetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(value));
+                                get {
+                                    var result = new HSExpr(GetterName(HSUtil.CArg(this), HSUtil.CArg(x)));
+                                    result.AddRef(this, x);
+                                    return result;
+                                }
+                                set {
+                                    AddRef(x, value);
+                                    SetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(value));
+                                }
                             }
                         }
                     }
@@ -67,8 +74,15 @@ namespace HalideSharp
 
                     public HSExpr this[csarg1 x, csarg2 y]
                     {
-                        get => new HSExpr(GetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y)));
-                        set => SetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(value));
+                        get {
+                            var result = new HSExpr(GetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y)));
+                            result.AddRef(this, x, y);
+                            return result;
+                        }
+                        set {
+                            AddRef(x, y, value);
+                            SetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(value));
+                        }
                     }
                 }
             }
@@ -91,8 +105,15 @@ namespace HalideSharp
 
                     public HSExpr this[csarg1 x, csarg2 y, csarg3 z]
                     {
-                        get => new HSExpr(GetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z)));
-                        set => SetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z), HSUtil.CArg(value));
+                        get {
+                            var result = new HSExpr(GetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z)));
+                            result.AddRef(this, x, y, z);
+                            return result;
+                        }
+                        set {
+                            AddRef(x, y, z, value);
+                            SetterName(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z), HSUtil.CArg(value));
+                        }
                     }
                 }
             }
@@ -169,6 +190,7 @@ namespace HalideSharp
         
         public void Parallel(HSVar v)
         {
+            AddRef(v);
             Func_Parallel_Var(HSUtil.CArg(this), HSUtil.CArg(v));
         }
 
@@ -197,6 +219,7 @@ namespace HalideSharp
             var varPointers = new IntPtr[vars.Length];
             for (var i = 0; i < vars.Length; i++)
             {
+                AddRef(vars[i]);
                 varPointers[i] = vars[i]._cppobj;
             }
             
@@ -212,6 +235,7 @@ namespace HalideSharp
             var varPointers = new IntPtr[vars.Length];
             for (var i = 0; i < vars.Length; i++)
             {
+                AddRef(vars[i]);
                 varPointers[i] = vars[i]._cppobj;
             }
             
@@ -222,9 +246,10 @@ namespace HalideSharp
         [DllImport(Constants.LibName)]
         private static extern void Func_Split_VarVarVarInt(IntPtr func, IntPtr origVar, IntPtr var1, IntPtr var2, int factor);
 
-        public HSFunc Split(HSVar origVar, HSVar v1, HSVar v2, int factor)
+        public HSFunc Split(HSVar origVar, HSVar var1, HSVar var2, int factor)
         {
-            Func_Split_VarVarVarInt(HSUtil.CArg(this), HSUtil.CArg(origVar), HSUtil.CArg(v1), HSUtil.CArg(v2), HSUtil.CArg(factor));
+            AddRef(origVar, var1, var2);
+            Func_Split_VarVarVarInt(HSUtil.CArg(this), HSUtil.CArg(origVar), HSUtil.CArg(var1), HSUtil.CArg(var2), HSUtil.CArg(factor));
             return this;
         }
 
@@ -233,6 +258,7 @@ namespace HalideSharp
 
         public HSFunc Fuse(HSVar var1, HSVar var2, HSVar fused)
         {
+            AddRef(var1, var2, fused);
             Func_Fuse_VarVarVar(HSUtil.CArg(this), HSUtil.CArg(var1), HSUtil.CArg(var2), HSUtil.CArg(fused));
             return this;
         }
@@ -242,6 +268,7 @@ namespace HalideSharp
 
         public HSFunc Vectorize(HSVar var1)
         {
+            AddRef(var1);
             Func_Vectorize_Var(HSUtil.CArg(this), HSUtil.CArg(var1));
             return this;
         }
@@ -251,6 +278,7 @@ namespace HalideSharp
 
         public HSFunc Vectorize(HSVar var1, int factor)
         {
+            AddRef(var1);
             Func_Vectorize_VarInt(HSUtil.CArg(this), HSUtil.CArg(var1), HSUtil.CArg(factor));
             return this;
         }
@@ -260,6 +288,7 @@ namespace HalideSharp
 
         public void Unroll(HSVar var1)
         {
+            AddRef(var1);
             Func_Unroll_Var(HSUtil.CArg(this), HSUtil.CArg(var1));
         }
 
@@ -269,6 +298,7 @@ namespace HalideSharp
 
         public HSFunc Tile(HSVar x, HSVar y, HSVar xo, HSVar yo, HSVar xi, HSVar yi, int xfactor, int yfactor)
         {
+            AddRef(x, y, xo, yo, xi, yi);
             Func_Tile_VarVarVarVarVarVarIntInt(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(xo), HSUtil.CArg(yo), HSUtil.CArg(xi), HSUtil.CArg(yi), HSUtil.CArg(xfactor), HSUtil.CArg(yfactor));
             return this;
         }
@@ -287,6 +317,7 @@ namespace HalideSharp
 
         public HSFunc ComputeAt(HSFunc f, HSVar v)
         {
+            AddRef(f, v);
             Func_ComputeAt_FuncVar(HSUtil.CArg(this), HSUtil.CArg(f), HSUtil.CArg(v));
             return this;
         }
@@ -305,6 +336,7 @@ namespace HalideSharp
 
         public HSFunc StoreAt(HSFunc f, HSVar v)
         {
+            AddRef(f, v);
             Func_StoreAt_FuncVar(HSUtil.CArg(this), HSUtil.CArg(f), HSUtil.CArg(v));
             return this;
         }
@@ -321,6 +353,7 @@ namespace HalideSharp
         private static extern void Func_CompileJit_Target(IntPtr self, IntPtr target);
         public HSFunc CompileJit(HSTarget target)
         {
+            AddRef(target);
             Func_CompileJit_Target(HSUtil.CArg(this), HSUtil.CArg(target));
             return this;
         }
@@ -329,6 +362,7 @@ namespace HalideSharp
         private static extern void Func_Bound(IntPtr self, IntPtr v, int min, int max);
         public HSFunc Bound(HSVar v, int min, int max)
         {
+            AddRef(v);
             Func_Bound(HSUtil.CArg(this), HSUtil.CArg(v), HSUtil.CArg(min), HSUtil.CArg(max));
             return this;
         }
@@ -339,6 +373,7 @@ namespace HalideSharp
         private static extern void Func_GpuTile_VarVarVarInt(IntPtr self, IntPtr x, IntPtr bx, IntPtr tx, int x_size);
         public HSFunc GpuTile (HSVar x, HSVar bx, HSVar tx, int x_size)
         {
+            AddRef(x, bx, tx);
             Func_GpuTile_VarVarVarInt(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(bx), HSUtil.CArg(tx), HSUtil.CArg(x_size));
             return this;
         }
@@ -347,6 +382,7 @@ namespace HalideSharp
         private static extern void Func_GpuTile_VarVarInt(IntPtr self, IntPtr x, IntPtr tx, int x_size);
         public HSFunc GpuTile (HSVar x, HSVar tx, int x_size)
         {
+            AddRef(x, tx);
             Func_GpuTile_VarVarInt(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(tx), HSUtil.CArg(x_size));
             return this;
         }
@@ -355,6 +391,7 @@ namespace HalideSharp
         private static extern void Func_GpuTile_VarVarVarVarVarVarIntInt(IntPtr self, IntPtr x, IntPtr y, IntPtr bx, IntPtr by, IntPtr tx, IntPtr ty, int x_size, int y_size);
         public HSFunc GpuTile (HSVar x, HSVar y, HSVar bx, HSVar by, HSVar tx, HSVar ty, int x_size, int y_size)
         {
+            AddRef(x, y, bx, by, tx, ty);
             Func_GpuTile_VarVarVarVarVarVarIntInt(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(bx), HSUtil.CArg(by), HSUtil.CArg(tx), HSUtil.CArg(ty), HSUtil.CArg(x_size), HSUtil.CArg(y_size));
             return this;
         }
@@ -363,6 +400,7 @@ namespace HalideSharp
         private static extern void Func_GpuTile_VarVarVarVarIntInt(IntPtr self, IntPtr x, IntPtr y, IntPtr tx, IntPtr ty, int x_size, int y_size);
         public HSFunc GpuTile (HSVar x, HSVar y, HSVar tx, HSVar ty, int x_size, int y_size)
         {
+            AddRef(x, y, tx, ty);
             Func_GpuTile_VarVarVarVarIntInt(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(tx), HSUtil.CArg(ty), HSUtil.CArg(x_size), HSUtil.CArg(y_size));
             return this;
         }
@@ -371,6 +409,7 @@ namespace HalideSharp
         private static extern void Func_GpuTile_VarVarVarVarVarVarVarVarVarIntIntInt(IntPtr self, IntPtr x, IntPtr y, IntPtr z, IntPtr bx, IntPtr by, IntPtr bz, IntPtr tx, IntPtr ty, IntPtr tz, int x_size, int y_size, int z_size);
         public HSFunc GpuTile (HSVar x, HSVar y, HSVar z, HSVar bx, HSVar by, HSVar bz, HSVar tx, HSVar ty, HSVar tz, int x_size, int y_size, int z_size)
         {
+            AddRef(x, y, z, bx, by, bz, tx, ty, tz);
             Func_GpuTile_VarVarVarVarVarVarVarVarVarIntIntInt(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z), HSUtil.CArg(bx), HSUtil.CArg(by), HSUtil.CArg(bz), HSUtil.CArg(tx), HSUtil.CArg(ty), HSUtil.CArg(tz), HSUtil.CArg(x_size), HSUtil.CArg(y_size), HSUtil.CArg(z_size));
             return this;
         }
@@ -379,6 +418,7 @@ namespace HalideSharp
         private static extern void Func_GpuTile_VarVarVarVarVarVarIntIntInt(IntPtr self, IntPtr x, IntPtr y, IntPtr z, IntPtr tx, IntPtr ty, IntPtr tz, int x_size, int y_size, int z_size);
         public HSFunc GpuTile (HSVar x, HSVar y, HSVar z, HSVar tx, HSVar ty, HSVar tz, int x_size, int y_size, int z_size)
         {
+            AddRef(x, y, z, tx, ty, tz);
             Func_GpuTile_VarVarVarVarVarVarIntIntInt(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z), HSUtil.CArg(tx), HSUtil.CArg(ty), HSUtil.CArg(tz), HSUtil.CArg(x_size), HSUtil.CArg(y_size), HSUtil.CArg(z_size));
             return this;
         }
@@ -413,6 +453,7 @@ namespace HalideSharp
         [DllImport(Constants.LibName)]
         private static extern void Func_GpuBlocks_Var(IntPtr self, IntPtr x);
         public HSFunc GpuBlocks(HSVar x) {
+            AddRef(x);
             Func_GpuBlocks_Var(HSUtil.CArg(this), HSUtil.CArg(x));
             return this;
         }
@@ -420,6 +461,7 @@ namespace HalideSharp
         [DllImport(Constants.LibName)]
         private static extern void Func_GpuBlocks_VarVar(IntPtr self, IntPtr x, IntPtr y);
         public HSFunc GpuBlocks(HSVar x, HSVar y) {
+            AddRef(x, y);
             Func_GpuBlocks_VarVar(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y));
             return this;
         }
@@ -427,6 +469,7 @@ namespace HalideSharp
         [DllImport(Constants.LibName)]
         private static extern void Func_GpuBlocks_VarVarVar(IntPtr self, IntPtr x, IntPtr y, IntPtr z);
         public HSFunc GpuBlocks(HSVar x, HSVar y, HSVar z) {
+            AddRef(x, y, z);
             Func_GpuBlocks_VarVarVar(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z));
             return this;
         }
@@ -435,6 +478,7 @@ namespace HalideSharp
         [DllImport(Constants.LibName)]
         private static extern void Func_GpuThreads_Var(IntPtr self, IntPtr x);
         public HSFunc GpuThreads(HSVar x) {
+            AddRef(x);
             Func_GpuThreads_Var(HSUtil.CArg(this), HSUtil.CArg(x));
             return this;
         }
@@ -442,6 +486,7 @@ namespace HalideSharp
         [DllImport(Constants.LibName)]
         private static extern void Func_GpuThreads_VarVar(IntPtr self, IntPtr x, IntPtr y);
         public HSFunc GpuThreads(HSVar x, HSVar y) {
+            AddRef(x, y);
             Func_GpuThreads_VarVar(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y));
             return this;
         }
@@ -449,6 +494,7 @@ namespace HalideSharp
         [DllImport(Constants.LibName)]
         private static extern void Func_GpuThreads_VarVarVar(IntPtr self, IntPtr x, IntPtr y, IntPtr z);
         public HSFunc GpuThreads(HSVar x, HSVar y, HSVar z) {
+            AddRef(x, y, z);
             Func_GpuThreads_VarVarVar(HSUtil.CArg(this), HSUtil.CArg(x), HSUtil.CArg(y), HSUtil.CArg(z));
             return this;
         }
@@ -456,13 +502,17 @@ namespace HalideSharp
         [DllImport(Constants.LibName)]
         private static extern IntPtr Func_In_Func(IntPtr self, IntPtr f);
         public HSFunc In(HSFunc f) {
-            return new HSFunc(Func_In_Func(HSUtil.CArg(this), HSUtil.CArg(f)));
+            var result = new HSFunc(Func_In_Func(HSUtil.CArg(this), HSUtil.CArg(f)));
+            result.AddRef(this, f);
+            return result;
         }
         
         [DllImport(Constants.LibName)]
         private static extern IntPtr Func_In(IntPtr self);
         public HSFunc In() {
-            return new HSFunc(Func_In(HSUtil.CArg(this)));
+            var result = new HSFunc(Func_In(HSUtil.CArg(this)));
+            result.AddRef(this);
+            return result;
         }
     }
 }

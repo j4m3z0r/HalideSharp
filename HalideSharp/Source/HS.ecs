@@ -32,7 +32,9 @@ namespace HalideSharp
             unroll((BufferType, NativeType) in BufferAndNativeTypes) {
                 replacePP(MethodName => concatId(Global_CastTo, BufferType)) {
                     if(typeof(T) == typeof(NativeType)) {
-                        return new HSExpr(MethodName(HSUtil.CArg(expr)));
+                        var result = new HSExpr(MethodName(HSUtil.CArg(expr)));
+                        result.AddRef(expr);
+                        return result;
                     }
                 }
             }
@@ -81,14 +83,23 @@ namespace HalideSharp
                     }
                 }
 
+                HSExpr result = null;
                 if (ReferenceEquals(when, null))
                 {
-                    return new HSExpr(PrintObjectsWhen(IntPtr.Zero, args.Length, typeList, objList));
+                    result = new HSExpr(PrintObjectsWhen(IntPtr.Zero, args.Length, typeList, objList));
                 }
                 else
                 {
-                    return new HSExpr(PrintObjectsWhen(HSUtil.CArg(when), args.Length, typeList, objList));
+                    result = new HSExpr(PrintObjectsWhen(HSUtil.CArg(when), args.Length, typeList, objList));
                 }
+
+                foreach(var a in args) {
+                    if(a as HSObject != null) {
+                        result.AddRef(a as HSObject);
+                    }
+                }
+
+                return result;
 
             }
             finally
@@ -108,25 +119,33 @@ namespace HalideSharp
 		[DllImport(Constants.LibName)] private static extern IntPtr Global_Clamp_ExprIntInt(IntPtr e, int min, int max);
 		public static HSExpr Clamp(HSExpr e, int min, int max)
 		{
-			return new HSExpr(Global_Clamp_ExprIntInt(HSUtil.CArg(e), HSUtil.CArg(min), HSUtil.CArg(max)));
+			var result = new HSExpr(Global_Clamp_ExprIntInt(HSUtil.CArg(e), HSUtil.CArg(min), HSUtil.CArg(max)));
+            result.AddRef(e);
+            return result;
 		}
 
 		[DllImport(Constants.LibName)] private static extern IntPtr Global_Clamp_ExprFloatFloat(IntPtr e, float min, float max);
 		public static HSExpr Clamp(HSExpr e, float min, float max)
 		{
-			return new HSExpr(Global_Clamp_ExprFloatFloat(HSUtil.CArg(e), HSUtil.CArg(min), HSUtil.CArg(max)));
+			var result = new HSExpr(Global_Clamp_ExprFloatFloat(HSUtil.CArg(e), HSUtil.CArg(min), HSUtil.CArg(max)));
+            result.AddRef(e);
+            return result;
 		}
 
         [DllImport(Constants.LibName)] private static extern IntPtr Global_Clamp_VarIntInt(IntPtr v, int min, int max);
         public static HSExpr Clamp(HSVar v, int min, int max)
         {
-            return new HSExpr(Global_Clamp_VarIntInt(HSUtil.CArg(v), HSUtil.CArg(min), HSUtil.CArg(max)));
+            var result = new HSExpr(Global_Clamp_VarIntInt(HSUtil.CArg(v), HSUtil.CArg(min), HSUtil.CArg(max)));
+            result.AddRef(v);
+            return result;
         }
 
         [DllImport(Constants.LibName)] private static extern IntPtr Global_Clamp_VarFloatFloat(IntPtr v, float min, float max);
         public static HSExpr Clamp(HSVar v, float min, float max)
         {
-            return new HSExpr(Global_Clamp_VarFloatFloat(HSUtil.CArg(v), HSUtil.CArg(min), HSUtil.CArg(max)));
+            var result = new HSExpr(Global_Clamp_VarFloatFloat(HSUtil.CArg(v), HSUtil.CArg(min), HSUtil.CArg(max)));
+            result.AddRef(v);
+            return result;
         }
 
         [DllImport(Constants.LibName)]
@@ -141,7 +160,9 @@ namespace HalideSharp
         private static extern IntPtr Global_Select_ExprExprExpr(IntPtr condition, IntPtr trueVal, IntPtr falseVal);
         public static HSExpr Select(HSExpr condition, HSExpr trueVal, HSExpr falseVal)
         {
-            return new HSExpr(Global_Select_ExprExprExpr(HSUtil.CArg(condition), HSUtil.CArg(trueVal), HSUtil.CArg(falseVal)));
+            var result = new HSExpr(Global_Select_ExprExprExpr(HSUtil.CArg(condition), HSUtil.CArg(trueVal), HSUtil.CArg(falseVal)));
+            result.AddRef(condition, trueVal, falseVal);
+            return result;
         }
 
         [DllImport(Constants.LibName)]
@@ -159,10 +180,17 @@ namespace HalideSharp
                 objList[i] = HSUtil.CArg(args[i]);
             }
 
-            return new HSExpr(Global_Select_ExprExprExprExprVarargs(
+            var result = new HSExpr(Global_Select_ExprExprExprExprVarargs(
                 HSUtil.CArg(c0), HSUtil.CArg(v0),
                 HSUtil.CArg(c1), HSUtil.CArg(v1),
                 args.Length, objList));
+
+            result.AddRef(c0, v0, c1, v1);
+            foreach(var a in args) {
+                result.AddRef(a);
+            }
+
+            return result;
         }
     }
 }

@@ -13,7 +13,11 @@ namespace HalideSharp
                         CSArg => concatId(HS, ArgType)) {
                     [DllImport(Constants.LibName)]
                     private static extern IntPtr MethodName(IntPtr arg);
-                    public static HSExpr MathFn(CSArg arg) { return new HSExpr(MethodName(HSUtil.CArg(arg))); }
+                    public static HSExpr MathFn(CSArg arg) {
+                        var result = new HSExpr(MethodName(HSUtil.CArg(arg)));
+                        result.AddRef(arg);
+                        return result;
+                    }
                 }
             }
         }
@@ -25,7 +29,9 @@ namespace HalideSharp
                     replace(CName => concatId(Global_, MathFn, _, CSTYPE1, CSTYPE2)) {
                         [DllImport(Constants.LibName)] private static extern IntPtr CName(CPPTYPE1 a, CPPTYPE2 b);
                         public static HSExpr MathFn(HSTYPE1 a, HSTYPE2 b) {
-                            return new HSExpr(CName(HSUtil.CArg(a), HSUtil.CArg(b)));
+                            var result = new HSExpr(CName(HSUtil.CArg(a), HSUtil.CArg(b)));
+                            result.AddRef(a, b);
+                            return result;
                         }
                     }
                 }
