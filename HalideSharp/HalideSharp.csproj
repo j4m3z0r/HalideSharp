@@ -79,6 +79,7 @@
     <Compile Include="Source\HSRDom.cs" />
     <None Include="Source\HSOperators.ecs" />
     <Compile Include="Source\HSOperators.out.cs" />
+    <Compile Include="Source\HSRVar.cs" />
     <Compile Include="Source\HSTarget.cs" />
     <Compile Include="Source\HSUtil.cs" />
     <Compile Include="Source\HSVar.out.cs">
@@ -87,6 +88,7 @@
     <Compile Include="Source\SharedEnums.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Source\hsrvar.cpp" />
     <None Include="Source\hserror.cpp" />
     <None Include="build\HalideSharp.targets" />
     <Content Include="..\README.md">
