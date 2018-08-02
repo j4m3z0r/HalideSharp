@@ -7,6 +7,11 @@ namespace HalideSharp
 {
     public class HSRVar : HSObject
     {
+        internal HSRVar(IntPtr o)
+        {
+            _cppobj = o;
+        }
+        
         [DllImport(Constants.LibName)]
         private static extern IntPtr RVar_New();
         public HSRVar() : base()
