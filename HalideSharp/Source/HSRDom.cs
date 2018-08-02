@@ -18,6 +18,10 @@ namespace HalideSharp
 
         ~HSRDom()
         {
+            #if TRACE_DESTRUCTORS
+                Console.WriteLine($"Destroying {this.GetType().Name}");
+            #endif
+
             RDom_Delete(_cppobj);
         }
     }

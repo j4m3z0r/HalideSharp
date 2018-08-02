@@ -26,6 +26,10 @@ namespace HalideSharp
         private static extern void Func_Delete(IntPtr obj);
         
         ~HSFunc() {
+            ifdef("TRACE_DESTRUCTORS") {
+                Console.WriteLine($"Destroying {this.GetType().Name}");
+            }
+
             if (_cppobj != IntPtr.Zero)
             {
                 Func_Delete(_cppobj);

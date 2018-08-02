@@ -50,6 +50,11 @@ define ExecMacro3D($macro3d) {
     }
 }
 
+// The folllowing two macros are a workaround for the fact that LeMP struggles
+// with defining "#preprocessorDirective" directly in the code -- it will emit
+// it sometimes but not others. A "proper" fix for this seems to be elusive, so
+// we're just going to go ahead and write a macro to emit them directly and use
+// that instead.
 define region($name, { $(..code); }) {
     #rawText("\n");
     #rawText("#region "); #rawText($name);
@@ -58,3 +63,10 @@ define region($name, { $(..code); }) {
     #rawText("\n");
 }
 
+define ifdef($name, { $(..code); }) {
+    #rawText("\n");
+    #rawText("#if "); #rawText($name);
+    $(..code);
+    #rawText("#endif // "); #rawText($name);
+    #rawText("\n");
+}

@@ -15,6 +15,10 @@ namespace HalideSharp
         
         ~HSTarget()
         {
+            #if TRACE_DESTRUCTORS
+                Console.WriteLine($"Destroying {this.GetType().Name}");
+            #endif
+
             if (_cppobj != IntPtr.Zero)
             {
                 Target_Delete(_cppobj);

@@ -106,6 +106,10 @@ namespace HalideSharp
         region("Destructor") {
             ~HSImageParam()
             {
+                ifdef("TRACE_DESTRUCTORS") {
+                    Console.WriteLine($"Destroying {this.GetType().Name}");
+                }
+
                 unroll((BufferType, NativeType) in BufferAndNativeTypes) {
                     replacePP(MethodName => concatId(ImageParamOf, BufferType, _Delete)) {
                         if(typeof(T) == typeof(NativeType)) { CppImageParam.MethodName(HSUtil.CArg(this)); return; }

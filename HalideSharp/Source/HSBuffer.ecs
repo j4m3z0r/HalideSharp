@@ -276,6 +276,10 @@ namespace HalideSharp
 
         ~HSBuffer()
         {
+            ifdef("TRACE_DESTRUCTORS") {
+                Console.WriteLine($"Destroying {this.GetType().Name}");
+            }
+
             CheckType();
             if (_cppobj == IntPtr.Zero)
             {

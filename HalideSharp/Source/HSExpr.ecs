@@ -50,6 +50,10 @@ namespace HalideSharp
         
         ~HSExpr()
         {
+            ifdef("TRACE_DESTRUCTORS") {
+                Console.WriteLine($"Destroying {this.GetType().Name}");
+            }
+
             if (_cppobj != IntPtr.Zero)
             {
                 Expr_Delete(_cppobj);

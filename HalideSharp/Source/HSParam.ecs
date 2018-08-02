@@ -118,6 +118,10 @@ namespace HalideSharp
         }
 
         ~HSParam() {
+            ifdef("TRACE_DESTRUCTORS") {
+                Console.WriteLine($"Destroying {this.GetType().Name}");
+            }
+
             unroll((BufferType, NativeType) in BufferAndNativeTypes) {
                 if(typeof(T) == typeof(NativeType)) {
                     replacePP(MethodName => concatId(ParamOf, BufferType, _Delete)) {
