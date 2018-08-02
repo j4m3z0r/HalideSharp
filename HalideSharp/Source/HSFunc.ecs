@@ -518,5 +518,19 @@ namespace HalideSharp
             result.AddRef(this);
             return result;
         }
+        
+        [DllImport(Constants.LibName)]
+        private static extern IntPtr Func_Update_Int(IntPtr self, int index);
+        public HSStage Update(int index = 0) {
+            var result = new HSStage(Func_Update_Int(HSUtil.CArg(this), HSUtil.CArg(index)));
+            result.AddRef(this);
+            
+            // HSStage is a handle into a HSFunc's internals. The HSStage won't be valid if the HSFunc disappears, so
+            // we add a reference to the function. However, the HSFunc *will* still be valid if the HSStage disappears,
+            // since it's just a handle for scheduling, and can be reaped as soon as we've done whatever we plan to do
+            // with it. Hence: we do not add a reference to the Stage to this Func.
+            
+            return result;
+        }
     }
 }
