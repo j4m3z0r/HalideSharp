@@ -87,6 +87,25 @@ namespace HalideSharp
         }
 
         [DllImport(Constants.LibName)]
+        private static extern IntPtr RDom_New_Varargs(int numArgs, IntPtr[] args);
+        
+        public HSRDom(params HSExpr[] args)
+        {
+            if (args.Length % 2 != 0)
+            {
+                throw new HSError($"Even number of arguments required. {args.Length} provided");
+            }
+            var exprArgs = new IntPtr[args.Length];
+            for (var i = 0; i < args.Length; i++)
+            {
+                exprArgs[i] = args[i]._cppobj;
+                AddRef(args[i]);
+            }
+
+            _cppobj = RDom_New_Varargs(args.Length, exprArgs);
+        }
+
+        [DllImport(Constants.LibName)]
         private static extern void RDom_Delete(IntPtr r);
 
         ~HSRDom()
