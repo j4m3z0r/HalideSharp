@@ -19,6 +19,11 @@ namespace HalideSharp
 
         internal static IntPtr CArg(HSObject o)
         {
+            if (o == null)
+            {
+                return IntPtr.Zero;
+            }
+            
             return o._cppobj;
         }
         
@@ -40,6 +45,16 @@ namespace HalideSharp
         internal static HSFeature CArg(HSFeature f)
         {
             return f;
+        }
+
+        public static HSOperatingSystem CArg(HSOperatingSystem os)
+        {
+            return os;
+        }
+
+        public static HSArchitecture CArg(HSArchitecture arch)
+        {
+            return arch;
         }
     }
 }

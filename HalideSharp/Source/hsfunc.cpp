@@ -132,6 +132,17 @@ extern "C" void Func_ComputeAt_FuncVar(Func *self, Func *func, Var *v) { self->c
 extern "C" void Func_StoreRoot(Func *self) { self->store_root(); }
 extern "C" void Func_StoreAt_FuncVar(Func *self, Func *func, Var *v) { self->store_at(*func, *v); }
 extern "C" void Func_CompileJit(Func *self) { self->compile_jit(); }
+extern "C" void Func_CompileToFile_StringIntArrayOfArgumentStringTarget(Func *self, char *prefix, int nrArgs, Argument **args, char *functionName, Target *t) {
+    std::vector<Argument> argv;
+    for(int i = 0; i < nrArgs; i++) {
+        argv.push_back(*args[i]);
+    }
+    if(t == nullptr) {
+        self->compile_to_file(prefix, argv, functionName);
+    } else {
+        self->compile_to_file(prefix, argv, functionName, *t);
+    }
+}
 extern "C" void Func_CompileJit_Target(Func *self, Target *t) { self->compile_jit(*t); }
 extern "C" void Func_Bound(Func *self, Var *v, int min, int max) { self->bound(*v, min, max); }
 

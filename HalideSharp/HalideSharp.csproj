@@ -48,6 +48,10 @@
     <Compile Include="Source\HS.out.cs">
       <DependentUpon>Source\HS.ecs</DependentUpon>
     </Compile>
+    <None Include="Source\HSArgument.ecs" />
+    <Compile Include="Source\HSArgument.out.cs">
+      <DependentUpon>Source\HSArgument.ecs</DependentUpon>
+    </Compile>
     <Compile Include="Source\HSBuffer.out.cs">
       <DependentUpon>Source\HSBuffer.ecs</DependentUpon>
     </Compile>
@@ -89,6 +93,7 @@
     <Compile Include="Source\SharedEnums.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Source\hsargument.cpp" />
     <None Include="Source\hsstage.cpp" />
     <None Include="Source\hsrvar.cpp" />
     <None Include="Source\hserror.cpp" />

@@ -3,6 +3,7 @@
 includeFile("Indexer.ecs");
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace HalideSharp
@@ -361,6 +362,33 @@ namespace HalideSharp
             Func_CompileJit_Target(HSUtil.CArg(this), HSUtil.CArg(target));
             return this;
         }
+        
+        [DllImport(Constants.LibName)]
+        private static extern void Func_CompileToFile_StringIntArrayOfArgumentStringTarget(
+            IntPtr func,
+            [MarshalAs(Constants.StringType)] string prefix,
+            int nrArguments,
+            IntPtr[] arguments,
+            [MarshalAs(Constants.StringType)] string functionName,
+            IntPtr target);
+            
+        public void CompileToFile(string prefix, List<HSArgument> arguments, string functionName, HSTarget target=null)
+        {
+            var objList = new IntPtr[arguments.Count];
+            for(var i = 0; i < arguments.Count; i++)
+            {
+                objList[i] = HSUtil.CArg(arguments[i]);
+            }
+            
+            Func_CompileToFile_StringIntArrayOfArgumentStringTarget(
+                HSUtil.CArg(this),
+                prefix,
+                arguments.Count,
+                objList,
+                functionName,
+                HSUtil.CArg(target));
+        }
+            
 
         [DllImport(Constants.LibName)]
         private static extern void Func_Bound(IntPtr self, IntPtr v, int min, int max);

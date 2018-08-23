@@ -1,0 +1,62 @@
+﻿#ecs;
+
+using System;
+using System.Runtime.InteropServices;
+
+includeFile("MagicMacros.ecs");
+
+namespace HalideSharp
+{
+    public class HSArgument : HSObject
+    {
+        internal HSArgument(IntPtr cppobj) : base()
+        {
+            _cppobj = cppobj;
+        }
+
+        region("Constructors") {
+            unroll((BufferType, NativeType) in BufferAndNativeTypes) {
+                replace(CFunc => concatId(Argument_New_ImageParamOf, BufferType)) {
+                    [DllImport(Constants.LibName)] private static extern IntPtr CFunc(IntPtr obj);
+                    internal HSArgument(HSImageParam<NativeType> p)
+                    {
+                        _cppobj = CFunc(HSUtil.CArg(p));
+                        AddRef(p);
+                    }
+                }
+                
+                replace(CFunc => concatId(Argument_New_ParamOf, BufferType)) {
+                    [DllImport(Constants.LibName)] private static extern IntPtr CFunc(IntPtr obj);
+                    internal HSArgument(HSParam<NativeType> p)
+                    {
+                        _cppobj = CFunc(HSUtil.CArg(p));
+                        AddRef(p);
+                    }
+                }
+            }
+        }
+
+		[DllImport(Constants.LibName)] private static extern void Argument_Delete(IntPtr obj);
+        ~HSArgument()
+        {
+            if (_cppobj != IntPtr.Zero)
+            {
+                Argument_Delete(_cppobj);
+            }
+        }
+
+        region("Implicit type converters") {
+            unroll((_, NativeType) in BufferAndNativeTypes) {
+                public static implicit operator HSArgument(HSImageParam<NativeType> p)
+                {
+                    return new HSArgument(p);
+                }
+
+                public static implicit operator HSArgument(HSParam<NativeType> p)
+                {
+                    return new HSArgument(p);
+                }
+            }
+        }
+    }
+}
