@@ -372,7 +372,7 @@ namespace HalideSharp
             [MarshalAs(Constants.StringType)] string functionName,
             IntPtr target);
             
-        public void CompileToFile(string prefix, List<HSArgument> arguments, string functionName, HSTarget target=null)
+        public void CompileToFile(string filenamePrefix, List<HSArgument> arguments, string functionName, HSTarget target=null)
         {
             var objList = new IntPtr[arguments.Count];
             for(var i = 0; i < arguments.Count; i++)
@@ -382,13 +382,38 @@ namespace HalideSharp
             
             Func_CompileToFile_StringIntArrayOfArgumentStringTarget(
                 HSUtil.CArg(this),
-                prefix,
+                filenamePrefix,
                 arguments.Count,
                 objList,
                 functionName,
                 HSUtil.CArg(target));
         }
+        
+        [DllImport(Constants.LibName)]
+        private static extern void Func_CompileToStaticLibrary_StringIntArrayOfArgumentStringTarget(
+            IntPtr func,
+            [MarshalAs(Constants.StringType)] string prefix,
+            int nrArguments,
+            IntPtr[] arguments,
+            [MarshalAs(Constants.StringType)] string functionName,
+            IntPtr target);
             
+        public void CompileToStaticLibrary(string filenamePrefix, List<HSArgument> arguments, string functionName, HSTarget target=null)
+        {
+            var objList = new IntPtr[arguments.Count];
+            for(var i = 0; i < arguments.Count; i++)
+            {
+                objList[i] = HSUtil.CArg(arguments[i]);
+            }
+            
+            Func_CompileToStaticLibrary_StringIntArrayOfArgumentStringTarget(
+                HSUtil.CArg(this),
+                filenamePrefix,
+                arguments.Count,
+                objList,
+                functionName,
+                HSUtil.CArg(target));
+        }
 
         [DllImport(Constants.LibName)]
         private static extern void Func_Bound(IntPtr self, IntPtr v, int min, int max);

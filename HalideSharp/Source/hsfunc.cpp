@@ -143,6 +143,17 @@ extern "C" void Func_CompileToFile_StringIntArrayOfArgumentStringTarget(Func *se
         self->compile_to_file(prefix, argv, functionName, *t);
     }
 }
+extern "C" void Func_CompileToStaticLibrary_StringIntArrayOfArgumentStringTarget(Func *self, char *prefix, int nrArgs, Argument **args, char *functionName, Target *t) {
+    std::vector<Argument> argv;
+    for(int i = 0; i < nrArgs; i++) {
+        argv.push_back(*args[i]);
+    }
+    if(t == nullptr) {
+        self->compile_to_static_library(prefix, argv, functionName);
+    } else {
+        self->compile_to_static_library(prefix, argv, functionName, *t);
+    }
+}
 extern "C" void Func_CompileJit_Target(Func *self, Target *t) { self->compile_jit(*t); }
 extern "C" void Func_Bound(Func *self, Var *v, int min, int max) { self->bound(*v, min, max); }
 
