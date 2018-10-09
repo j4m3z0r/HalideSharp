@@ -11,7 +11,7 @@ LDFLAGS := ...
 all: $(TARGET) $(ECS_OUTPUTS)
 
 THIRDPARTY_DIR := $(abspath ../3rdparty)
-HALIDE_VERSION := linux-64-gcc53-trunk-46d8e9e0cdae456489f1eddfd6d829956fc3c843
+HALIDE_VERSION := linux-64-gcc53-trunk-6e673cc8a8efe21396ddc66214e9cf645650a3fd
 HALIDE_DIR := $(abspath $(THIRDPARTY_DIR)/halide)
 HALIDE_LIB := $(HALIDE_DIR)/lib/libHalide.a
 HALIDE_INC := $(HALIDE_DIR)/include
