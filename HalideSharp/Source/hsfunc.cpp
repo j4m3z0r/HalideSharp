@@ -203,3 +203,6 @@ extern "C" Func* Func_In_Func(Func *self, Func *f) { return new Func(self->in(*f
 extern "C" Func* Func_In(Func *self) { return new Func(self->in()); }
 
 extern "C" Stage* Func_Update_Int(Func *self, int index) { return new Stage(self->update(index)); }
+
+extern "C" OutputImageParam *Func_OutputBuffer(Func *self) { return new OutputImageParam(self->output_buffer()); }
+

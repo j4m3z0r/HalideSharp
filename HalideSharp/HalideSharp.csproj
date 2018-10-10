@@ -77,6 +77,9 @@
     <Compile Include="Source\HSImageParamDimension.cs" />
     <Compile Include="Source\HSImageParamDimensionList.cs" />
     <Compile Include="Source\HSObject.cs" />
+    <Compile Include="Source\HSOutputImageParam.cs" />
+    <Compile Include="Source\HSOutputImageParamDimension.cs" />
+    <Compile Include="Source\HSOutputImageParamDimensionList.cs" />
     <Compile Include="Source\HSParam.out.cs">
       <DependentUpon>Source\HSParam.ecs</DependentUpon>
     </Compile>
@@ -93,6 +96,7 @@
     <Compile Include="Source\SharedEnums.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Source\hsoutputimageparam.cpp" />
     <None Include="Source\hsargument.cpp" />
     <None Include="Source\hsstage.cpp" />
     <None Include="Source\hsrvar.cpp" />

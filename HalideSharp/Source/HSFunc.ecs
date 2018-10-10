@@ -585,5 +585,13 @@ namespace HalideSharp
             
             return result;
         }
+
+        [DllImport(Constants.LibName)]
+        private static extern IntPtr Func_OutputBuffer(IntPtr self);
+        public HSOutputImageParam OutputBuffer() {
+            var result = new HSOutputImageParam(Func_OutputBuffer(HSUtil.CArg(this)));
+            result.AddRef(this);
+            return result;
+        }
     }
 }
