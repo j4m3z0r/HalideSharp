@@ -116,37 +116,16 @@ namespace HalideSharp
             return PrintWhen(null, args);
         }
 
-		[DllImport(Constants.LibName)] private static extern IntPtr Global_Clamp_ExprIntInt(IntPtr e, int min, int max);
-		public static HSExpr Clamp(HSExpr e, int min, int max)
+		[DllImport(Constants.LibName)] private static extern IntPtr Global_Clamp_ExprExprExpr(IntPtr e, IntPtr min, IntPtr max);
+		public static HSExpr Clamp(HSExpr e, HSExpr min, HSExpr max)
 		{
-			var result = new HSExpr(Global_Clamp_ExprIntInt(HSUtil.CArg(e), HSUtil.CArg(min), HSUtil.CArg(max)));
+    		var cppobj = Global_Clamp_ExprExprExpr(HSUtil.CArg(e), HSUtil.CArg(min), HSUtil.CArg(max));
+			var result = new HSExpr(cppobj);
             result.AddRef(e);
+            result.AddRef(min);
+            result.AddRef(max);
             return result;
 		}
-
-		[DllImport(Constants.LibName)] private static extern IntPtr Global_Clamp_ExprFloatFloat(IntPtr e, float min, float max);
-		public static HSExpr Clamp(HSExpr e, float min, float max)
-		{
-			var result = new HSExpr(Global_Clamp_ExprFloatFloat(HSUtil.CArg(e), HSUtil.CArg(min), HSUtil.CArg(max)));
-            result.AddRef(e);
-            return result;
-		}
-
-        [DllImport(Constants.LibName)] private static extern IntPtr Global_Clamp_VarIntInt(IntPtr v, int min, int max);
-        public static HSExpr Clamp(HSVar v, int min, int max)
-        {
-            var result = new HSExpr(Global_Clamp_VarIntInt(HSUtil.CArg(v), HSUtil.CArg(min), HSUtil.CArg(max)));
-            result.AddRef(v);
-            return result;
-        }
-
-        [DllImport(Constants.LibName)] private static extern IntPtr Global_Clamp_VarFloatFloat(IntPtr v, float min, float max);
-        public static HSExpr Clamp(HSVar v, float min, float max)
-        {
-            var result = new HSExpr(Global_Clamp_VarFloatFloat(HSUtil.CArg(v), HSUtil.CArg(min), HSUtil.CArg(max)));
-            result.AddRef(v);
-            return result;
-        }
 
         [DllImport(Constants.LibName)]
         private static extern IntPtr Global_GetHostTarget();

@@ -11,6 +11,10 @@ extern "C" Expr* Expr_New_Float(float f) {
     return new Expr(f);
 }
 
+extern "C" Expr* Expr_New_Var(Var *v) {
+    return new Expr(*v);
+}
+
 extern "C" void Expr_Delete(Expr *e) {
     delete e;
 }

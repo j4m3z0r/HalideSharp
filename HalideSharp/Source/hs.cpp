@@ -45,11 +45,7 @@ extern "C" Expr* print_objects_when(Expr* condition, int numObjects, enum HSObje
     }
 }
 
-extern "C" Expr* Global_Clamp_ExprIntInt(Expr* e, int min, int max) { return new Expr(clamp(*e, min, max)); }
-extern "C" Expr* Global_Clamp_ExprFloatFloat(Expr* e, float min, float max) { return new Expr(clamp(*e, min, max)); }
-
-extern "C" Expr* Global_Clamp_VarIntInt(Var *v, int min, int max) { return new Expr(clamp(*v, min, max)); }
-extern "C" Expr* Global_Clamp_VarFloatFloat(Var *v, float min, float max) { return new Expr(clamp(*v, min, max)); }
+extern "C" Expr* Global_Clamp_ExprExprExpr(Expr* e, Expr *min, Expr *max) { return new Expr(clamp(*e, *min, *max)); }
 
 extern "C" Target* Global_GetHostTarget() { return new Target(get_host_target()); }
 

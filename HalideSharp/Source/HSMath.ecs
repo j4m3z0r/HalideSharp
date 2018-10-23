@@ -8,32 +8,25 @@ namespace HalideSharp
         replace(SingleArgMathFunctions => (Sin, Asin, Cos, Acos, Tan, Atan, Sinh, Asinh, Cosh, Acosh, Tanh, Atanh, Sqrt, Exp, Log, Erf, FastInverse, FastInverseSqrt, Floor, Ceil, Round, Trunc, IsNan, Fract, Abs));
 
         unroll(MathFn in SingleArgMathFunctions) {
-            unroll(ArgType in (Expr, Var)) {
-                replace(MethodName => concatId(Global_, MathFn, _, ArgType),
-                        CSArg => concatId(HS, ArgType)) {
-                    [DllImport(Constants.LibName)]
-                    private static extern IntPtr MethodName(IntPtr arg);
-                    public static HSExpr MathFn(CSArg arg) {
-                        var result = new HSExpr(MethodName(HSUtil.CArg(arg)));
-                        result.AddRef(arg);
-                        return result;
-                    }
+            replace(MethodName => concatId(Global_, MathFn, _Expr)) {
+                [DllImport(Constants.LibName)]
+                private static extern IntPtr MethodName(IntPtr arg);
+                public static HSExpr MathFn(HSExpr arg) {
+                    var result = new HSExpr(MethodName(HSUtil.CArg(arg)));
+                    result.AddRef(arg);
+                    return result;
                 }
             }
         }
 
         replace(DualArgMathFunctions => (Atan2, Hypot, Pow, FastPow, Min, Max, AbsD));
         unroll(MathFn in DualArgMathFunctions) {
-            unroll((HSTYPE1, CSTYPE1, CPPTYPE1) in ((HSVar, Var, IntPtr), (HSExpr, Expr, IntPtr))) {
-                unroll((HSTYPE2, CSTYPE2, CPPTYPE2) in ((HSVar, Var, IntPtr), (HSExpr, Expr, IntPtr))) {
-                    replace(CName => concatId(Global_, MathFn, _, CSTYPE1, CSTYPE2)) {
-                        [DllImport(Constants.LibName)] private static extern IntPtr CName(CPPTYPE1 a, CPPTYPE2 b);
-                        public static HSExpr MathFn(HSTYPE1 a, HSTYPE2 b) {
-                            var result = new HSExpr(CName(HSUtil.CArg(a), HSUtil.CArg(b)));
-                            result.AddRef(a, b);
-                            return result;
-                        }
-                    }
+            replace(CName => concatId(Global_, MathFn, _ExprExpr)) {
+                [DllImport(Constants.LibName)] private static extern IntPtr CName(IntPtr a, IntPtr b);
+                public static HSExpr MathFn(HSExpr a, HSExpr b) {
+                    var result = new HSExpr(CName(HSUtil.CArg(a), HSUtil.CArg(b)));
+                    result.AddRef(a, b);
+                    return result;
                 }
             }
         }

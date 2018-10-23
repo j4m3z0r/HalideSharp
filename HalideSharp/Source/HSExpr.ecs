@@ -31,6 +31,14 @@ namespace HalideSharp
             {
                 _cppobj = Expr_New_Float(f);
             }
+            
+            [DllImport(Constants.LibName)]
+            private static extern IntPtr Expr_New_Var(IntPtr v);
+            public HSExpr(HSVar v) : base()
+            {
+                _cppobj = Expr_New_Var(HSUtil.CArg(v));
+                AddRef(v);
+            }
         }
 
         region("Implicit type converters") {
@@ -42,6 +50,11 @@ namespace HalideSharp
             public static implicit operator HSExpr(float f)
             {
                 return new HSExpr(f);
+            }
+            
+            public static implicit operator HSExpr(HSVar v)
+            {
+                return new HSExpr(v);
             }
         }
 
