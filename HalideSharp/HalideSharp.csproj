@@ -141,7 +141,7 @@
   <!-- Compile the bridging library for native -->
   <Target Name="BeforeBuild">
     <CallTarget Targets="Version" />
-    <Exec Command="make -C $(ProjectDir)/Source -j 8" />
+    <Exec Command="make -C $(ProjectDir)/Source -j 4" />
   </Target>
   <!-- Clean the bridging library when we clean the C# project -->
   <Target Name="BeforeClean">
