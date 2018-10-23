@@ -60,3 +60,6 @@ PERMUTE_ARGS_1D(ALL_MATHFN_ONE_ARG)
 
 PERMUTE_ARGS_2D(ALL_MATHFN_TWO_ARG)
 
+extern "C" Expr* Global_Lerp_ExprExprExpr(Expr *zeroVal, Expr *oneVal, Expr *weight) {
+    return new Expr(lerp(*zeroVal, *oneVal, *weight));
+}

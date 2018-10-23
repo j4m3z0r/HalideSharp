@@ -30,5 +30,13 @@ namespace HalideSharp
                 }
             }
         }
+        
+        [DllImport(Constants.LibName)]
+        private static extern IntPtr Global_Lerp_ExprExprExpr(IntPtr zeroVal, IntPtr oneVal, IntPtr weight);
+        public static HSExpr Lerp(HSExpr zeroVal, HSExpr oneVal, HSExpr weight) {
+            var result = new HSExpr(Global_Lerp_ExprExprExpr(HSUtil.CArg(zeroVal), HSUtil.CArg(oneVal), HSUtil.CArg(weight)));
+            result.AddRef(zeroVal, oneVal, weight);
+            return result;
+        }
     }
 }
